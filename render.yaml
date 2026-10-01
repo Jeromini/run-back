@@ -11,3 +11,6 @@ services:
       - path: /
         name: Cache-Control
         value: no-cache
+      - path: /manifest.webmanifest
+        name: Content-Type
+        value: application/manifest+json
