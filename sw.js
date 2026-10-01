@@ -1,6 +1,6 @@
 // Offline support: the app page loads network-first (so updates show up), everything
 // else the app needs is served from cache. Calls to the sync service are never cached.
-const CACHE = "runback-v2";
+const CACHE = "runback-v3";
 const SHELL = ["/", "/manifest.webmanifest", "/icon-192.png", "/icon-512.png", "/apple-touch-icon.png",
   "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js",
