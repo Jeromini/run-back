@@ -1,0 +1,908 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a7f7a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Run Back">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Run Back</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one-column phone app, sticky header, fixed bottom tab bar; cards only for the session and log forms. */
+:root {
+  --bg: #edf2f1;
+  --surface: #ffffff;
+  --surface-2: #f5f8f7;
+  --ink: #0e2a2f;
+  --muted: #5b7176;
+  --line: #d5dfdd;
+  --accent: #0a7f7a;
+  --accent-ink: #ffffff;
+  --accent-soft: #d6efec;
+  --sun: #e9a41d;
+  --sun-soft: #fbefd2;
+  --walk: #7c8fa6;
+  --good: #23824f;
+  --warn: #b3621b;
+  --bad: #b8382f;
+  --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1a1d; --surface: #12262a; --surface-2: #0f2124; --ink: #e3eeec; --muted: #93a9ab;
+    --line: #22393d; --accent: #3cc7be; --accent-ink: #062022; --accent-soft: #143c3c;
+    --sun: #f5be4a; --sun-soft: #3a3016; --walk: #8fa3bb; --good: #4fc184; --warn: #e2954c; --bad: #ef7469;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b1a1d; --surface: #12262a; --surface-2: #0f2124; --ink: #e3eeec; --muted: #93a9ab;
+  --line: #22393d; --accent: #3cc7be; --accent-ink: #062022; --accent-soft: #143c3c;
+  --sun: #f5be4a; --sun-soft: #3a3016; --walk: #8fa3bb; --good: #4fc184; --warn: #e2954c; --bad: #ef7469;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { padding-top: env(safe-area-inset-top, 0px); }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+body { margin: 0; -webkit-text-size-adjust: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.45; }
+.wrap { max-width: 560px; margin: 0 auto; padding-inline: 16px; padding-block: 0 calc(96px + env(safe-area-inset-bottom, 0px)); }
+header.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg);
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-block: 14px 10px;
+}
+.brand { font-family: var(--display); font-weight: 700; font-size: 26px; letter-spacing: .02em; text-transform: uppercase; }
+.brand span { color: var(--accent); }
+.sync { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.sync i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); display: inline-block; }
+.sync.ok i { background: var(--good); }
+.sync.local i { background: var(--warn); }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.num { font-family: var(--display); font-variant-numeric: tabular-nums; }
+section.view { display: flex; flex-direction: column; gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.daybar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+.daybar button {
+  flex: 1 0 44px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 10px;
+  padding: 6px 0; font: inherit; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer;
+}
+.daybar button small { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.daybar button b { font-family: var(--display); font-size: 19px; font-weight: 600; }
+.daybar button .dot { width: 6px; height: 6px; border-radius: 50%; background: transparent; }
+.daybar button .dot.run { background: var(--accent); }
+.daybar button .dot.cross { background: var(--sun); }
+.daybar button.sel { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.daybar button.sel small { color: var(--bg); opacity: .75; }
+.daybar button.done::after { content: ""; width: 14px; height: 3px; border-radius: 2px; background: var(--good); }
+.session-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.session-title { font-family: var(--display); font-size: 34px; font-weight: 700; line-height: 1; text-transform: uppercase; letter-spacing: .01em; }
+.pill { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; white-space: nowrap; background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); }
+.pill.run { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+.pill.cross { background: var(--sun-soft); color: var(--warn); border-color: transparent; }
+.pill.good { background: var(--accent-soft); color: var(--good); border-color: transparent; }
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.steps li { display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: baseline; }
+.steps li .num { font-size: 20px; font-weight: 600; color: var(--accent); }
+.note { font-size: 13.5px; color: var(--muted); }
+.strip { display: flex; height: 14px; border-radius: 4px; overflow: hidden; gap: 2px; }
+.strip i { display: block; height: 100%; }
+.strip .w { background: var(--walk); opacity: .45; }
+.strip .r { background: var(--accent); }
+.strip .h { background: var(--sun); }
+.btn {
+  appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-weight: 600;
+  border-radius: 12px; padding: 12px 16px; cursor: pointer; min-height: 46px;
+}
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.big { width: 100%; font-size: 17px; }
+.btn.ghost { background: transparent; }
+.btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.row > * { flex: 1 1 140px; min-width: 0; }
+label.f { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; color: var(--muted); }
+input, select, textarea {
+  font: inherit; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 12px; width: 100%; min-height: 44px;
+}
+textarea { min-height: 70px; resize: vertical; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.seg button { flex: 1; border: 0; background: var(--surface-2); color: var(--ink); font: inherit; font-weight: 600; padding: 10px 0; cursor: pointer; min-height: 44px; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button.on { background: var(--accent); color: var(--accent-ink); }
+.check { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+.check input { width: 22px; height: 22px; min-height: 0; accent-color: var(--accent); }
+.lift { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding-block: 8px; border-top: 1px solid var(--line); }
+.lift:first-child { border-top: 0; }
+.lift small { display: block; color: var(--muted); font-size: 12.5px; }
+.sets { display: flex; gap: 6px; }
+.sets button { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); color: var(--muted); font: inherit; font-weight: 700; cursor: pointer; }
+.sets button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; min-width: 0; }
+.stat b { display: block; font-family: var(--display); font-size: 28px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 12px; color: var(--muted); }
+.chart { width: 100%; height: auto; display: block; }
+.chart text { fill: var(--muted); font-family: var(--body); font-size: 11px; }
+.hist { display: flex; flex-direction: column; }
+.hist .h { display: grid; grid-template-columns: 74px 1fr auto; gap: 10px; padding-block: 10px; border-top: 1px solid var(--line); align-items: baseline; }
+.hist .h:first-child { border-top: 0; }
+.hist .h .d { font-size: 13px; color: var(--muted); }
+.hist .h .w { font-family: var(--display); font-size: 19px; font-weight: 600; }
+.plan-week { display: grid; grid-template-columns: 48px 1fr; gap: 10px; padding-block: 12px; border-top: 1px solid var(--line); }
+.plan-week:first-child { border-top: 0; }
+.plan-week.cur { background: var(--accent-soft); margin-inline: -16px; padding-inline: 16px; border-radius: 10px; border-top-color: transparent; }
+.plan-week .wk { font-family: var(--display); font-size: 26px; font-weight: 700; color: var(--accent); line-height: 1; }
+.plan-week .wk small { display: block; font-size: 11px; font-family: var(--body); color: var(--muted); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+/* Timer */
+.timer { position: fixed; inset: 0; z-index: 30; background: var(--ink); color: var(--bg); display: flex; flex-direction: column;
+  padding: calc(20px + env(safe-area-inset-top, 0px)) 20px calc(24px + env(safe-area-inset-bottom, 0px)); gap: 18px; }
+.timer.run { background: var(--accent); color: var(--accent-ink); }
+.timer.hard { background: var(--sun); color: #2a1d02; }
+.timer .phase { font-family: var(--display); font-size: clamp(64px, 22vw, 120px); font-weight: 700; line-height: .9; text-transform: uppercase; }
+.timer .clock { font-family: var(--display); font-size: clamp(88px, 34vw, 180px); font-weight: 600; font-variant-numeric: tabular-nums; line-height: .9; }
+.timer .meta { display: flex; justify-content: space-between; font-weight: 600; opacity: .85; gap: 12px; flex-wrap: wrap; }
+.timer .bar { height: 8px; background: rgba(127,127,127,.35); border-radius: 4px; overflow: hidden; }
+.timer .bar i { display: block; height: 100%; background: currentColor; width: 0; }
+.timer .next { font-size: 17px; opacity: .85; }
+.timer .ctrl { margin-top: auto; display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 10px; }
+.timer .ctrl button { border: 2px solid currentColor; background: transparent; color: inherit; font: inherit; font-weight: 700; font-size: 17px; border-radius: 14px; min-height: 60px; cursor: pointer; }
+.timer .ctrl button.main { background: currentColor; }
+.timer .ctrl button.main span { color: var(--ink); }
+.timer.run .ctrl button.main span { color: var(--accent); }
+.timer.hard .ctrl button.main span { color: var(--sun); }
+nav.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: var(--surface); border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: repeat(4, 1fr); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+nav.tabs button { background: none; border: 0; color: var(--muted); font: inherit; font-size: 12px; font-weight: 600; padding: 10px 0 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+nav.tabs button svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+nav.tabs button.on { color: var(--accent); }
+.toast { position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; z-index: 40; }
+.callout { background: var(--sun-soft); border-radius: 12px; padding: 12px 14px; font-size: 14px; }
+.callout.red { background: color-mix(in srgb, var(--bad) 14%, var(--surface)); }
+.auth { position: fixed; inset: 0; z-index: 50; background: var(--bg); overflow-y: auto;
+  padding: calc(32px + env(safe-area-inset-top, 0px)) 16px calc(24px + env(safe-area-inset-bottom, 0px)); }
+.auth .inner { max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.auth .brand { font-size: 44px; line-height: 1; }
+.auth .err { color: var(--bad); font-size: 14px; font-weight: 600; margin: 0; }
+.auth .ok { color: var(--good); font-size: 14px; font-weight: 600; margin: 0; }
+.linkbtn { background: none; border: 0; color: var(--accent); font: inherit; font-weight: 600; padding: 6px 0; cursor: pointer; text-align: left; }
+@media (prefers-reduced-motion: no-preference) { .btn, .seg button, .sets button { transition: background .15s, color .15s; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">Run <span>Back</span></div>
+    <div class="sync" id="sync"><i></i><span>Connecting</span></div>
+  </header>
+
+  <!-- TODAY -->
+  <section class="view" id="v-today">
+    <div class="daybar" id="daybar" aria-label="Pick a day this week"></div>
+    <div class="card" id="session"></div>
+    <div class="card" id="logcard"></div>
+    <div class="card" id="liftcard" hidden></div>
+  </section>
+
+  <!-- WEIGHT -->
+  <section class="view" id="v-weight" hidden>
+    <div class="card">
+      <div class="eyebrow">Log weight</div>
+      <div class="row">
+        <label class="f">Date<input type="date" id="w-date"></label>
+        <label class="f"><span id="w-label">Weight (lb)</span><input type="number" id="w-val" inputmode="decimal" step="0.1" placeholder="e.g. 205.4"></label>
+      </div>
+      <button class="btn primary big" id="w-save">Save weight</button>
+      <p class="note">Weigh first thing in the morning, after the bathroom, before food. Judge progress by the 7-day average, not single days.</p>
+    </div>
+    <div class="stats" id="w-stats"></div>
+    <div class="card">
+      <div class="eyebrow">Weight trend</div>
+      <div id="w-chart"></div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">History</div>
+      <div class="hist" id="w-hist"></div>
+    </div>
+  </section>
+
+  <!-- PROGRESS -->
+  <section class="view" id="v-progress" hidden>
+    <div class="stats" id="p-stats"></div>
+    <div class="card">
+      <div class="eyebrow">Running minutes per week</div>
+      <div id="p-chart"></div>
+    </div>
+    <div class="card">
+      <div class="session-head"><div class="eyebrow">The plan</div><span class="pill" id="p-weeklabel"></span></div>
+      <div id="p-plan"></div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="view" id="v-me" hidden>
+    <div class="card">
+      <div class="eyebrow">Your numbers</div>
+      <div class="row">
+        <label class="f">Age<input type="number" id="s-age" inputmode="numeric"></label>
+        <label class="f">Height<input type="text" id="s-height" placeholder="e.g. 5 ft 10"></label>
+      </div>
+      <div class="row">
+        <label class="f"><span>Weight units</span>
+          <div class="seg" id="s-unit"><button data-v="lb">lb</button><button data-v="kg">kg</button></div></label>
+        <label class="f"><span>Distance units</span>
+          <div class="seg" id="s-dunit"><button data-v="mi">mi</button><button data-v="km">km</button></div></label>
+      </div>
+      <div class="row">
+        <label class="f">Starting weight<input type="number" id="s-start" inputmode="decimal" step="0.1"></label>
+        <label class="f">Goal weight<input type="number" id="s-goal" inputmode="decimal" step="0.1"></label>
+      </div>
+      <label class="f">Plan start date<input type="date" id="s-startdate"></label>
+      <label class="f">Injuries or health notes<textarea id="s-health" placeholder="Anything that affects training"></textarea></label>
+      <button class="btn primary big" id="s-save">Save</button>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Pacing the plan</div>
+      <p class="note" id="s-repeatnote"></p>
+      <div class="row">
+        <button class="btn" id="s-repeat">Repeat this week</button>
+        <button class="btn ghost" id="s-unrepeat">Undo a repeat</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Account</div>
+      <p class="note" style="margin:0" id="s-acct"></p>
+      <div class="row" id="s-pwrow">
+        <label class="f">New password<input type="password" id="s-newpw" autocomplete="new-password" minlength="6"></label>
+      </div>
+      <div class="row">
+        <button class="btn" id="s-setpw">Change password</button>
+        <button class="btn ghost" id="s-signout">Sign out</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Safety</div>
+      <p class="note">Stop and get medical advice for chest pain, faintness, or unusual breathlessness. In Cayman heat, run early or late, slow down when it is humid, and carry water on anything over 30 minutes.</p>
+    </div>
+  </section>
+</div>
+
+<nav class="tabs" id="tabs">
+  <button data-v="today" class="on"><svg viewBox="0 0 24 24"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v5M10 15l1-5 4 3 3-1M11 10l-3 1-2 3"/></svg>Today</button>
+  <button data-v="weight"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9a5 5 0 0 1 8 0M12 9l1.5-2"/></svg>Weight</button>
+  <button data-v="progress"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Progress</button>
+  <button data-v="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Me</button>
+</nav>
+
+<div class="timer" id="timer" hidden>
+  <div class="meta"><span id="t-round"></span><span id="t-left"></span></div>
+  <div class="bar"><i id="t-bar"></i></div>
+  <div class="phase" id="t-phase">Walk</div>
+  <div class="clock" id="t-clock">5:00</div>
+  <div class="next" id="t-next"></div>
+  <div class="ctrl">
+    <button id="t-stop">End</button>
+    <button id="t-play" class="main"><span>Pause</span></button>
+    <button id="t-skip">Skip</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<div class="auth" id="auth" hidden>
+  <form class="inner" id="a-form" novalidate>
+    <div class="brand">Run <span>Back</span></div>
+    <p class="note" style="margin:0">Your comeback plan, interval timer and logs. Sign in to keep your data synced between devices.</p>
+    <div class="seg" id="a-mode"><button type="button" data-v="in" class="on">Sign in</button><button type="button" data-v="up">Create account</button></div>
+    <label class="f">Email<input type="email" id="a-email" autocomplete="email" inputmode="email" required></label>
+    <label class="f">Password<input type="password" id="a-pass" autocomplete="current-password" minlength="6" required></label>
+    <p class="err" id="a-err" hidden></p>
+    <p class="ok" id="a-ok" hidden></p>
+    <button class="btn primary big" type="submit" id="a-go">Sign in</button>
+    <button class="linkbtn" type="button" id="a-forgot">Forgot password?</button>
+    <button class="linkbtn" type="button" id="a-local" style="color:var(--muted)">Use without an account (this phone only)</button>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // ---------- dates ----------
+  const pad = n => String(n).padStart(2, "0");
+  const iso = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  const parse = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+  const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+  const daysBetween = (a, b) => Math.round((parse(iso(b)) - parse(iso(a))) / 86400000);
+  const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const nice = s => { const d = parse(s); return DOW[d.getDay()] + " " + d.getDate() + " " + MON[d.getMonth()]; };
+  const mmss = s => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ":" + pad(s % 60); };
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  // ---------- state ----------
+  const DEFAULT_PROFILE = { age: 40, height: "", unit: "lb", dunit: "mi", startWeight: null, goalWeight: null, startDate: "2026-10-01", weekOffset: 0, health: "" };
+  const state = { profile: { ...DEFAULT_PROFILE }, days: {}, view: "today", sel: iso(new Date()) };
+
+  // ---------- the plan ----------
+  // Weekly rhythm keyed by JS day number. Weeks run Thursday to Wednesday from the start date.
+  const RHYTHM = { 4: "run", 5: "cross", 6: "rest", 0: "run", 1: "cross", 2: "rest", 3: "run" };
+  const WALK = 300; // 5-minute brisk walk before and after every run
+
+  // Each run is a list of blocks: [kind, seconds, label]. kind: w = walk, r = easy run, h = faster.
+  function intervals(n, run, walk) { const b = []; for (let i = 0; i < n; i++) { b.push(["r", run]); b.push(["w", walk]); } return b; }
+  function runFor(week, dow) {
+    const wu = ["w", WALK, "Warm-up walk"], cd = ["w", WALK, "Cool-down walk"];
+    const easy = m => [["r", m * 60]];
+    let body, title, how;
+    if (week <= 1) { body = intervals(8, 60, 90); title = "8 x 1 min jog"; how = "1 min very easy jog, 90 s walk. Six rounds is fine if eight is too much."; }
+    else if (week === 2) { body = intervals(8, 90, 90); title = "8 x 90 s jog"; how = "90 s easy jog, 90 s walk."; }
+    else if (week === 3) { body = intervals(6, 120, 120); title = "6 x 2 min jog"; how = "2 min easy jog, 2 min walk."; }
+    else if (week === 4) { body = intervals(6, 180, 120); title = "6 x 3 min jog"; how = "3 min easy jog, 2 min walk."; }
+    else if (week === 5) { body = intervals(4, 300, 120); title = "4 x 5 min jog"; how = "5 min easy jog, 2 min walk."; }
+    else if (week === 6) { body = intervals(3, 480, 120); title = "3 x 8 min jog"; how = "8 min easy jog, 2 min walk."; }
+    else if (week === 7) { body = intervals(2, 720, 120); title = "2 x 12 min jog"; how = "12 min easy jog, 2 min walk."; }
+    else if (week === 8) { body = easy(20); title = "20 min run"; how = "20 minutes continuous, conversational pace."; }
+    else if (week === 9) { body = easy(30); title = "30 min run"; how = "Milestone: 30 easy minutes without stopping."; }
+    else {
+      // Phase 2: three runs, one with some speed. Long run grows on Sunday.
+      if (dow === 0) { const m = Math.min(70, 35 + 5 * (week - 10)); body = easy(m); title = m + " min long run"; how = "Easy with friends. Talking pace the whole way."; }
+      else if (dow === 3) {
+        if (week <= 11) {
+          body = [["r", 600]]; for (let i = 0; i < 6; i++) { body.push(["h", 20]); body.push(["w", 70]); } body.push(["r", 300]);
+          title = "Easy + 6 strides"; how = "10 min easy, then 6 x 20 s quick and relaxed with 70 s easy walk or jog, then 5 min easy.";
+        } else {
+          const reps = week === 12 ? 3 : 4;
+          body = [["r", 600]]; for (let i = 0; i < reps; i++) { body.push(["h", 240]); body.push(["r", 120]); } body.push(["r", 300]);
+          title = reps + " x 4 min steady"; how = "10 min easy, then " + reps + " x 4 min comfortably hard (short sentences only) with 2 min easy, then 5 min easy.";
+        }
+      } else { body = easy(30); title = "30 min easy"; how = "Easy, conversational. No watch-checking."; }
+    }
+    return { kind: "run", title, how, blocks: [wu, ...body, cd] };
+  }
+  const LIFTS = [
+    ["squat", "Squat or sit-to-stand", "8-12 reps"],
+    ["hinge", "Hip hinge (good morning or RDL)", "8-12 reps"],
+    ["calf", "Calf raises", "12-15 reps"],
+    ["push", "Push-up variation", "8-12 reps"],
+    ["row", "Row (band, dumbbell or TRX)", "8-12 reps"]
+  ];
+  function weekOf(dateStr) {
+    const p = state.profile, start = parse(p.startDate || DEFAULT_PROFILE.startDate);
+    const d = daysBetween(start, parse(dateStr));
+    if (d < 0) return 0;
+    return Math.max(1, Math.floor(d / 7) + 1 - (p.weekOffset || 0));
+  }
+  function sessionFor(dateStr) {
+    const d = parse(dateStr), dow = d.getDay(), wk = weekOf(dateStr), type = RHYTHM[dow];
+    if (wk === 0) return { kind: "pre", title: "Plan not started", how: "Your plan starts " + nice(state.profile.startDate) + "." };
+    if (type === "run") { const s = runFor(wk, dow); if (dow === 0) s.how += " Sunday is the run with friends: let the slowest person set the pace."; return s; }
+    if (type === "cross") return { kind: "cross", title: (dow === 5 ? "30" : "30-40") + " min easy cardio + strength", how: "Easy cycling or a brisk walk, then 2 sets of each strength move. Stop sets with 2-3 reps left in the tank." };
+    return { kind: "rest", title: "Rest day", how: "Easy walk if you like, plus 10 minutes of calf, hip and hamstring stretching. Sleep is training too." };
+  }
+  const blocksTotal = b => b.reduce((a, x) => a + x[1], 0);
+  const runSeconds = b => b.filter(x => x[0] !== "w").reduce((a, x) => a + x[1], 0);
+
+  // ---------- storage ----------
+  // Supabase is the record; localStorage is an offline cache plus a list of unsent changes ("dirty"),
+  // so a run logged with no signal is sent the next time the phone is online.
+  const SUPABASE_URL = "https://bxmjxupypptofjrcofcb.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_dDGbEpmSv3wEwkAXHVn6xQ_5-aZEXGx";
+  const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true } }) : null;
+  let uid = null, email = "", localOnly = false, dirty = {};
+  const lsKey = () => "runback.v2:" + (uid || "local");
+  function lsLoad() {
+    state.profile = { ...DEFAULT_PROFILE }; state.days = {}; dirty = {};
+    try { const j = JSON.parse(localStorage.getItem(lsKey()) || "null"); if (j) { state.profile = { ...DEFAULT_PROFILE, ...j.profile }; state.days = j.days || {}; dirty = j.dirty || {}; } } catch (e) {}
+  }
+  function lsSave() { try { localStorage.setItem(lsKey(), JSON.stringify({ profile: state.profile, days: state.days, dirty })); } catch (e) {} }
+
+  let flushT = null, flushing = false;
+  let seq = Date.now();
+  function markDirty(id) { dirty[id] = ++seq; lsSave(); clearTimeout(flushT); flushT = setTimeout(flush, 600); }
+  async function flush() {
+    if (!sb || !uid || flushing) return;
+    const ids = Object.keys(dirty); if (!ids.length) { setSync("ok"); return; }
+    if (!navigator.onLine) { setSync("offline"); return; }
+    flushing = true;
+    try {
+      const now = new Date().toISOString();
+      const sent = { ...dirty };
+      const clear = id => { if (dirty[id] === sent[id]) delete dirty[id]; };
+      if (sent.profile) {
+        const { error } = await sb.from("profiles").upsert({ user_id: uid, data: state.profile, updated_at: now });
+        if (error) throw error;
+        clear("profile");
+      }
+      const rows = ids.filter(id => id !== "profile" && state.days[id]).map(id => ({ user_id: uid, date: id, data: state.days[id], updated_at: now }));
+      if (rows.length) {
+        const { error } = await sb.from("day_logs").upsert(rows);
+        if (error) throw error;
+        rows.forEach(r => clear(r.date));
+      }
+      lsSave(); setSync(Object.keys(dirty).length ? "offline" : "ok");
+    } catch (e) { setSync("offline"); }
+    flushing = false;
+    if (Object.keys(dirty).length && navigator.onLine) { clearTimeout(flushT); flushT = setTimeout(flush, 1500); }
+  }
+  async function pull() {
+    if (!sb || !uid || !navigator.onLine) return;
+    try {
+      const [p, d] = await Promise.all([
+        sb.from("profiles").select("data").eq("user_id", uid).maybeSingle(),
+        sb.from("day_logs").select("date,data").eq("user_id", uid)
+      ]);
+      if (p.error || d.error) throw p.error || d.error;
+      if (p.data && !dirty.profile) state.profile = { ...DEFAULT_PROFILE, ...p.data.data };
+      const days = {};
+      (d.data || []).forEach(r => { days[r.date] = { ...r.data, date: r.date }; });
+      Object.keys(dirty).forEach(id => { if (id !== "profile" && state.days[id]) days[id] = state.days[id]; });
+      state.days = days;
+      if (!p.data) dirty.profile = ++seq; // first sign-in: save the profile up
+      lsSave();
+      const a = document.activeElement;
+      if (!(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) render();
+      flush();
+    } catch (e) { setSync("offline"); }
+  }
+  const saveProfile = () => markDirty("profile");
+  const saveDay = date => markDirty(date);
+  function day(date) { return state.days[date] || (state.days[date] = { date }); }
+
+  function setSync(m) {
+    const el = document.getElementById("sync");
+    if (localOnly) m = "local";
+    el.className = "sync " + (m === "ok" ? "ok" : (m === "local" || m === "offline") ? "local" : "");
+    el.querySelector("span").textContent = m === "ok" ? "Synced" : m === "offline" ? "Offline, will sync" : m === "local" ? "This phone only" : "Connecting";
+  }
+
+  // ---------- sign in ----------
+  let authMode = "in";
+  const $ = id => document.getElementById(id);
+  function showAuth(show) { $("auth").hidden = !show; }
+  function authMsg(err, ok) { $("a-err").hidden = !err; $("a-err").textContent = err || ""; $("a-ok").hidden = !ok; $("a-ok").textContent = ok || ""; }
+  $("a-mode").querySelectorAll("button").forEach(b => b.onclick = () => {
+    authMode = b.dataset.v;
+    $("a-mode").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+    $("a-go").textContent = authMode === "in" ? "Sign in" : "Create account";
+    $("a-pass").autocomplete = authMode === "in" ? "current-password" : "new-password";
+    authMsg();
+  });
+  $("a-form").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const em = $("a-email").value.trim(), pw = $("a-pass").value;
+    if (!em || pw.length < 6) { authMsg("Enter your email and a password of at least 6 characters."); return; }
+    if (!sb) { authMsg("Can't reach the sync service. Check your connection, or use the app on this phone only."); return; }
+    $("a-go").disabled = true; authMsg();
+    try {
+      if (authMode === "in") {
+        const { error } = await sb.auth.signInWithPassword({ email: em, password: pw });
+        if (error) throw error;
+      } else {
+        const { data, error } = await sb.auth.signUp({ email: em, password: pw, options: { emailRedirectTo: location.origin } });
+        if (error) throw error;
+        if (!data.session) authMsg(null, "Check your email and tap the confirmation link, then come back and sign in.");
+      }
+    } catch (e) {
+      const m = (e && e.message) || "";
+      authMsg(/invalid login/i.test(m) ? "That email and password don't match. Try again, or create an account."
+        : /not confirmed/i.test(m) ? "Confirm your email first: tap the link we sent you, then sign in."
+        : /already registered/i.test(m) ? "That email already has an account. Sign in instead."
+        : m || "Something went wrong. Check your connection and try again.");
+    }
+    $("a-go").disabled = false;
+  });
+  $("a-forgot").onclick = async () => {
+    const em = $("a-email").value.trim();
+    if (!em) { authMsg("Type your email above first."); return; }
+    if (!sb) return;
+    const { error } = await sb.auth.resetPasswordForEmail(em, { redirectTo: location.origin });
+    authMsg(error ? error.message : null, error ? null : "If that email has an account, a reset link is on its way.");
+  };
+  $("a-local").onclick = () => {
+    localOnly = true; try { localStorage.setItem("runback.localOnly", "1"); } catch (e) {}
+    uid = null; lsLoad(); showAuth(false); setSync("local"); render();
+  };
+  $("s-signout").onclick = async () => {
+    if (localOnly) { localOnly = false; try { localStorage.removeItem("runback.localOnly"); } catch (e) {} showAuth(true); return; }
+    if (Object.keys(dirty).length) await flush();
+    if (sb) await sb.auth.signOut();
+  };
+
+  $("s-setpw").onclick = async () => {
+    const pw = $("s-newpw").value;
+    if (pw.length < 6) { toast("Use at least 6 characters"); return; }
+    const { error } = await sb.auth.updateUser({ password: pw });
+    if (error) toast(error.message); else { $("s-newpw").value = ""; toast("Password changed"); }
+  };
+
+  function onSession(session) {
+    const newUid = session ? session.user.id : null;
+    if (newUid === uid && !localOnly) return;
+    if (!newUid) {
+      uid = null;
+      if (!localOnly) { showAuth(true); }
+      return;
+    }
+    const hadLocal = !uid ? (() => { try { return JSON.parse(localStorage.getItem("runback.v2:local") || "null"); } catch (e) { return null; } })() : null;
+    localOnly = false; try { localStorage.removeItem("runback.localOnly"); } catch (e) {}
+    uid = newUid; email = session.user.email || "";
+    lsLoad();
+    // First sign-in after using the app without an account: carry those entries over.
+    if (hadLocal && hadLocal.days && !Object.keys(state.days).length) {
+      state.days = hadLocal.days; state.profile = { ...DEFAULT_PROFILE, ...hadLocal.profile };
+      Object.keys(state.days).forEach(d => dirty[d] = ++seq); dirty.profile = ++seq; lsSave();
+    }
+    showAuth(false); setSync("connecting"); render(); pull();
+  }
+
+  async function connect() {
+    try { localOnly = localStorage.getItem("runback.localOnly") === "1"; } catch (e) {}
+    if (!sb) { localOnly = true; lsLoad(); render(); setSync("local"); return; }
+    sb.auth.onAuthStateChange((ev, session) => setTimeout(() => {
+      onSession(session);
+      if (ev === "PASSWORD_RECOVERY") { state.view = "me"; render(); toast("Set a new password under Account"); }
+    }, 0));
+    const { data } = await sb.auth.getSession();
+    if (data.session) onSession(data.session);
+    else if (localOnly) { lsLoad(); render(); setSync("local"); }
+    else { lsLoad(); render(); showAuth(true); }
+    window.addEventListener("online", () => { flush(); pull(); });
+    window.addEventListener("offline", () => setSync("offline"));
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") { flush(); pull(); } });
+  }
+
+  // ---------- toast ----------
+  let toastT;
+  function toast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2200); }
+
+  // ---------- TODAY ----------
+  function renderDaybar() {
+    const sel = parse(state.sel), today = iso(new Date());
+    // show the plan week (Thu-Wed) that contains the selected day
+    const startDow = 4, back = (sel.getDay() - startDow + 7) % 7, first = addDays(sel, -back);
+    const bar = document.getElementById("daybar"); bar.innerHTML = "";
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(first, i), s = iso(d), t = RHYTHM[d.getDay()], dd = state.days[s];
+      const done = dd && (dd.runDone || dd.crossDone);
+      const b = document.createElement("button");
+      b.className = (s === state.sel ? "sel " : "") + (done ? "done" : "");
+      b.innerHTML = "<small>" + (s === today ? "Today" : DOW[d.getDay()]) + "</small><b>" + d.getDate() + "</b><span class='dot " + (t === "rest" ? "" : t) + "'></span>";
+      b.onclick = () => { state.sel = s; render(); };
+      bar.appendChild(b);
+    }
+  }
+
+  function stripHtml(blocks) {
+    const tot = blocksTotal(blocks);
+    return "<div class='strip' aria-hidden='true'>" + blocks.map(b => "<i class='" + b[0] + "' style='flex:" + (b[1] / tot) + "'></i>").join("") + "</div>";
+  }
+
+  function renderSession() {
+    const s = sessionFor(state.sel), wk = weekOf(state.sel), el = document.getElementById("session");
+    const pillCls = s.kind === "run" ? "run" : s.kind === "cross" ? "cross" : "";
+    const pillTxt = s.kind === "run" ? "Run" : s.kind === "cross" ? "Cardio + strength" : s.kind === "rest" ? "Rest" : "Upcoming";
+    let html = "<div class='session-head'><div><div class='eyebrow'>" + esc(nice(state.sel)) + (wk ? " &middot; Week " + wk : "") + "</div>" +
+      "<h1 class='session-title'>" + esc(s.title) + "</h1></div><span class='pill " + pillCls + "'>" + pillTxt + "</span></div>";
+    html += "<p class='note' style='margin:0'>" + esc(s.how) + "</p>";
+    if (s.kind === "run") {
+      const tot = blocksTotal(s.blocks), r = runSeconds(s.blocks);
+      html += stripHtml(s.blocks);
+      html += "<ul class='steps'><li><span class='num'>5 min</span><span>Brisk walk</span></li>" +
+        "<li><span class='num'>" + Math.round((tot - 2 * WALK) / 60) + " min</span><span>" + esc(s.title) + " (" + Math.round(r / 60) + " min running)</span></li>" +
+        "<li><span class='num'>5 min</span><span>Walk to cool down</span></li></ul>";
+      html += "<button class='btn primary big' id='go'>Start timer &middot; " + Math.round(tot / 60) + " min</button>";
+      if (wk <= 9) html += "<p class='note' style='margin:0'>Easy means you can speak full sentences. Your 2021 half pace was 6:43 per mile. That is a goal for later, not for these weeks.</p>";
+    }
+    el.innerHTML = html;
+    const go = document.getElementById("go");
+    if (go) go.onclick = () => startTimer(s);
+  }
+
+  function segHtml(id, opts, val) {
+    return "<div class='seg' id='" + id + "'>" + opts.map(o => "<button type='button' data-v='" + o[0] + "' class='" + (String(val) === String(o[0]) ? "on" : "") + "'>" + o[1] + "</button>").join("") + "</div>";
+  }
+
+  function renderLog() {
+    const s = sessionFor(state.sel), d = state.days[state.sel] || {}, el = document.getElementById("logcard"), p = state.profile;
+    if (s.kind === "pre") { el.hidden = true; return; }
+    el.hidden = false;
+    const isRun = s.kind === "run", isCross = s.kind === "cross";
+    let h = "<div class='eyebrow'>Log " + (isRun ? "this run" : isCross ? "this session" : "today") + "</div>";
+    if (isRun) {
+      h += "<label class='check'><input type='checkbox' id='l-done'" + (d.runDone ? " checked" : "") + "> Run done</label>";
+      h += "<div class='row'><label class='f'>Minutes<input type='number' id='l-min' inputmode='numeric' value='" + esc(d.runMin || "") + "'></label>" +
+        "<label class='f'>Distance (" + p.dunit + ")<input type='number' id='l-dist' inputmode='decimal' step='0.01' value='" + esc(d.dist || "") + "'></label></div>";
+    } else if (isCross) {
+      h += "<label class='check'><input type='checkbox' id='l-cdone'" + (d.crossDone ? " checked" : "") + "> Cardio done</label>";
+      h += "<div class='row'><label class='f'>Activity" + "<select id='l-ctype'>" + ["Cycling", "Brisk walk", "Swim", "Rower", "Other"].map(o => "<option" + (d.crossType === o ? " selected" : "") + ">" + o + "</option>").join("") + "</select></label>" +
+        "<label class='f'>Minutes<input type='number' id='l-cmin' inputmode='numeric' value='" + esc(d.crossMin || "") + "'></label></div>";
+    }
+    if (isRun || isCross) {
+      h += "<label class='f'>Effort (1 easy, 10 all out)" + segHtml("l-rpe", [[2, "2"], [3, "3"], [4, "4"], [5, "5"], [6, "6"], [7, "7"], [8, "8+"]], d.rpe) + "</label>";
+      h += "<label class='f'>Any pain?" + segHtml("l-pain", [["no", "No"], ["niggle", "Niggle"], ["yes", "Yes"]], d.pain || "") + "</label>";
+    }
+    h += "<label class='f'>Weight today (" + p.unit + ")<input type='number' id='l-w' inputmode='decimal' step='0.1' value='" + esc(d.weight || "") + "'></label>";
+    h += "<label class='f'>Notes<textarea id='l-notes' placeholder='How it felt, heat, who you ran with'>" + esc(d.notes || "") + "</textarea></label>";
+    if (d.rpe >= 7 && isRun && weekOf(state.sel) <= 9) h += "<div class='callout'>That felt hard for an easy run. Slow the jog down, and repeat this week if it stays above 6.</div>";
+    if (d.pain === "yes") h += "<div class='callout red'>Pain that changes how you move means stop running for now. Walk or cycle and repeat the week. If it lasts more than a few days, get it checked.</div>";
+    el.innerHTML = h;
+
+    const bind = (id, key, fn) => { const x = document.getElementById(id); if (x) x.addEventListener(x.type === "checkbox" ? "change" : "input", () => { const dd = day(state.sel); dd[key] = fn ? fn(x) : x.value; saveDay(state.sel); if (x.type === "checkbox") { renderDaybar(); toast("Saved"); } }); };
+    bind("l-done", "runDone", x => x.checked);
+    bind("l-cdone", "crossDone", x => x.checked);
+    bind("l-min", "runMin", x => x.value ? Number(x.value) : null);
+    bind("l-dist", "dist", x => x.value ? Number(x.value) : null);
+    bind("l-cmin", "crossMin", x => x.value ? Number(x.value) : null);
+    bind("l-w", "weight", x => x.value ? Number(x.value) : null);
+    bind("l-notes", "notes");
+    const ct = document.getElementById("l-ctype"); if (ct) ct.addEventListener("change", () => { day(state.sel).crossType = ct.value; saveDay(state.sel); });
+    [["l-rpe", "rpe", Number], ["l-pain", "pain", String]].forEach(([id, key, cast]) => {
+      const g = document.getElementById(id); if (!g) return;
+      g.querySelectorAll("button").forEach(b => b.onclick = () => { const dd = day(state.sel); const v = cast(b.dataset.v); dd[key] = dd[key] === v ? null : v; saveDay(state.sel); renderLog(); });
+    });
+  }
+
+  function renderLifts() {
+    const s = sessionFor(state.sel), el = document.getElementById("liftcard");
+    if (s.kind !== "cross") { el.hidden = true; return; }
+    el.hidden = false;
+    const d = state.days[state.sel] || {}, done = d.lifts || {};
+    let h = "<div class='session-head'><div class='eyebrow'>Strength &middot; 2 sets each</div><span class='pill'>20-25 min</span></div><div>";
+    LIFTS.forEach(([k, name, reps]) => {
+      const n = done[k] || 0;
+      h += "<div class='lift'><div>" + esc(name) + "<small>" + reps + "</small></div><div class='sets'>" +
+        [1, 2].map(i => "<button type='button' data-k='" + k + "' data-i='" + i + "' class='" + (n >= i ? "on" : "") + "' aria-label='Set " + i + "'>" + i + "</button>").join("") + "</div></div>";
+    });
+    h += "</div>";
+    el.innerHTML = h;
+    el.querySelectorAll(".sets button").forEach(b => b.onclick = () => {
+      const dd = day(state.sel), L = { ...(dd.lifts || {}) }, k = b.dataset.k, i = Number(b.dataset.i);
+      L[k] = (L[k] || 0) >= i ? i - 1 : i; dd.lifts = L; saveDay(state.sel); renderLifts();
+    });
+  }
+
+  // ---------- TIMER ----------
+  let T = null, audio = null, wake = null;
+  function beep(freq, dur, times) {
+    if (!audio) return;
+    for (let i = 0; i < (times || 1); i++) {
+      const o = audio.createOscillator(), g = audio.createGain(), t0 = audio.currentTime + i * (dur + 0.08);
+      o.frequency.value = freq; o.type = "square"; g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.25, t0 + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      o.connect(g).connect(audio.destination); o.start(t0); o.stop(t0 + dur + 0.02);
+    }
+  }
+  function buzz(p) { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} }
+  async function lockScreen() { try { wake = await navigator.wakeLock.request("screen"); } catch (e) { wake = null; } }
+
+  function startTimer(s) {
+    try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch (e) { audio = null; }
+    const segs = []; let t = 0;
+    s.blocks.forEach((b, i) => { segs.push({ kind: b[0], len: b[1], at: t, label: b[2] || (b[0] === "r" ? "Jog" : b[0] === "h" ? "Quick" : "Walk") }); t += b[1]; });
+    const runs = segs.filter(x => x.kind !== "w").length;
+    T = { segs, total: t, runs, started: Date.now(), pausedAt: null, pausedFor: 0, idx: -1, date: state.sel, raf: null };
+    document.getElementById("timer").hidden = false;
+    lockScreen(); beep(880, 0.15, 2); tick();
+    T.raf = setInterval(tick, 250);
+  }
+  function elapsed() { return ((T.pausedAt || Date.now()) - T.started - T.pausedFor) / 1000; }
+  function tick() {
+    if (!T) return;
+    const e = elapsed();
+    if (e >= T.total) return finishTimer(true);
+    let i = T.segs.findIndex(s => e < s.at + s.len);
+    const seg = T.segs[i];
+    if (i !== T.idx) {
+      if (T.idx !== -1) { if (seg.kind === "w") { beep(520, 0.25, 1); buzz([300]); } else { beep(880, 0.15, 3); buzz([150, 80, 150, 80, 150]); } }
+      T.idx = i;
+    }
+    const left = seg.at + seg.len - e;
+    if (left <= 3.2 && left > 0 && Math.ceil(left) !== T.lastCount) { T.lastCount = Math.ceil(left); if (T.idx !== T.segs.length - 1) beep(660, 0.06, 1); }
+    const box = document.getElementById("timer");
+    box.className = "timer " + (seg.kind === "r" ? "run" : seg.kind === "h" ? "hard" : "");
+    document.getElementById("t-phase").textContent = seg.label;
+    document.getElementById("t-clock").textContent = mmss(left);
+    const runNo = T.segs.slice(0, i + 1).filter(x => x.kind !== "w").length;
+    document.getElementById("t-round").textContent = runNo ? "Run " + runNo + " of " + T.runs : "Warm-up";
+    document.getElementById("t-left").textContent = mmss(T.total - e) + " left";
+    document.getElementById("t-bar").style.width = (100 * e / T.total).toFixed(2) + "%";
+    const nx = T.segs[i + 1];
+    document.getElementById("t-next").textContent = nx ? "Next: " + nx.label + " " + mmss(nx.len) : "Last one. Nice and easy.";
+    document.querySelector("#t-play span").textContent = T.pausedAt ? "Resume" : "Pause";
+  }
+  function finishTimer(complete) {
+    if (!T) return;
+    clearInterval(T.raf);
+    const mins = Math.round(Math.min(elapsed(), T.total) / 60), date = T.date;
+    T = null;
+    try { wake && wake.release(); } catch (e) {}
+    document.getElementById("timer").hidden = true;
+    if (mins >= 3) {
+      const dd = day(date); dd.runMin = mins; if (complete) dd.runDone = true; saveDay(date);
+      beep(988, 0.2, 3);
+      toast(complete ? "Session complete. Logged " + mins + " min." : "Logged " + mins + " min.");
+    }
+    render();
+  }
+  document.getElementById("t-play").onclick = () => {
+    if (!T) return;
+    if (T.pausedAt) { T.pausedFor += Date.now() - T.pausedAt; T.pausedAt = null; } else T.pausedAt = Date.now();
+    tick();
+  };
+  document.getElementById("t-skip").onclick = () => {
+    if (!T || T.idx < 0) return;
+    const seg = T.segs[T.idx], e = elapsed(), jump = seg.at + seg.len - e + 0.01;
+    T.pausedFor -= jump * 1000; tick();
+  };
+  document.getElementById("t-stop").onclick = () => finishTimer(false);
+  document.addEventListener("visibilitychange", () => { if (T && document.visibilityState === "visible") { lockScreen(); tick(); } });
+
+  // ---------- WEIGHT ----------
+  function weights() {
+    return Object.values(state.days).filter(d => d.weight).map(d => ({ date: d.date, w: Number(d.weight) })).sort((a, b) => a.date < b.date ? -1 : 1);
+  }
+  function avg7(list, endDate) {
+    const end = parse(endDate), xs = list.filter(x => { const k = daysBetween(parse(x.date), end); return k >= 0 && k < 7; });
+    return xs.length ? xs.reduce((a, x) => a + x.w, 0) / xs.length : null;
+  }
+  function renderWeight() {
+    const p = state.profile, list = weights(), u = p.unit;
+    document.getElementById("w-label").textContent = "Weight (" + u + ")";
+    const wd = document.getElementById("w-date"); if (!wd.value) wd.value = iso(new Date());
+    const today = iso(new Date()), a = avg7(list, today), a0 = avg7(list, iso(addDays(new Date(), -7)));
+    const start = p.startWeight || (list[0] && list[0].w), goal = p.goalWeight;
+    const stats = [
+      [a ? a.toFixed(1) : "-", "7-day avg (" + u + ")"],
+      [a && a0 ? ((a - a0 > 0 ? "+" : "") + (a - a0).toFixed(1)) : "-", "vs last week"],
+      [a && goal ? Math.max(0, a - goal).toFixed(1) : "-", goal ? "to goal " + goal : "set a goal in Me"]
+    ];
+    document.getElementById("w-stats").innerHTML = stats.map(s => "<div class='stat'><b>" + s[0] + "</b><span>" + esc(s[1]) + "</span></div>").join("");
+    document.getElementById("w-chart").innerHTML = weightChart(list, start, goal);
+    const h = document.getElementById("w-hist");
+    h.innerHTML = list.length ? list.slice().reverse().slice(0, 30).map(x => {
+      const av = avg7(list, x.date);
+      return "<div class='h'><span class='d'>" + esc(nice(x.date)) + "</span><span class='w'>" + x.w.toFixed(1) + " <small class='note'>" + u + "</small></span><span class='note'>avg " + (av ? av.toFixed(1) : "-") + "</span></div>";
+    }).join("") : "<p class='note' style='margin:0'>No weigh-ins yet. Add your first one above; it becomes your starting point.</p>";
+  }
+  function weightChart(list, start, goal) {
+    const W = 520, H = 220, L = 40, R = 12, Tp = 14, B = 26;
+    if (list.length < 2) return "<p class='note' style='margin:0'>The chart appears after two weigh-ins. A gradual 1-2 lb a week is the target range; the slower end is fine.</p>";
+    const d0 = parse(list[0].date), dN = parse(list[list.length - 1].date), span = Math.max(7, daysBetween(d0, dN));
+    const vals = list.map(x => x.w).concat(goal ? [goal] : []);
+    let lo = Math.floor(Math.min(...vals) - 1), hi = Math.ceil(Math.max(...vals) + 1);
+    const X = date => L + (W - L - R) * daysBetween(d0, parse(date)) / span, Y = v => Tp + (H - Tp - B) * (hi - v) / (hi - lo);
+    let g = "";
+    const step = Math.max(1, Math.ceil((hi - lo) / 4));
+    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) g += "<line x1='" + L + "' x2='" + (W - R) + "' y1='" + Y(v) + "' y2='" + Y(v) + "' stroke='var(--line)'/><text x='" + (L - 6) + "' y='" + (Y(v) + 4) + "' text-anchor='end'>" + v + "</text>";
+    g += "<text x='" + L + "' y='" + (H - 6) + "'>" + esc(nice(list[0].date).slice(4)) + "</text><text x='" + (W - R) + "' y='" + (H - 6) + "' text-anchor='end'>" + esc(nice(list[list.length - 1].date).slice(4)) + "</text>";
+    if (goal && goal >= lo && goal <= hi) g += "<line x1='" + L + "' x2='" + (W - R) + "' y1='" + Y(goal) + "' y2='" + Y(goal) + "' stroke='var(--good)' stroke-dasharray='5 5'/><text x='" + (W - R) + "' y='" + (Y(goal) - 5) + "' text-anchor='end' style='fill:var(--good)'>goal " + goal + "</text>";
+    const pts = list.map(x => "<circle cx='" + X(x.date).toFixed(1) + "' cy='" + Y(x.w).toFixed(1) + "' r='3' fill='var(--walk)' opacity='.7'/>").join("");
+    const avgPts = list.map(x => [X(x.date), Y(avg7(list, x.date))]);
+    const path = avgPts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+    const last = avgPts[avgPts.length - 1];
+    return "<svg class='chart' viewBox='0 0 " + W + " " + H + "' role='img' aria-label='Weight trend with 7-day average'>" + g + pts +
+      "<path d='" + path + "' fill='none' stroke='var(--accent)' stroke-width='2.5' stroke-linejoin='round'/><circle cx='" + last[0] + "' cy='" + last[1] + "' r='5' fill='var(--accent)'/></svg>" +
+      "<p class='note' style='margin:0'>Dots are daily weigh-ins; the line is the 7-day average.</p>";
+  }
+  document.getElementById("w-save").onclick = () => {
+    const date = document.getElementById("w-date").value, v = Number(document.getElementById("w-val").value);
+    if (!date || !v) { toast("Enter a date and a weight"); return; }
+    day(date).weight = v; saveDay(date);
+    if (!state.profile.startWeight) { state.profile.startWeight = v; saveProfile(); }
+    document.getElementById("w-val").value = ""; toast("Weight saved"); render();
+  };
+
+  // ---------- PROGRESS ----------
+  function renderProgress() {
+    const p = state.profile, today = iso(new Date()), wk = weekOf(today);
+    // week window (Thu-Wed) containing a date
+    const weekStart = s => { const d = parse(s); return addDays(d, -((d.getDay() - 4 + 7) % 7)); };
+    const ws = weekStart(today);
+    let runsThis = 0, crossThis = 0;
+    for (let i = 0; i < 7; i++) { const d = state.days[iso(addDays(ws, i))]; if (d && d.runDone) runsThis++; if (d && d.crossDone) crossThis++; }
+    const all = Object.values(state.days), runs = all.filter(d => d.runDone).length;
+    const totalMin = all.reduce((a, d) => a + (d.runMin || 0) + (d.crossMin || 0), 0);
+    document.getElementById("p-stats").innerHTML = [
+      [runsThis + "/3", "runs this week"], [crossThis + "/2", "cardio + strength"], [runs, "runs logged"]
+    ].map(s => "<div class='stat'><b>" + s[0] + "</b><span>" + s[1] + "</span></div>").join("");
+    // minutes per plan week, last 8
+    const bars = [];
+    for (let k = 7; k >= 0; k--) {
+      const s0 = addDays(ws, -7 * k); let m = 0;
+      for (let i = 0; i < 7; i++) { const d = state.days[iso(addDays(s0, i))]; if (d && d.runMin) m += d.runMin; }
+      bars.push({ s0, m });
+    }
+    document.getElementById("p-chart").innerHTML = barChart(bars) + (totalMin ? "" : "<p class='note' style='margin:0'>Bars fill in as you log runs. The timer logs minutes for you.</p>");
+    document.getElementById("p-weeklabel").textContent = wk ? "You are in week " + wk : "Starts " + nice(p.startDate);
+    let h = "";
+    for (let w = 1; w <= 12; w++) {
+      const thu = runFor(w, 4), sun = runFor(w, 0), wed = runFor(w, 3);
+      const same = thu.title === sun.title && sun.title === wed.title;
+      const label = w <= 9 ? "Build" : "Speed";
+      h += "<div class='plan-week" + (w === wk ? " cur" : "") + "'><div class='wk'>" + w + "<small>" + label + "</small></div><div>" +
+        (same ? "<b>" + esc(thu.title) + "</b> on Thu, Sun, Wed<div class='note'>" + esc(thu.how) + "</div>"
+              : "<b>Thu</b> " + esc(thu.title) + " &middot; <b>Sun</b> " + esc(sun.title) + " &middot; <b>Wed</b> " + esc(wed.title)) +
+        "</div></div>";
+    }
+    h += "<p class='note' style='margin:12px 0 0'>Fri and Mon: easy cardio plus strength. Sat and Tue: rest. After week 12 the long run keeps growing by 5 minutes a week. Repeat any week that feels too hard.</p>";
+    document.getElementById("p-plan").innerHTML = h;
+  }
+  function barChart(bars) {
+    const W = 520, H = 180, L = 30, R = 8, Tp = 12, B = 24, max = Math.max(60, ...bars.map(b => b.m));
+    const top = Math.ceil(max / 30) * 30, bw = (W - L - R) / bars.length;
+    let g = "";
+    for (let v = 0; v <= top; v += 30) { const y = Tp + (H - Tp - B) * (1 - v / top); g += "<line x1='" + L + "' x2='" + (W - R) + "' y1='" + y + "' y2='" + y + "' stroke='var(--line)'/><text x='" + (L - 6) + "' y='" + (y + 4) + "' text-anchor='end'>" + v + "</text>"; }
+    bars.forEach((b, i) => {
+      const h = (H - Tp - B) * b.m / top, x = L + i * bw + bw * 0.18, w = bw * 0.64, last = i === bars.length - 1;
+      g += "<rect x='" + x + "' y='" + (H - B - h) + "' width='" + w + "' height='" + Math.max(h, 0) + "' rx='3' fill='" + (last ? "var(--accent)" : "var(--walk)") + "' opacity='" + (last ? 1 : .55) + "'/>";
+      if (b.m) g += "<text x='" + (x + w / 2) + "' y='" + (H - B - h - 4) + "' text-anchor='middle'>" + b.m + "</text>";
+      g += "<text x='" + (x + w / 2) + "' y='" + (H - 6) + "' text-anchor='middle'>" + b.s0.getDate() + " " + MON[b.s0.getMonth()] + "</text>";
+    });
+    return "<svg class='chart' viewBox='0 0 " + W + " " + H + "' role='img' aria-label='Running minutes per week'>" + g + "</svg>";
+  }
+
+  // ---------- ME ----------
+  function renderMe() {
+    const p = state.profile;
+    const set = (id, v) => { const x = document.getElementById(id); if (document.activeElement !== x) x.value = v == null ? "" : v; };
+    set("s-age", p.age); set("s-height", p.height); set("s-start", p.startWeight); set("s-goal", p.goalWeight);
+    set("s-startdate", p.startDate); set("s-health", p.health);
+    ["s-unit", "s-dunit"].forEach(id => document.querySelectorAll("#" + id + " button").forEach(b => b.classList.toggle("on", b.dataset.v === (id === "s-unit" ? p.unit : p.dunit))));
+    document.getElementById("s-acct").textContent = localOnly ? "Using the app without an account. Entries stay on this phone. Sign in to sync them." : "Signed in as " + email + ". Your logs sync to any phone or computer you sign in on.";
+    document.getElementById("s-signout").textContent = localOnly ? "Sign in or create account" : "Sign out";
+    document.getElementById("s-pwrow").hidden = document.getElementById("s-setpw").hidden = localOnly;
+    document.getElementById("s-repeatnote").textContent = "Repeat a week when the runs feel hard or something aches. Weeks repeated so far: " + (p.weekOffset || 0) + ". Current week: " + (weekOf(iso(new Date())) || "not started") + ".";
+  }
+  ["s-unit", "s-dunit"].forEach(id => document.querySelectorAll("#" + id + " button").forEach(b => b.onclick = () => {
+    state.profile[id === "s-unit" ? "unit" : "dunit"] = b.dataset.v; saveProfile(); render();
+  }));
+  document.getElementById("s-save").onclick = () => {
+    const p = state.profile, n = id => { const v = document.getElementById(id).value; return v ? Number(v) : null; };
+    p.age = n("s-age"); p.height = document.getElementById("s-height").value.trim(); p.startWeight = n("s-start"); p.goalWeight = n("s-goal");
+    p.startDate = document.getElementById("s-startdate").value || DEFAULT_PROFILE.startDate; p.health = document.getElementById("s-health").value.trim();
+    saveProfile(); toast("Saved"); render();
+  };
+  document.getElementById("s-repeat").onclick = () => { state.profile.weekOffset = (state.profile.weekOffset || 0) + 1; saveProfile(); toast("This week will repeat"); render(); };
+  document.getElementById("s-unrepeat").onclick = () => { state.profile.weekOffset = Math.max(0, (state.profile.weekOffset || 0) - 1); saveProfile(); render(); };
+
+  // ---------- nav ----------
+  document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => {
+    state.view = b.dataset.v; try { sessionStorage.setItem("runback.view", state.view); } catch (e) {}
+    render(); window.scrollTo(0, 0);
+  });
+  try { const v = sessionStorage.getItem("runback.view"); if (v) state.view = v; } catch (e) {}
+  if (/^#(today|weight|progress|me)$/.test(location.hash)) state.view = location.hash.slice(1);
+
+  function render() {
+    ["today", "weight", "progress", "me"].forEach(v => { document.getElementById("v-" + v).hidden = v !== state.view; });
+    document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.v === state.view));
+    if (state.view === "today") { renderDaybar(); renderSession(); renderLog(); renderLifts(); }
+    if (state.view === "weight") renderWeight();
+    if (state.view === "progress") renderProgress();
+    if (state.view === "me") renderMe();
+  }
+
+  connect();
+  if ("serviceWorker" in navigator && location.protocol === "https:") {
+    window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
+  }
+})();
+</script>
+</body>
+</html>

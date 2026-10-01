@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: run-back
+    runtime: static
+    staticPublishPath: .
+    buildCommand: ""
+    headers:
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache
+      - path: /
+        name: Cache-Control
+        value: no-cache
