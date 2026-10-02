@@ -1,5 +1,5 @@
 // Today: the daily hub. Fasting status, weekly rings, the session, the coach, water and strength.
-import { act, onInput, onChange, segHtml, toast, ICON } from "../lib/dom.js";
+import { act, onInput, segHtml, toast, ICON } from "../lib/dom.js";
 import { esc, mmss, hm } from "../lib/format.js";
 import { iso, addDays, nice, today, weekStart, DOWL, MONL, DOW, clock } from "../lib/dates.js";
 import { rings, ring } from "../lib/charts.js";
@@ -12,6 +12,9 @@ import { coach, allFasts, planById } from "../domain/fasting.js";
 import { waterCard } from "../features/water.js";
 import { strengthCard, afterRender as strengthAfter } from "../features/strength.js";
 import { openWorkout } from "../features/workout.js";
+import { pickActivity, openLogActivity } from "../features/activitylog.js";
+import { activityById, activityKcal, INTENSITY } from "../domain/activities.js";
+import { actsOf, currentWeight, toKg } from "../domain/metrics.js";
 import { fmtDist, paceOf } from "../features/activity.js";
 import { unlockRow } from "../features/paywall.js";
 import { GUIDES } from "../domain/guides.js";
@@ -72,21 +75,25 @@ function manualLog() {
     <div class="quickw"><input type="number" id="q-w" aria-label="Weight in ${p.unit}" inputmode="decimal" step="0.1" placeholder="Weight in ${p.unit}" value="${esc(d.weight || "")}">
     <button class="btn primary" data-act="q-wsave">Save</button></div>`;
   if (isRun || isCross) {
-    h += `<details class="manual" id="manual"><summary>Log ${isRun ? "a run" : "cardio"} without the timer</summary>`;
-    h += isRun
-      ? `<label class="check"><input type="checkbox"${d.runDone ? " checked" : ""} data-act="m-flag" data-k="runDone"> Run done</label>
-        <div class="row"><label class="f">Minutes<input type="number" inputmode="numeric" value="${esc(d.runMin || "")}" data-in="m-num" data-k="runMin"></label>
-        <label class="f">Distance (${p.dunit})<input type="number" inputmode="decimal" step="0.01" value="${esc(d.dist || "")}" data-in="m-num" data-k="dist"></label></div>`
-      : `<label class="check"><input type="checkbox"${d.crossDone ? " checked" : ""} data-act="m-flag" data-k="crossDone"> Cardio done</label>
-        <div class="row"><label class="f">Activity<select data-chg="m-type">${["Cycling", "Brisk walk", "Swim", "Rower", "Other"].map(o => `<option${d.crossType === o ? " selected" : ""}>${o}</option>`).join("")}</select></label>
-        <label class="f">Minutes<input type="number" inputmode="numeric" value="${esc(d.crossMin || "")}" data-in="m-num" data-k="crossMin"></label></div>`;
-    h += `<label class="f" style="margin-top:10px">Effort (1 easy, 10 all out)${segHtml("m-rpe", [[2, "2"], [3, "3"], [4, "4"], [5, "5"], [6, "6"], [7, "7"], [8, "8+"]], d.rpe, 'data-act="m-seg" data-k="rpe"')}</label>
+    const done = isRun ? d.runDone : d.crossDone;
+    if (!done) h += `<button class="linkbtn" data-act="log-plan-manual">Did it without the timer? Log ${isRun ? "your run" : "your cardio"}</button>`;
+    h += `<details class="manual" id="manual"><summary>Effort, pain and notes</summary>`;
+    h += `<label class="f">Effort (1 easy, 10 all out)${segHtml("m-rpe", [[2, "2"], [3, "3"], [4, "4"], [5, "5"], [6, "6"], [7, "7"], [8, "8+"]], d.rpe, 'data-act="m-seg" data-k="rpe"')}</label>
       <label class="f" style="margin-top:10px">Any pain?${segHtml("m-pain", [["no", "No"], ["niggle", "Niggle"], ["yes", "Yes"]], d.pain || "", 'data-act="m-seg" data-k="pain"')}</label>
       <label class="f" style="margin-top:10px">Notes<textarea data-in="m-text" data-k="notes" placeholder="How it felt, heat, who you ran with">${esc(d.notes || "")}</textarea></label></details>`;
   }
   if (d.rpe >= 7 && isRun && weekOf(state.sel, p) <= 9) h += `<div class="callout">That felt hard for an easy run. Slow the jog down, and repeat this week if it stays above 6.</div>`;
   if (d.pain === "yes") h += `<div class="callout red">Pain that changes how you move means stop running for now. Walk or cycle and repeat the week. If it lasts more than a few days, get it checked.</div>`;
   return h + `</div>`;
+}
+
+function extraActs() {
+  const d = state.days[state.sel], list = actsOf(d);
+  if (!list.length) return "";
+  const kg = toKg(currentWeight(state.days, state.sel) || state.profile.startWeight, state.profile.unit);
+  return `<div class="card"><div class="card-head"><h3>Other activity</h3><button class="linkbtn" data-act="add-activity">+ Add</button></div>
+    <div class="list">${list.map(x => { const a = activityById(x.type); if (!a) return ""; return `<button class="frow" data-act="open-activity" data-date="${state.sel}" data-kind="act" data-id="${x.id}">
+      <span><b>${esc(a.name)}</b><span class="note">${x.min} min &middot; ${esc(INTENSITY[x.int ?? 1][1].toLowerCase())} &middot; about ${activityKcal(a, x.int ?? 1, x.min, kg) || "-"} kcal</span></span><i aria-hidden="true">${ICON.next}</i></button>`; }).join("")}</div></div>`;
 }
 
 export function renderToday(root) {
@@ -109,10 +116,11 @@ export function renderToday(root) {
     ${coachCard()}
     <div class="quickacts">
       <button class="qa" data-act="tab" data-v="food"><i style="background:var(--rose-soft);color:var(--rose)">${ICON.food}</i>Meal</button>
+      <button class="qa" data-act="add-activity"><i style="background:var(--violet-soft);color:var(--violet)">${ICON.bolt}</i>Activity</button>
       <button class="qa" data-act="water" data-ml="250" data-date="${state.sel}"><i style="background:var(--water-soft);color:var(--water)">${ICON.water}</i>+ 250 ml</button>
-      <button class="qa" data-act="focus-weight"><i style="background:var(--rose-soft);color:var(--rose)">${ICON.scale}</i>Weight</button>
       <button class="qa" data-act="tab" data-v="fast"><i style="background:var(--fast-soft);color:var(--fast)">${ICON.timer}</i>${p.fastActive ? "End fast" : "Fast"}</button>
     </div>
+    ${extraActs()}
     ${waterCard(state.sel)}
     ${strengthCard(render)}
     ${manualLog()}
@@ -122,7 +130,13 @@ export function renderToday(root) {
 }
 
 act("pick-day", el => { state.sel = el.dataset.d; render(); });
-act("start-session", () => openWorkout(sessionFor(state.sel, state.profile), state.sel));
+act("start-session", () => {
+  const s = sessionFor(state.sel, state.profile);
+  if (s.kind === "cross") pickActivity(a => openWorkout(s, state.sel, { type: a.id }), "Which cardio today?");
+  else openWorkout(s, state.sel);
+});
+act("add-activity", () => openLogActivity(state.sel));
+act("log-plan-manual", () => { const s = sessionFor(state.sel, state.profile); openLogActivity(state.sel, s.kind === "run" ? { type: "run-out" } : {}); });
 act("focus-weight", () => { const i = document.getElementById("q-w"); if (i) { i.scrollIntoView({ block: "center" }); i.focus(); } });
 act("q-wsave", () => {
   const v = Number(document.getElementById("q-w").value); if (!v) { toast("Enter your weight"); return; }
@@ -130,10 +144,7 @@ act("q-wsave", () => {
   if (!state.profile.startWeight) { state.profile.startWeight = v; saveProfile(); }
   toast("Weight saved"); render();
 });
-act("m-flag", el => { day(state.sel)[el.dataset.k] = el.checked; saveDay(state.sel); toast("Saved"); render(); });
-onInput("m-num", el => { day(state.sel)[el.dataset.k] = el.value ? Number(el.value) : null; saveDay(state.sel); });
 onInput("m-text", el => { day(state.sel)[el.dataset.k] = el.value; saveDay(state.sel); });
-onChange("m-type", el => { day(state.sel).crossType = el.value; saveDay(state.sel); });
 act("m-seg", (el, ev) => {
   const b = ev.target.closest("button"); if (!b) return;
   const k = el.dataset.k, dd = day(state.sel), v = k === "rpe" ? Number(b.dataset.v) : b.dataset.v;

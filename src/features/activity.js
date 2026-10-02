@@ -7,7 +7,9 @@ import { nice } from "../lib/dates.js";
 import { state, day, render } from "../core/state.js";
 import { saveDay } from "../core/store.js";
 import { sessionFor } from "../domain/plan.js";
-import { runDist, runSecs, crossSecs, strengthDone, setCounts, liftVolume } from "../domain/metrics.js";
+import { runDist, runSecs, crossSecs, strengthDone, setCounts, liftVolume, actsOf, currentWeight, toKg } from "../domain/metrics.js";
+import { activityById, activityKcal, INTENSITY } from "../domain/activities.js";
+import { openLogActivity } from "./activitylog.js";
 
 const du = () => state.profile.dunit || "mi";
 export const fmtDist = m => (m / UNIT_M[du()]).toFixed(2);
@@ -48,6 +50,7 @@ export function activities() {
   Object.values(state.days).forEach(d => {
     if (d.runDone) { const s = sessionFor(d.date, state.profile); out.push({ date: d.date, kind: "run", title: d.runTitle || (s.kind === "run" ? s.title : "Run"), dist: runDist(d, du()), dur: runSecs(d), route: d.route }); }
     if (d.crossDone) out.push({ date: d.date, kind: "cross", title: d.crossType || "Cardio", dist: d.crossDistM || 0, dur: crossSecs(d), route: d.crossRoute });
+    actsOf(d).forEach(x => { const a = activityById(x.type); if (a) out.push({ date: d.date, kind: "act", id: x.id, title: a.name, dist: x.distM || 0, dur: (x.min || 0) * 60, actType: a.id, int: x.int }); });
     if (strengthDone(d)) { const [n] = setCounts(d.strength); out.push({ date: d.date, kind: "strength", title: "Strength workout", ex: d.strength.filter(x => (x.sets || []).some(t => t.done)).length, sets: n, vol: liftVolume(d.strength) }); }
   });
   return out.sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -59,11 +62,17 @@ export function feedHtml(acts) {
       <div><div class="when">${esc(nice(a.date))} &middot; Strength</div><h3>${esc(a.title)}</h3>
       <div class="st"><div><b>${a.ex}</b><span>exercises</span></div><div><b>${a.sets}</b><span>sets</span></div>${a.vol ? `<div><b>${num(a.vol)}</b><span>${state.profile.unit} lifted</span></div>` : ""}</div></div>
       <div class="thumb" style="color:var(--violet)"><span class="ic">${ICON.dumbbell}</span></div></button>`
+    : a.kind === "act" ? `<button class="act" data-act="open-activity" data-date="${a.date}" data-kind="act" data-id="${a.id}">
+      <div><div class="when">${esc(nice(a.date))} &middot; ${esc(INTENSITY[a.int ?? 1][1])}</div><h3>${esc(a.title)}</h3>
+      <div class="st"><div><b>${mmss(a.dur)}</b><span>time</span></div>${a.dist ? `<div><b>${fmtDist(a.dist)}</b><span>${du()}</span></div>` : ""}<div><b>${kcalFor(a) || "-"}</b><span>kcal est.</span></div></div></div>
+      <div class="thumb" style="color:var(--violet)"><span class="ic">${ICON.bolt}</span></div></button>`
     : `<button class="act" data-act="open-activity" data-date="${a.date}" data-kind="${a.kind}">
       <div><div class="when">${esc(nice(a.date))} &middot; ${a.kind === "run" ? "Run" : "Cardio"}</div><h3>${esc(a.title)}</h3>
       <div class="st"><div><b>${a.dist ? fmtDist(a.dist) : "-"}</b><span>${du()}</span></div><div><b>${a.dur ? mmss(a.dur) : "-"}</b><span>time</span></div>${a.kind === "run" ? `<div><b>${paceOf(a.dur, a.dist)}</b><span>/${du()}</span></div>` : ""}</div></div>
       <div class="thumb">${routeSvg(a.route, a.kind === "run" ? "var(--accent)" : "var(--violet)")}</div></button>`).join("")}</div>`;
 }
+
+const kcalFor = a => activityKcal(activityById(a.actType), a.int ?? 1, a.dur / 60, toKg(currentWeight(state.days, a.date) || state.profile.startWeight, state.profile.unit));
 
 // ---------- detail ----------
 export function intervalTable(ints, dark) {
@@ -82,8 +91,17 @@ function splitTable(splits) {
 }
 const actions = (date, kind) => `<div class="row"><button class="btn" data-act="activity-edit" data-date="${date}">Edit on Today</button><button class="btn danger" data-act="activity-del" data-date="${date}" data-kind="${kind}">Delete</button></div>`;
 
-export function openActivity(date, kind) {
+export function openActivity(date, kind, id) {
   const d = state.days[date]; if (!d) return;
+  if (kind === "act") {
+    const x = actsOf(d).find(a => a.id === id), a = x && activityById(x.type); if (!a) return;
+    const kc = kcalFor({ actType: a.id, int: x.int, dur: (x.min || 0) * 60, date });
+    openSheet({ title: nice(date) + " · Activity", html: `<h1 class="big-title">${esc(a.name)}</h1>
+      <div class="stats"><div class="stat"><b>${x.min}</b><span>minutes</span></div><div class="stat"><b>${esc(INTENSITY[x.int ?? 1][1])}</b><span>intensity</span></div><div class="stat"><b>${kc || "-"}</b><span>kcal est.</span></div></div>
+      ${x.distM ? `<div class="stats"><div class="stat"><b>${fmtDist(x.distM)}</b><span>${du()}</span></div><div class="stat"><b>${paceOf(x.min * 60, x.distM)}</b><span>avg /${du()}</span></div></div>` : ""}
+      <div class="row"><button class="btn" data-act="act-edit" data-date="${date}" data-id="${x.id}">Edit</button><button class="btn danger" data-act="activity-del" data-date="${date}" data-kind="act" data-id="${x.id}">Delete</button></div>` });
+    return;
+  }
   if (kind === "strength") {
     const items = d.strength || [], u = state.profile.unit, [n, t] = setCounts(items), vol = liftVolume(items);
     openSheet({ title: nice(date) + " · Strength", onClose: clearMaps, html: `<h1 class="big-title">Strength workout</h1>
@@ -108,13 +126,15 @@ export function openActivity(date, kind) {
     ${actions(date, kind)}` });
   drawMap(body.querySelector("#sh-map"), isRun ? d.route : d.crossRoute, false);
 }
-act("open-activity", el => openActivity(el.dataset.date, el.dataset.kind));
+act("open-activity", el => openActivity(el.dataset.date, el.dataset.kind, el.dataset.id));
+act("act-edit", el => { closeSheet(); openLogActivity(el.dataset.date, { editId: el.dataset.id }); });
 act("activity-edit", el => { closeSheet(); state.sel = el.dataset.date; state.view = "today"; render(); window.scrollTo(0, 0); });
 act("activity-del", el => {
   if (!confirmTap("del-" + el.dataset.date + el.dataset.kind, el, "Tap again to delete")) return;
   const date = el.dataset.date, kind = el.dataset.kind, dd = day(date);
-  const fields = kind === "run" ? ["runDone", "runMin", "dist", "runDistM", "runDur", "route", "ints", "splits", "runTitle"]
-    : kind === "cross" ? ["crossDone", "crossMin", "crossType", "crossDistM", "crossDur", "crossRoute"] : ["strength", "lifts"];
+  if (kind === "act") { dd.acts = actsOf(dd).filter(x => x.id !== el.dataset.id); saveDay(date); closeSheet(); toast("Deleted"); render(); return; }
+  const fields = kind === "run" ? ["runDone", "runMin", "dist", "runDistM", "runDur", "route", "ints", "splits", "runTitle", "runAct", "runInt", "runWhere"]
+    : kind === "cross" ? ["crossDone", "crossMin", "crossType", "crossDistM", "crossDur", "crossRoute", "crossAct", "crossInt"] : ["strength", "lifts"];
   fields.forEach(f => delete dd[f]);
   if (Object.keys(dd).filter(k => k !== "date" && dd[k] != null && dd[k] !== "").length === 0) delete state.days[date];
   saveDay(date); closeSheet(); toast("Deleted"); render();

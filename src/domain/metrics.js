@@ -1,10 +1,15 @@
 // Numbers derived from the day records. Pure: everything is passed in.
 import { iso, parse, addDays, daysBetween, weekStart, DOW, MON } from "../lib/dates.js";
 import { UNIT_M, LB_PER_KG } from "../lib/format.js";
+import { activityById, activityKcal, legacyType } from "./activities.js";
 
 export const runDist = (d, dunit) => d.runDistM || (d.dist ? d.dist * UNIT_M[dunit] : 0);
 export const runSecs = d => d.runDone ? (d.runDur || (d.runMin || 0) * 60) : 0;
 export const crossSecs = d => d.crossDone ? (d.crossDur || (d.crossMin || 0) * 60) : 0;
+export const actsOf = d => (d && Array.isArray(d.acts) ? d.acts : []);
+export const runActs = d => actsOf(d).filter(x => { const a = activityById(x.type); return a && a.run; });
+export const ranToday = d => !!(d && (d.runDone || runActs(d).length));
+export const otherCardio = d => !!(d && (d.crossDone || actsOf(d).some(x => { const a = activityById(x.type); return a && !a.run; })));
 export const strengthDone = d => !!(d && Array.isArray(d.strength) && d.strength.some(x => (x.sets || []).some(s => s.done)));
 export function setCounts(items) { let t = 0, n = 0; (items || []).forEach(x => (x.sets || []).forEach(s => { t++; if (s.done) n++; })); return [n, t]; }
 export const liftVolume = items => Math.round((items || []).reduce((a, x) => a + (x.sets || []).filter(t => t.done).reduce((b, t) => b + (Number(t.r) || 0) * (Number(t.w) || 0), 0), 0));
@@ -62,12 +67,14 @@ export function burned(d, kg) {
   let kcal = 0;
   if (d.runDone) {
     if (Array.isArray(d.ints) && d.ints.length) kcal += d.ints.reduce((a, x) => a + (MET[x.k] || 4) * kg * x.sec / 3600, 0);
+    else if (d.runAct) kcal += activityKcal(activityById(d.runAct), d.runInt ?? 1, runSecs(d) / 60, kg);
     else kcal += 6 * kg * runSecs(d) / 3600;
   }
   if (d.crossDone) {
-    const t = d.crossType || "", met = /cycl/i.test(t) ? 6 : /swim/i.test(t) ? 7 : /row/i.test(t) ? 6.5 : 3.8;
-    kcal += met * kg * crossSecs(d) / 3600;
+    const a = activityById(d.crossAct || legacyType(d.crossType) || "walk-out");
+    kcal += activityKcal(a, d.crossInt ?? 1, crossSecs(d) / 60, kg);
   }
+  actsOf(d).forEach(x => { kcal += activityKcal(activityById(x.type), x.int ?? 1, x.min || 0, kg); });
   if (strengthDone(d)) { const [n] = setCounts(d.strength); kcal += 5 * kg * (n * 2.5 * 60) / 3600; }
   return Math.round(kcal);
 }
@@ -76,7 +83,7 @@ export function weekCounts(days, ws) {
   let runs = 0, cross = 0, weighs = 0, fasts = 0;
   for (let i = 0; i < 7; i++) {
     const d = days[iso(addDays(ws, i))]; if (!d) continue;
-    if (d.runDone) runs++; if (d.crossDone || strengthDone(d)) cross++; if (d.weight) weighs++; if (fastsOf(d).length) fasts++;
+    if (ranToday(d)) runs++; if (otherCardio(d) || strengthDone(d)) cross++; if (d.weight) weighs++; if (fastsOf(d).length) fasts++;
   }
   return { runs, cross, weighs, fasts };
 }

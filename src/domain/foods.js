@@ -7,9 +7,10 @@
 //   cupped hand = about 1/2 cup    thumb = about 1 tablespoon
 
 import { WORLD, WORLD_CATS } from "./foods-world.js";
+import { SIGNATURE } from "./drinks.js";
 
 export const CATS = [
-  ["protein", "Meat & fish"], ["dairy", "Eggs & dairy"], ["carbs", "Rice, bread & starch"], ["carib", "Caribbean"],
+  ["coffee", "Coffee & tea"], ["protein", "Meat & fish"], ["dairy", "Eggs & dairy"], ["carbs", "Rice, bread & starch"], ["carib", "Caribbean"],
   ["legumes", "Beans & lentils"], ["veg", "Vegetables"], ["fruit", "Fruit"], ["fats", "Nuts, oils & sauces"],
   ["drinks", "Drinks"], ["snacks", "Snacks & treats"], ["fast", "Takeaway & meals"], ...WORLD_CATS
 ];
@@ -160,8 +161,6 @@ const RAW = [
   ["honey", "Honey", "fats", 304, 0.3, [["1 tbsp", 21], ["1 tsp", 7]], "honey"],
   ["jam", "Jam", "fats", 250, 0.4, [["1 tbsp", 20]], "jam jelly"],
   // ---- drinks ----
-  ["coffee", "Coffee, black / tea", "drinks", 2, 0.3, [["1 cup", 240]], "coffee tea black"],
-  ["latte", "Latte (whole milk)", "drinks", 40, 2.5, [["small (12 oz)", 355], ["medium (16 oz)", 473]], "latte cappuccino flat white"],
   ["oj", "Orange juice", "drinks", 45, 0.7, [["1 glass (240 ml)", 248]], "juice orange"],
   ["soda", "Soft drink (cola, regular)", "drinks", 39, 0, [["1 can (355 ml)", 355], ["bottle (500 ml)", 500]], "soda coke pepsi ting soft drink"],
   ["diet-soda", "Diet soft drink", "drinks", 0, 0, [["1 can", 355]], "diet coke zero"],
@@ -198,7 +197,9 @@ const RAW = [
 
 // every food also offers 100 g, for anyone who weighs their food
 const withGrams = portions => (portions.some(([, g]) => g === 100) ? portions : [...portions, ["100 g", 100]]);
-export const FOODS = [...RAW, ...WORLD].map(([id, name, cat, k, p, portions, aliases]) => ({ id, name, cat, k, p, portions: withGrams(portions).map(([label, g]) => ({ label, g })), aliases: aliases || "" }));
+// chain signature drinks become per-100 ml foods with their cup size as the portion
+const SIG = SIGNATURE.map(([id, name, k, p, size, ml]) => [id, name, "coffee", Math.round(k / ml * 1000) / 10, Math.round(p / ml * 1000) / 10, [[size, ml]], "coffee starbucks dunkin tim hortons mccafe costa pret " + name.toLowerCase()]);
+export const FOODS = [...RAW, ...WORLD, ...SIG].map(([id, name, cat, k, p, portions, aliases]) => ({ id, name, cat, k, p, portions: withGrams(portions).map(([label, g]) => ({ label, g })), aliases: aliases || "" }));
 const byId = Object.fromEntries(FOODS.map(f => [f.id, f]));
 export const foodById = id => byId[id] || null;
 

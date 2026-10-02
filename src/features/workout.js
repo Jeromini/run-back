@@ -6,6 +6,8 @@ import { beep, buzz, say, setVoice, setSound, unlockAudio, unlockSpeech, keepAwa
 import { state, S, day, render } from "../core/state.js";
 import { saveDay } from "../core/store.js";
 import { drawMap, clearMaps, intervalTable, fmtDist } from "./activity.js";
+import { activityById } from "../domain/activities.js";
+import { pickActivity } from "./activitylog.js";
 
 const C_RING = 2 * Math.PI * 140;
 let W = null, gpsWatch = null, gpsFix = null;
@@ -59,11 +61,13 @@ function gpsLabel() {
 function paintGps() { const el = $("wk-gps"); if (!el) return; const [c, t] = gpsLabel(); el.className = "gpsdot " + c; el.querySelector("span").textContent = t; }
 
 // ---------- flow ----------
-export function openWorkout(session, date) {
+export function openWorkout(session, date, opts = {}) {
   const segs = []; let t = 0;
   session.blocks.forEach(b => { segs.push({ kind: b[0], len: b[1], at: t, label: b[2] || null }); t += b[1]; });
   const p = state.profile;
-  W = { session, date, segs, total: t, runs: segs.filter(x => x.kind !== "w").length, phase: "pre", voice: p.voice !== false, gpsOn: p.gps !== false, idx: -1, segDist: segs.map(() => 0), half: false, lastCount: null, gps: null };
+  W = { session, date, segs, total: t, runs: segs.filter(x => x.kind !== "w").length, phase: "pre", voice: p.voice !== false, gpsOn: p.gps !== false, idx: -1, segDist: segs.map(() => 0), half: false, lastCount: null, gps: null,
+    where: "outdoor", act: session.kind === "cross" ? activityById(opts.type || "walk-out") : null, manualDist: "" };
+  if (W.act) W.gpsOn = W.gpsOn && W.act.gps;
   setSound(p.beeps !== false); setVoice(W.voice);
   S.workoutLive = true;
   $("wk").hidden = false; document.body.classList.add("locked");
@@ -79,7 +83,7 @@ function closeWorkout() {
 }
 function renderPre() {
   const s = W.session, rows = [], body = W.segs.filter(x => !x.label);
-  rows.push(...W.segs.filter(x => x.label === "Warm-up" || x.label === "Easy cardio").map(x => [x.kind, x.label, mmss(x.len)]));
+  rows.push(...W.segs.filter(x => x.label === "Warm-up" || x.label === "Easy cardio").map(x => [x.kind, x.label === "Easy cardio" && W.act ? W.act.name : x.label, mmss(x.len)]));
   if (body.length) {
     const runs = body.filter(x => x.kind !== "w"), walk = body.find(x => x.kind === "w");
     const same = runs.every(r => r.len === runs[0].len && r.kind === runs[0].kind);
@@ -90,8 +94,10 @@ function renderPre() {
   const [gc, gt] = gpsLabel(), fa = state.profile.fastActive, fastH = fa ? (Date.now() - fa.s) / 3600000 : 0;
   $("wk-inner").innerHTML = `
     <div class="bar-top"><button class="iconbtn" id="wk-close" aria-label="Close">${ICON.close}</button><span class="t">${esc(nice(W.date))}</span><span style="width:44px"></span></div>
-    <div><div class="eyebrow">${s.kind === "run" ? "Run" : "Cardio"} &middot; ${Math.round(W.total / 60)} min</div><h2>${esc(s.title)}</h2></div>
-    <p class="desc">${esc(s.how)}</p>
+    <div><div class="eyebrow">${s.kind === "run" ? "Run" : "Cardio"} &middot; ${Math.round(W.total / 60)} min</div><h2>${esc(W.act ? W.act.name : s.title)}</h2></div>
+    <p class="desc">${esc(W.act ? "Easy, conversational effort for the whole session. Strength work follows on Today." : s.how)}</p>
+    ${s.kind === "run" ? `<div class="seg" id="wk-where" role="group"><button type="button" data-v="outdoor" class="${W.where === "outdoor" ? "on" : ""}">Outdoor</button><button type="button" data-v="treadmill" class="${W.where === "treadmill" ? "on" : ""}">Treadmill</button></div>` : ""}
+    ${W.act ? `<button class="btn" id="wk-change">${ICON.edit} Change activity</button>` : ""}
     ${fa ? `<div class="card" style="border-color:${fastH >= 20 ? "#e9a04d" : "var(--wk-line)"}"><span class="eyebrow">Fasted session &middot; ${Math.floor(fastH)} h in</span><p class="desc">${fastH >= 24 ? "You're more than 24 hours into a fast. Eat first, then train." : fastH >= 20 ? "Keep it easy, sip water, and stop if you feel light-headed." : "Easy effort only. Break your fast with protein within an hour after."}</p></div>` : ""}
     <div class="blocks">${rows.map(r => `<div><i style="background:${kindColor(r[0])}"></i><span>${esc(r[1])}</span><b>${r[2]}</b></div>`).join("")}</div>
     <div class="opts">
@@ -104,6 +110,9 @@ function renderPre() {
   $("o-voice").onchange = e => { W.voice = e.target.checked; setVoice(W.voice); };
   $("o-gps").onchange = e => { W.gpsOn = e.target.checked; if (W.gpsOn) gpsStart(); else gpsStop(); const el = $("wk-gps"); if (!W.gpsOn) { el.className = "gpsdot off"; el.querySelector("span").textContent = "Off"; } else paintGps(); };
   $("wk-start").onclick = startCountdown;
+  const wh = $("wk-where");
+  if (wh) wh.onclick = ev => { const b = ev.target.closest("button"); if (!b) return; W.where = b.dataset.v; W.gpsOn = W.where === "outdoor" && state.profile.gps !== false; if (W.gpsOn) gpsStart(); else gpsStop(); renderPre(); };
+  if ($("wk-change")) $("wk-change").onclick = () => pickActivity(a => { W.act = a; W.gpsOn = a.gps && state.profile.gps !== false; if (W.gpsOn) gpsStart(); else gpsStop(); $("wk").hidden = false; renderPre(); }, "Which cardio?");
 }
 function startCountdown() {
   unlockAudio(); if (W.voice) unlockSpeech(); keepAwake();
@@ -167,7 +176,7 @@ function cueFor(i) {
   const s = W.segs[i], runsLeft = W.segs.slice(i).filter(x => x.kind !== "w").length;
   if (s.label === "Warm-up") return "Warm up. Brisk walk for " + durWords(s.len) + ".";
   if (s.label === "Cool-down") return "Last part. Cool down walk for " + durWords(s.len) + ". Great work.";
-  if (s.label === "Easy cardio") return "Easy cardio for " + durWords(s.len) + ". Conversational pace.";
+  if (s.label === "Easy cardio") return (W.act ? W.act.name.replace(/\s*\(.*\)$/, "").replace(/\s*\/.*$/, "") : "Easy cardio") + " for " + durWords(s.len) + ". Conversational pace.";
   if (s.kind === "r") return (runsLeft === 1 && W.runs > 1 ? "Last one. " : "") + "Jog for " + durWords(s.len) + ". Easy pace.";
   if (s.kind === "h") return (runsLeft === 1 ? "Last one. " : "") + "Pick it up for " + durWords(s.len) + ". Quick but relaxed.";
   return "Walk for " + durWords(s.len) + ".";
@@ -186,7 +195,7 @@ function tick() {
   const left = seg.at + seg.len - e;
   if (!W.pausedAt && left <= 3.2 && i < W.segs.length - 1 && Math.ceil(left) !== W.lastCount) { W.lastCount = Math.ceil(left); beep(700, 0.07); }
   $("wk").className = "wk " + (seg.kind === "r" ? "ph-r" : seg.kind === "h" ? "ph-h" : "");
-  $("lv-lbl").textContent = kindName(seg);
+  $("lv-lbl").textContent = seg.label === "Easy cardio" && W.act ? "Cardio" : kindName(seg);
   $("lv-clock").textContent = mmss(left);
   $("lv-ring").setAttribute("stroke-dashoffset", (C_RING * (1 - (e - seg.at) / seg.len)).toFixed(1));
   const runNo = W.segs.slice(0, i + 1).filter(x => x.kind !== "w").length;
@@ -231,6 +240,7 @@ function renderSummary() {
       <div><b>${s.kind === "run" ? mmss(runSec) : W.ints.length}</b><span>${s.kind === "run" ? "Time jogging" : "Blocks"}</span></div>
     </div>
     ${route.length > 1 ? `<div class="map" id="sum-map"></div>` : ""}
+    ${dist < 20 && (s.kind === "run" || (W.act && W.act.distance)) ? `<div class="card"><label class="f"><span class="eyebrow">Distance (${du()}, optional)</span><input type="number" inputmode="decimal" step="0.01" id="sm-dist" placeholder="From the ${W.where === "treadmill" ? "treadmill" : "machine"} display" style="background:rgba(255,255,255,.05);border-color:var(--wk-line);color:var(--wk-ink)"></label></div>` : ""}
     ${s.kind === "run" ? `<div class="card"><div class="eyebrow">Intervals</div>${intervalTable(W.ints, true) || `<p class="desc">No jog intervals recorded.</p>`}</div>` : ""}
     <div class="card">
       <div class="eyebrow">How hard did it feel?</div>
@@ -265,9 +275,13 @@ function simplify(route) {
   return thin;
 }
 function saveWorkout() {
-  const d = day(W.date), s = W.session, dist = W.gps ? Math.round(W.gps.dist) : 0, notes = $("sm-notes").value.trim();
-  if (s.kind === "run") Object.assign(d, { runDone: true, runTitle: s.title, runDur: Math.round(W.elapsed), runMin: Math.round(W.elapsed / 60), runDistM: dist || null, route: W.route.length > 1 ? W.route : null, ints: W.ints, splits: W.gps && W.gps.splits.length ? W.gps.splits.map(Math.round) : null });
-  else Object.assign(d, { crossDone: true, crossDur: Math.round(W.elapsed), crossMin: Math.round(W.elapsed / 60), crossDistM: dist || null, crossRoute: W.route.length > 1 ? W.route : null, crossType: d.crossType || (dist > 1500 && W.elapsed / (dist / 1000) < 240 ? "Cycling" : "Brisk walk") });
+  const d = day(W.date), s = W.session, notes = $("sm-notes").value.trim();
+  let dist = W.gps ? Math.round(W.gps.dist) : 0;
+  const md = $("sm-dist") ? Number($("sm-dist").value) : 0;
+  if (dist < 20 && md > 0) dist = Math.round(md * UNIT_M[du()]);
+  const intensity = W.rpe ? (W.rpe <= 4 ? 0 : W.rpe <= 6 ? 1 : 2) : 1;
+  if (s.kind === "run") Object.assign(d, { runDone: true, runTitle: s.title + (W.where === "treadmill" ? " (treadmill)" : ""), runWhere: W.where, runAct: W.where === "treadmill" ? "run-tread" : "run-out", runDur: Math.round(W.elapsed), runMin: Math.round(W.elapsed / 60), runDistM: dist || null, route: W.route.length > 1 ? W.route : null, ints: W.ints, splits: W.gps && W.gps.splits.length ? W.gps.splits.map(Math.round) : null });
+  else Object.assign(d, { crossDone: true, crossDur: Math.round(W.elapsed), crossMin: Math.round(W.elapsed / 60), crossDistM: dist || null, crossRoute: W.route.length > 1 ? W.route : null, crossType: W.act.name, crossAct: W.act.id, crossInt: intensity });
   if (W.rpe) d.rpe = W.rpe;
   if (W.pain) d.pain = W.pain;
   if (notes) d.notes = d.notes ? d.notes + "\n" + notes : notes;

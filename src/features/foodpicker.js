@@ -8,6 +8,8 @@ import { state, S, day, render } from "../core/state.js";
 import { saveDay, saveProfile, sb } from "../core/store.js";
 import { FOODS, CATS, foodById, nutrition, searchFoods, onlineFood } from "../domain/foods.js";
 import { buzz } from "../lib/sound.js";
+import { DRINKS } from "../domain/drinks.js";
+import { openDrinkBuilder } from "./drinkbuilder.js";
 
 const uidGen = () => Math.random().toString(36).slice(2, 9);
 let ctx = { date: null, meal: "Lunch" }, query = "", cat = "recent", plate = [], showCustom = false, savingPlate = false, pick = null;
@@ -22,7 +24,7 @@ const fmtQ = q => (q === 0.5 ? "½" : q === 1.5 ? "1½" : q === 2.5 ? "2½" : St
 function recents() {
   const out = [], seen = new Set();
   Object.keys(state.days).sort().reverse().forEach(k => (state.days[k].food || []).slice().reverse().forEach(f => {
-    const key = f.fid ? "db:" + f.fid : "c:" + f.n.toLowerCase();
+    const key = f.fid ? "db:" + f.fid : f.drink ? "d:" + f.n.toLowerCase() : "c:" + f.n.toLowerCase();
     if (!seen.has(key) && out.length < 16) { seen.add(key); out.push(f); }
   }));
   return out;
@@ -50,16 +52,25 @@ function rowHtml(f) {
   const pt = f.portions[0], n = nutrition(f, 0, 1);
   return `<button class="frow" data-act="food-pick" data-id="${f.id}"><span><b>${esc(f.name)}</b><span class="note">${esc(pt.label)} &middot; ${n.k} kcal &middot; ${n.p} g protein</span></span><i aria-hidden="true">${ICON.plus}</i></button>`;
 }
+const DRINK_WORDS = /coffee|latte|cappuc|espresso|americano|macchiato|cortado|flat white|mocha|frap|cold brew|iced coffee|chai|matcha|tea|boba|bubble|hot choc|cocoa|starbucks|dunkin|tim hortons|mccaf|costa|pret/i;
+const drinkRow = d => `<button class="frow" data-act="drink-build" data-id="${d.id}"><span><b>${esc(d.name)}</b><span class="note">Build it: shop, size, milk, sugar and extras</span></span><i aria-hidden="true" style="background:var(--fast-soft);color:var(--fast)">${ICON.edit}</i></button>`;
+function drinkRows(q) {
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  const hits = DRINKS.filter(d => words.some(w => (d.name + " " + d.aliases).toLowerCase().includes(w)));
+  return (hits.length ? hits : DRINKS.slice(0, 4)).slice(0, 6).map(drinkRow).join("");
+}
 function resultsHtml() {
   if (query.trim()) {
     const r = searchFoods(query);
-    return (r.length ? r.map(rowHtml).join("") : `<p class="note" style="padding:8px 0">No dish called "${esc(query)}" in the built-in list.</p>`) + onlineHtml();
+    const drinks = DRINK_WORDS.test(query) ? drinkRows(query) : "";
+    return drinks + (r.length ? r.map(rowHtml).join("") : `<p class="note" style="padding:8px 0">No dish called "${esc(query)}" in the built-in list.</p>`) + onlineHtml();
   }
   if (cat === "recent") {
     const r = recents();
     if (!r.length) return `<p class="note" style="padding:8px 0">Foods you log appear here for one-tap re-adding. Search above or pick a category to start.</p>`;
-    return r.map((f, i) => `<button class="frow" data-act="recent-pick" data-i="${i}"><span><b>${esc(f.n)}</b><span class="note">${esc(f.u ? fmtQ(f.q) + " x " + f.u : "custom")} &middot; ${f.k} kcal${f.p ? " &middot; " + f.p + " g protein" : ""}</span></span><i aria-hidden="true">${ICON.plus}</i></button>`).join("");
+    return r.map((f, i) => `<button class="frow" data-act="recent-pick" data-i="${i}"><span><b>${esc(f.n)}</b><span class="note">${esc(f.drink ? "drink" : f.u ? fmtQ(f.q) + " x " + f.u : "custom")} &middot; ${f.k} kcal${f.p ? " &middot; " + f.p + " g protein" : ""}</span></span><i aria-hidden="true">${ICON.plus}</i></button>`).join("");
   }
+  if (cat === "coffee") return `<div class="eyebrow" style="padding-top:6px">Build your drink</div>${DRINKS.map(drinkRow).join("")}<div class="eyebrow" style="padding-top:12px">Popular chain drinks (standard recipe)</div>` + FOODS.filter(f => f.cat === "coffee").map(rowHtml).join("");
   return FOODS.filter(f => f.cat === cat).map(rowHtml).join("");
 }
 function onlineHtml() {
@@ -135,9 +146,15 @@ function paintPortion() {
   $("pp-q").textContent = fmtQ(pick.q);
   document.querySelectorAll("#pp-por .chip").forEach(c => c.classList.toggle("on", Number(c.dataset.i) === pick.pi));
 }
+const drinkCallbacks = {
+  onLog: e => { logItems([e]); toast(`${e.k} kcal added to ${ctx.meal}`); render(); },
+  onPlate: e => { plate.push(e); toast("Added to your plate"); render(); scrollToPicker(); }
+};
+act("drink-build", el => openDrinkBuilder({ drink: el.dataset.id, brand: state.profile.lastBrand || "home" }, drinkCallbacks));
 act("food-pick", el => { const f = lookup(el.dataset.id); if (f) openPortion(f); });
 act("recent-pick", el => {
   const f = recents()[Number(el.dataset.i)];
+  if (f.drink) { openDrinkBuilder(f.drink, drinkCallbacks); return; }
   if (f.fid && !foodById(f.fid) && f.src) onlineById[f.fid] = { id: f.fid, name: f.n, cat: "online", k: f.src.k, p: f.src.p, portions: f.src.portions, aliases: "", online: true };
   if (f.fid && lookup(f.fid)) { openPortion(lookup(f.fid), f.pi || 0, f.q || 1); return; }
   logItems([{ n: f.n, k: f.k, p: f.p }]); toast(f.n + " added to " + ctx.meal); render();
