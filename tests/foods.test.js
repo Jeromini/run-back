@@ -77,7 +77,8 @@ describe("activities", () => {
   it("has unique ids and increasing intensity", () => {
     expect(new Set(ACTIVITIES.map(a => a.id)).size).toBe(ACTIVITIES.length);
     ACTIVITIES.forEach(a => { expect(a.mets[0]).toBeLessThanOrEqual(a.mets[1]); expect(a.mets[1]).toBeLessThanOrEqual(a.mets[2]); });
-    expect(ACTIVITIES.length).toBeGreaterThan(40);
+    expect(ACTIVITIES.length).toBeGreaterThan(70);
+    expect(ACTIVITIES.filter(a => a.group === "machine").length).toBeGreaterThan(25);
   });
   it("30 min moderate elliptical at 95 kg is about 309 kcal", () => {
     expect(activityKcal(activityById("elliptical"), 1, 30, 95)).toBe(309);

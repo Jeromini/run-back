@@ -8,12 +8,36 @@ import { LIFTS, sessionFor } from "../domain/plan.js";
 import { setCounts } from "../domain/metrics.js";
 import { buzz } from "../lib/sound.js";
 
+// [name, default reps, group]
 const LIBRARY = [
-  ["Squat", 10], ["Goblet squat", 10], ["Sit-to-stand", 12], ["Lunge", 10], ["Step-up", 10], ["Glute bridge", 12],
-  ["Romanian deadlift", 10], ["Hip hinge (good morning)", 10], ["Calf raises", 15], ["Single-leg calf raise", 12],
-  ["Push-up", 10], ["Incline push-up", 12], ["Bench press", 10], ["Overhead press", 10], ["Dips", 10],
-  ["Dumbbell row", 10], ["Band row", 12], ["TRX row", 12], ["Pull-up", 6], ["Lat pulldown", 10],
-  ["Bicep curl", 12], ["Tricep extension", 12], ["Plank (seconds)", 30], ["Side plank (seconds)", 20], ["Dead bug", 10], ["Bird dog", 10]
+  // legs
+  ["Squat", 10, "Legs"], ["Goblet squat", 10, "Legs"], ["Sit-to-stand", 12, "Legs"], ["Lunge", 10, "Legs"], ["Bulgarian split squat", 10, "Legs"], ["Step-up", 10, "Legs"],
+  ["Leg press (machine)", 12, "Legs"], ["Hack squat (machine)", 10, "Legs"], ["Smith machine squat", 10, "Legs"], ["Pendulum squat (machine)", 10, "Legs"],
+  ["Leg extension (machine)", 12, "Legs"], ["Seated leg curl (machine)", 12, "Legs"], ["Lying leg curl (machine)", 12, "Legs"],
+  ["Romanian deadlift", 10, "Legs"], ["Deadlift", 6, "Legs"], ["Trap bar deadlift", 8, "Legs"], ["Hip hinge (good morning)", 10, "Legs"],
+  ["Hip thrust", 10, "Legs"], ["Hip thrust (machine)", 12, "Legs"], ["Glute bridge", 12, "Legs"], ["Glute kickback (machine or cable)", 12, "Legs"],
+  ["Hip abduction (machine)", 15, "Legs"], ["Hip adduction (machine)", 15, "Legs"],
+  ["Calf raises", 15, "Legs"], ["Single-leg calf raise", 12, "Legs"], ["Standing calf raise (machine)", 12, "Legs"], ["Seated calf raise (machine)", 15, "Legs"],
+  // chest
+  ["Push-up", 10, "Chest"], ["Incline push-up", 12, "Chest"], ["Bench press", 10, "Chest"], ["Incline bench press", 10, "Chest"], ["Dumbbell bench press", 10, "Chest"],
+  ["Chest press (machine)", 12, "Chest"], ["Incline chest press (machine)", 12, "Chest"], ["Pec deck / chest fly (machine)", 12, "Chest"], ["Cable crossover / cable fly", 12, "Chest"],
+  ["Dips", 10, "Chest"], ["Assisted dip (machine)", 10, "Chest"],
+  // back
+  ["Pull-up", 6, "Back"], ["Assisted pull-up (machine)", 8, "Back"], ["Chin-up", 6, "Back"], ["Lat pulldown", 10, "Back"], ["Close-grip lat pulldown", 10, "Back"],
+  ["Seated cable row", 10, "Back"], ["Seated row (machine)", 12, "Back"], ["Chest-supported row (machine / T-bar)", 10, "Back"], ["Dumbbell row", 10, "Back"],
+  ["Barbell row", 8, "Back"], ["Band row", 12, "Back"], ["TRX row", 12, "Back"], ["Straight-arm pulldown (cable)", 12, "Back"], ["Back extension (hyperextension)", 12, "Back"],
+  // shoulders & arms
+  ["Overhead press", 8, "Shoulders & arms"], ["Dumbbell shoulder press", 10, "Shoulders & arms"], ["Shoulder press (machine)", 12, "Shoulders & arms"],
+  ["Lateral raise", 12, "Shoulders & arms"], ["Lateral raise (machine or cable)", 12, "Shoulders & arms"], ["Rear delt fly (reverse pec deck)", 12, "Shoulders & arms"], ["Face pull (cable)", 15, "Shoulders & arms"],
+  ["Shrugs", 12, "Shoulders & arms"], ["Bicep curl", 12, "Shoulders & arms"], ["Hammer curl", 12, "Shoulders & arms"], ["Cable curl", 12, "Shoulders & arms"], ["Preacher curl (machine)", 12, "Shoulders & arms"],
+  ["Tricep extension", 12, "Shoulders & arms"], ["Tricep pushdown (cable)", 12, "Shoulders & arms"], ["Overhead tricep extension (cable)", 12, "Shoulders & arms"], ["Tricep dip (machine)", 12, "Shoulders & arms"],
+  // core
+  ["Plank (seconds)", 30, "Core"], ["Side plank (seconds)", 20, "Core"], ["Dead bug", 10, "Core"], ["Bird dog", 10, "Core"],
+  ["Ab crunch (machine)", 15, "Core"], ["Cable crunch", 15, "Core"], ["Hanging knee raise", 10, "Core"], ["Captain's chair leg raise", 10, "Core"],
+  ["Rotary torso (machine)", 12, "Core"], ["Pallof press (cable)", 10, "Core"], ["Russian twist", 20, "Core"], ["Ab wheel rollout", 8, "Core"],
+  // full body & functional
+  ["Kettlebell swing", 15, "Full body"], ["Farmer's carry (metres)", 40, "Full body"], ["Thruster", 10, "Full body"], ["Burpee", 10, "Full body"],
+  ["Wall ball", 15, "Full body"], ["Medicine ball slam", 12, "Full body"], ["Box jump", 8, "Full body"], ["Cable woodchop", 12, "Full body"], ["Landmine press", 10, "Full body"]
 ];
 const uidGen = () => Math.random().toString(36).slice(2, 9);
 let pickerOpen = false, onChangeCb = () => {};
@@ -57,8 +81,13 @@ function fillPicker() {
   Object.values(state.days).forEach(d => (d.strength || []).forEach(x => used.add(x.name)));
   const lib = LIBRARY.map(l => l[0]), custom = [...used].filter(n => !lib.includes(n));
   const all = [...custom, ...lib].filter(n => !ql || n.toLowerCase().includes(ql));
+  const chip = n => `<button class="chip" data-act="ex-pick" data-n="${esc(n)}">${esc(n)}</button>`;
   let h = q && !all.some(n => n.toLowerCase() === ql) ? `<button class="chip add" data-act="ex-pick" data-n="${esc(q)}">+ Add "${esc(q)}"</button>` : "";
-  h += all.slice(0, 30).map(n => `<button class="chip" data-act="ex-pick" data-n="${esc(n)}">${esc(n)}</button>`).join("");
+  if (q) h += all.slice(0, 40).map(chip).join("");
+  else {
+    if (custom.length) h += `<div class="eyebrow" style="width:100%">Yours</div>` + custom.map(chip).join("");
+    [...new Set(LIBRARY.map(l => l[2]))].forEach(g => { h += `<div class="eyebrow" style="width:100%;margin-top:6px">${esc(g)}</div>` + LIBRARY.filter(l => l[2] === g).map(l => chip(l[0])).join(""); });
+  }
   $("pk-list").innerHTML = h || `<p class="note">Type a name to add your own exercise.</p>`;
 }
 export function afterRender() { if (pickerOpen && $("pk-q")) fillPicker(); }

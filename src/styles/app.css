@@ -570,3 +570,4 @@ details.manual[open] summary { margin-bottom: 12px; }
 .stepper b { font-family: var(--display); font-size: 44px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .stepper .btn { min-height: 56px; border-radius: 16px; }
 .online-h { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 2px 4px; border-top: 1px solid var(--line); margin-top: 4px; }
+.picker .chips { max-height: 380px; overflow-y: auto; }
