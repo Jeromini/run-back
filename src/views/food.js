@@ -8,9 +8,10 @@ import { state, day, render } from "../core/state.js";
 import { saveDay, saveProfile } from "../core/store.js";
 import { foodTotals, burned, currentWeight, toKg, weights } from "../domain/metrics.js";
 import { waterCard } from "../features/water.js";
+import { pickerHtml, setFoodCtx } from "../features/foodpicker.js";
 
 const MEALS = ["Breakfast", "Lunch", "Dinner", "Snacks"];
-let fdate = today(), meal = null, editTargets = false, recentCache = [];
+let fdate = today(), meal = null, editTargets = false;
 export const resetFood = () => { fdate = today(); meal = null; };
 const mealNow = () => { const h = new Date().getHours(); return h < 10 ? "Breakfast" : h < 15 ? "Lunch" : h < 21 ? "Dinner" : "Snacks"; };
 const uidGen = () => Math.random().toString(36).slice(2, 9);
@@ -26,8 +27,7 @@ export function renderFood(root) {
   const kT = p.kcalTarget, pT = p.proteinTarget, kg = toKg(currentWeight(state.days, fdate) || p.startWeight, p.unit);
   const burn = burned(d, kg), left = kT ? kT - tot.k : null;
   const m = meal || (fdate === t ? mealNow() : "Snacks");
-  const recent = [], seen = new Set();
-  Object.keys(state.days).sort().reverse().forEach(k => (state.days[k].food || []).slice().reverse().forEach(f => { const key = f.n.toLowerCase(); if (!seen.has(key) && recent.length < 14) { seen.add(key); recent.push(f); } }));
+  setFoodCtx({ date: fdate, meal: m });
   const food = d.food || [];
   const days7 = Array.from({ length: 7 }, (_, i) => iso(addDays(parse(fdate), i - 6)));
   const k7 = days7.map(k => foodTotals(state.days[k]).k), logged = days7.filter(k => foodTotals(state.days[k]).n);
@@ -51,23 +51,16 @@ export function renderFood(root) {
     </div>
     ${lowFuel ? `<div class="callout">You trained today on a ${num(kT)} kcal target. If your runs start to feel flat or sleep suffers, add 150-250 kcal, mostly protein and carbs, on training days.</div>` : ""}
     ${editTargets || !kT ? targetsCard() : ""}
-    <div class="card"><div class="card-head"><h3>Add food</h3></div>
-      ${segHtml("f-meal", MEALS.map(x => [x, x === "Snacks" ? "Snack" : x === "Breakfast" ? "Bkfst" : x]), m, 'data-act="food-meal"')}
-      <div class="addgrid"><label class="f full">Food<input id="f-n" placeholder="e.g. 2 eggs and toast" autocomplete="off" maxlength="80"></label>
-        <label class="f">Calories<input id="f-k" type="number" inputmode="numeric" placeholder="kcal"></label>
-        <label class="f">Protein (g)<input id="f-p" type="number" inputmode="decimal" placeholder="g"></label></div>
-      <button class="btn primary big" data-act="food-add" data-m="${m}">${ICON.plus} Add to ${m}</button>
-      ${recent.length ? `<div class="eyebrow">Recent: tap to add again</div><div class="chips">${recent.map((f, i) => `<button class="chip" data-act="food-again" data-i="${i}" data-m="${m}">${esc(f.n)}<small>${f.k || 0}</small></button>`).join("")}</div>` : ""}
-    </div>
+    ${segHtml("f-meal", MEALS.map(x => [x, x === "Snacks" ? "Snack" : x === "Breakfast" ? "Bkfst" : x]), m, 'data-act="food-meal"')}
+    ${pickerHtml()}
     ${food.length ? MEALS.filter(x => food.some(f => f.m === x)).map(x => { const items = food.filter(f => f.m === x);
-      return `<div class="meal"><div class="meal-h">${x}<span>${num(items.reduce((a, f) => a + (Number(f.k) || 0), 0))} kcal</span></div>${items.map((f, i) => `<div class="fi${i === 0 ? " first" : ""}"><span class="nm">${esc(f.n)}</span><span class="k">${f.k || 0}</span><span class="p">${f.p ? f.p + " g" : ""}</span>
+      return `<div class="meal"><div class="meal-h">${x}<span>${num(items.reduce((a, f) => a + (Number(f.k) || 0), 0))} kcal</span></div>${items.map((f, i) => `<div class="fi${i === 0 ? " first" : ""}"><span class="nm">${esc(f.n)}${f.u ? `<small class="note" style="display:block">${esc((f.q === 0.5 ? "½" : f.q === 1.5 ? "1½" : f.q) + " x " + f.u)}</small>` : ""}</span><span class="k">${f.k || 0}</span><span class="p">${f.p ? f.p + " g" : ""}</span>
         <button class="x" data-act="food-del" data-id="${f.id}" aria-label="Remove ${esc(f.n)}">&times;</button></div>`).join("")}</div>`; }).join("")
-      : `<div class="card empty"><b>Nothing logged ${fdate === t ? "today" : "this day"}</b>Add what you eat above. Rough numbers are fine; being consistent matters more than being exact.</div>`}
+      : `<div class="card empty"><b>Nothing logged ${fdate === t ? "today" : "this day"}</b>Search a food above, pick a portion, and the calories are worked out for you.</div>`}
     ${waterCard(fdate)}
     <div class="card"><div class="card-head"><h3>Last 7 days</h3><span class="note">${logged.length ? `avg ${num(avgK)} kcal &middot; ${avgP} g protein` : "no entries yet"}</span></div>
       ${barChart({ labels: days7.map(k => DOW[parse(k).getDay()].slice(0, 2)), values: k7, target: kT, targetLabel: kT ? "target " + num(kT) : "", fmt: v => num(v) })}</div>
   </section>`;
-  recentCache = recent;
 }
 function targetsCard() {
   const p = state.profile, sg = suggest();
@@ -86,17 +79,6 @@ act("food-targets-save", () => {
   if (!k || !pr) { toast("Enter both targets"); return; }
   state.profile.kcalTarget = k; state.profile.proteinTarget = pr; saveProfile(); editTargets = false; toast("Targets saved"); render();
 });
-function addItem(n, k, pr, m) {
-  const d = day(fdate); if (!Array.isArray(d.food)) d.food = [];
-  d.food.push({ id: uidGen(), n, k: Math.round(k) || 0, p: Math.round((pr || 0) * 10) / 10, m });
-  saveDay(fdate); toast(n + " added"); render();
-}
-act("food-add", el => {
-  const n = document.getElementById("f-n").value.trim();
-  if (!n) { toast("Name the food"); document.getElementById("f-n").focus(); return; }
-  addItem(n, Number(document.getElementById("f-k").value), Number(document.getElementById("f-p").value), el.dataset.m);
-});
-act("food-again", el => { const f = recentCache[Number(el.dataset.i)]; addItem(f.n, f.k, f.p, el.dataset.m); });
 act("food-del", el => {
   if (!confirmTap("food" + el.dataset.id, el, "?")) return;
   const d = day(fdate); d.food = (d.food || []).filter(f => f.id !== el.dataset.id); saveDay(fdate); render();

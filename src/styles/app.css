@@ -541,3 +541,31 @@ details.manual[open] summary { margin-bottom: 12px; }
 }
 .legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
 .still .view { animation: none !important; }
+/* Food picker */
+.search { position: relative; }
+.search span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); display: grid; }
+.search span svg { width: 19px; height: 19px; }
+.search input { padding-left: 40px; min-height: 50px; font-size: 16px; }
+.catrow { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; margin-inline: -16px; padding-inline: 16px; scrollbar-width: none; }
+.catrow::-webkit-scrollbar { display: none; }
+.catrow .chip { flex: none; white-space: nowrap; }
+.chip.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.results { display: flex; flex-direction: column; max-height: 420px; overflow-y: auto; margin-inline: -4px; padding-inline: 4px; }
+.frow { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; text-align: left; background: none; border: 0; border-top: 1px solid var(--line); padding: 11px 2px; cursor: pointer; color: var(--ink); width: 100%; }
+.frow:first-child { border-top: 0; }
+.frow b { display: block; font-weight: 700; font-size: 15px; }
+.frow .note { font-size: 12.5px; }
+.frow i { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+.frow i svg { width: 18px; height: 18px; }
+.plate { background: var(--surface-2); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.favs { display: flex; flex-wrap: wrap; gap: 8px; }
+.fav { display: inline-flex; align-items: center; }
+.fav .x { width: 26px; }
+.portion-total { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 8px; }
+.portion-total b { display: block; font-family: var(--display); font-size: 40px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.portion-total div:first-child b { color: var(--accent); }
+.portion-total div:nth-child(2) b { color: var(--rose); }
+.portion-total span { font-size: 12px; color: var(--muted); font-weight: 600; }
+.stepper { display: grid; grid-template-columns: 60px 1fr 60px; align-items: center; text-align: center; }
+.stepper b { font-family: var(--display); font-size: 44px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stepper .btn { min-height: 56px; border-radius: 16px; }
