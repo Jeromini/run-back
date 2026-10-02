@@ -4,13 +4,17 @@
 // Logged entries keep the old shape { id, n, k, p, m } plus { fid, pi, q, u } for database foods.
 import { $, act, onInput, openSheet, closeSheet, confirmTap, toast, ICON } from "../lib/dom.js";
 import { esc, num } from "../lib/format.js";
-import { state, day, render } from "../core/state.js";
-import { saveDay, saveProfile } from "../core/store.js";
-import { FOODS, CATS, foodById, nutrition, searchFoods } from "../domain/foods.js";
+import { state, S, day, render } from "../core/state.js";
+import { saveDay, saveProfile, sb } from "../core/store.js";
+import { FOODS, CATS, foodById, nutrition, searchFoods, onlineFood } from "../domain/foods.js";
 import { buzz } from "../lib/sound.js";
 
 const uidGen = () => Math.random().toString(36).slice(2, 9);
 let ctx = { date: null, meal: "Lunch" }, query = "", cat = "recent", plate = [], showCustom = false, savingPlate = false, pick = null;
+// worldwide search state; online foods are kept by id so they can be picked and re-added
+let online = { q: "", items: null, loading: false, err: "" }, onlineT = null;
+const onlineById = {};
+const lookup = id => foodById(id) || onlineById[id] || null;
 export const setFoodCtx = c => { ctx = c; };
 const fmtQ = q => (q === 0.5 ? "½" : q === 1.5 ? "1½" : q === 2.5 ? "2½" : String(q));
 
@@ -49,7 +53,7 @@ function rowHtml(f) {
 function resultsHtml() {
   if (query.trim()) {
     const r = searchFoods(query);
-    return r.length ? r.map(rowHtml).join("") : `<p class="note" style="padding:8px 0">No match for "${esc(query)}". Try another word, or add it as a custom food below.</p>`;
+    return (r.length ? r.map(rowHtml).join("") : `<p class="note" style="padding:8px 0">No dish called "${esc(query)}" in the built-in list.</p>`) + onlineHtml();
   }
   if (cat === "recent") {
     const r = recents();
@@ -58,6 +62,33 @@ function resultsHtml() {
   }
   return FOODS.filter(f => f.cat === cat).map(rowHtml).join("");
 }
+function onlineHtml() {
+  const q = query.trim();
+  if (q.length < 3) return "";
+  let body;
+  if (!sb || !S.uid) body = `<p class="note">Sign in to search millions of packaged foods and brands from around the world.</p>`;
+  else if (online.loading || online.q !== q) body = `<p class="note">Searching worldwide...</p>`;
+  else if (online.err) body = `<p class="note">${esc(online.err)} <button class="linkbtn" data-act="online-retry">Try again</button></p>`;
+  else if (!online.items.length) body = `<p class="note">No products found worldwide. Add it as a custom food below.</p>`;
+  else body = online.items.map(it => `<button class="frow" data-act="food-pick" data-id="${esc(it.id)}"><span><b>${esc(it.name)}</b><span class="note">${it.brand ? esc(it.brand) + " &middot; " : ""}${it.k} kcal &middot; ${it.p} g protein per 100 g</span></span><i aria-hidden="true">${ICON.plus}</i></button>`).join("");
+  return `<div class="online-h"><span class="eyebrow">Worldwide products</span><span class="note">Open Food Facts</span></div>${body}`;
+}
+async function searchOnline(q) {
+  if (!sb || !S.uid || q.length < 3) return;
+  online = { q, items: null, loading: true, err: "" };
+  try {
+    const { data, error } = await sb.functions.invoke("food-search", { body: { q } });
+    if (error) throw error;
+    if (data.error) throw new Error(data.error);
+    data.items.forEach(it => { onlineById[it.id] = onlineFood(it); });
+    online = { q, items: data.items, loading: false, err: "" };
+  } catch (e) {
+    online = { q, items: [], loading: false, err: navigator.onLine ? "Worldwide search didn't respond." : "You're offline. Worldwide search needs a connection." };
+  }
+  if (query.trim() === q && $("food-results")) $("food-results").innerHTML = resultsHtml();
+}
+act("online-retry", () => searchOnline(query.trim()));
+
 function customHtml() {
   return `<div class="picker"><div class="card-head"><b>Custom food</b><button class="linkbtn" data-act="custom-close">Close</button></div>
     <div class="addgrid"><label class="f full">Food<input id="f-n" placeholder="e.g. Mum's stew" autocomplete="off" maxlength="80"></label>
@@ -66,11 +97,19 @@ function customHtml() {
     <div class="row"><button class="btn" data-act="custom-plate">Add to plate</button><button class="btn primary" data-act="custom-log">Log now</button></div></div>`;
 }
 
-onInput("food-q", el => { query = el.value; $("food-results").innerHTML = resultsHtml(); document.querySelectorAll(".catrow .chip").forEach(c => c.classList.toggle("on", !query && c.dataset.c === cat)); });
+onInput("food-q", el => {
+  query = el.value; clearTimeout(onlineT);
+  const q = query.trim();
+  if (q.length >= 3 && online.q !== q) onlineT = setTimeout(() => searchOnline(q), 650);
+  $("food-results").innerHTML = resultsHtml(); document.querySelectorAll(".catrow .chip").forEach(c => c.classList.toggle("on", !query && c.dataset.c === cat)); });
 act("food-cat", el => { cat = el.dataset.c; query = ""; const q = $("food-q"); if (q) q.value = ""; $("food-results").innerHTML = resultsHtml(); document.querySelectorAll(".catrow .chip").forEach(c => c.classList.toggle("on", c.dataset.c === cat)); });
 
 // ---------- logging ----------
-function entry(f, pi, q) { const n = nutrition(f, pi, q); return { n: f.name, k: n.k, p: n.p, fid: f.id, pi, q, u: f.portions[pi].label }; }
+function entry(f, pi, q) {
+  const n = nutrition(f, pi, q), e = { n: f.name, k: n.k, p: n.p, fid: f.id, pi, q, u: f.portions[pi].label };
+  if (f.online) e.src = { k: f.k, p: f.p, portions: f.portions };
+  return e;
+}
 function logItems(items) {
   const d = day(ctx.date); if (!Array.isArray(d.food)) d.food = [];
   items.forEach(x => d.food.push({ ...x, id: uidGen(), m: ctx.meal }));
@@ -80,14 +119,14 @@ function logItems(items) {
 // ---------- portion sheet ----------
 function openPortion(f, pi = 0, q = 1) {
   pick = { f, pi, q };
-  openSheet({ title: CATS.find(c => c[0] === f.cat)[1], html: `<h1 class="big-title" style="font-size:30px">${esc(f.name)}</h1>
+  openSheet({ title: f.online ? "Worldwide product" : CATS.find(c => c[0] === f.cat)[1], html: `<h1 class="big-title" style="font-size:30px">${esc(f.name)}</h1>
     <div class="portion-total"><div><b id="pp-k"></b><span>kcal</span></div><div><b id="pp-p"></b><span>g protein</span></div><div><b id="pp-g"></b><span>grams</span></div></div>
     <div class="card"><div class="eyebrow">Portion</div><div class="chips" id="pp-por">${f.portions.map((pt, i) => `<button class="chip${i === pi ? " on" : ""}" data-act="pp-por" data-i="${i}">${esc(pt.label)}</button>`).join("")}</div>
       <div class="eyebrow">How many?</div>
       <div class="stepper"><button class="btn" data-act="pp-step" data-d="-0.5" aria-label="Less">${ICON.minus}</button><b id="pp-q"></b><button class="btn" data-act="pp-step" data-d="0.5" aria-label="More">${ICON.plus}</button></div>
       <div class="chips" style="justify-content:center">${[0.5, 1, 1.5, 2, 3].map(v => `<button class="chip" data-act="pp-set" data-v="${v}">${fmtQ(v)}</button>`).join("")}</div></div>
     <div class="row"><button class="btn big" data-act="pp-plate">Add to plate</button><button class="btn primary big" data-act="pp-log">Log to ${esc(ctx.meal)}</button></div>
-    <p class="note">Values are typical estimates (${f.k} kcal and ${f.p} g protein per 100 g). Recipes and brands vary.</p>` });
+    <p class="note">${f.online ? `From Open Food Facts, a crowd-sourced database (${f.k} kcal and ${f.p} g protein per 100 g). Check the label if it looks off.` : `Values are typical estimates (${f.k} kcal and ${f.p} g protein per 100 g). Recipes and brands vary.`}</p>` });
   paintPortion();
 }
 function paintPortion() {
@@ -96,10 +135,11 @@ function paintPortion() {
   $("pp-q").textContent = fmtQ(pick.q);
   document.querySelectorAll("#pp-por .chip").forEach(c => c.classList.toggle("on", Number(c.dataset.i) === pick.pi));
 }
-act("food-pick", el => openPortion(foodById(el.dataset.id)));
+act("food-pick", el => { const f = lookup(el.dataset.id); if (f) openPortion(f); });
 act("recent-pick", el => {
   const f = recents()[Number(el.dataset.i)];
-  if (f.fid && foodById(f.fid)) { openPortion(foodById(f.fid), f.pi || 0, f.q || 1); return; }
+  if (f.fid && !foodById(f.fid) && f.src) onlineById[f.fid] = { id: f.fid, name: f.n, cat: "online", k: f.src.k, p: f.src.p, portions: f.src.portions, aliases: "", online: true };
+  if (f.fid && lookup(f.fid)) { openPortion(lookup(f.fid), f.pi || 0, f.q || 1); return; }
   logItems([{ n: f.n, k: f.k, p: f.p }]); toast(f.n + " added to " + ctx.meal); render();
 });
 act("pp-por", el => { pick.pi = Number(el.dataset.i); paintPortion(); });

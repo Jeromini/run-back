@@ -12,7 +12,7 @@ describe("food database", () => {
       expect(f.p).toBeLessThanOrEqual(f.k / 4 + 0.5); // protein can't supply more energy than the food has
       f.portions.forEach(pt => expect(pt.g).toBeGreaterThan(0));
     }
-    expect(FOODS.length).toBeGreaterThan(150);
+    expect(FOODS.length).toBeGreaterThan(400);
   });
   it("2 large eggs = 143 kcal, 12.6 g protein", () => {
     expect(nutrition(foodById("egg"), 0, 2)).toEqual({ g: 100, k: 143, p: 12.6 });
@@ -22,6 +22,12 @@ describe("food database", () => {
   });
   it("half portions work", () => {
     expect(nutrition(foodById("chk-breast-grill"), 1, 0.5)).toEqual({ g: 85, k: 140, p: 26.4 });
+  });
+  it("covers world dishes", () => {
+    for (const q of ["jollof", "biryani", "pad thai", "pho", "falafel", "taco", "paella", "ramen", "injera", "arepa"]) expect(searchFoods(q).length).toBeGreaterThan(0);
+  });
+  it("adds a 100 g portion to every food", () => {
+    expect(FOODS.every(f => f.portions.some(p => p.g === 100))).toBe(true);
   });
   it("finds foods by name and alias, best match first", () => {
     expect(searchFoods("egg")[0].id).toBe("egg");

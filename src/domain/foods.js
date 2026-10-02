@@ -6,10 +6,12 @@
 //   fist = about 1 cup        palm = about 100 g cooked meat or fish (3.5 oz)
 //   cupped hand = about 1/2 cup    thumb = about 1 tablespoon
 
+import { WORLD, WORLD_CATS } from "./foods-world.js";
+
 export const CATS = [
   ["protein", "Meat & fish"], ["dairy", "Eggs & dairy"], ["carbs", "Rice, bread & starch"], ["carib", "Caribbean"],
   ["legumes", "Beans & lentils"], ["veg", "Vegetables"], ["fruit", "Fruit"], ["fats", "Nuts, oils & sauces"],
-  ["drinks", "Drinks"], ["snacks", "Snacks & treats"], ["fast", "Takeaway & meals"]
+  ["drinks", "Drinks"], ["snacks", "Snacks & treats"], ["fast", "Takeaway & meals"], ...WORLD_CATS
 ];
 
 // [id, name, cat, kcal/100g, protein/100g, portions[[label, grams]], aliases]
@@ -194,7 +196,9 @@ const RAW = [
   ["chow-mein", "Chow mein / lo mein", "fast", 150, 7, [["1 fist (1 cup)", 200], ["takeaway box", 450]], "chow mein noodles chinese"]
 ];
 
-export const FOODS = RAW.map(([id, name, cat, k, p, portions, aliases]) => ({ id, name, cat, k, p, portions: portions.map(([label, g]) => ({ label, g })), aliases: aliases || "" }));
+// every food also offers 100 g, for anyone who weighs their food
+const withGrams = portions => (portions.some(([, g]) => g === 100) ? portions : [...portions, ["100 g", 100]]);
+export const FOODS = [...RAW, ...WORLD].map(([id, name, cat, k, p, portions, aliases]) => ({ id, name, cat, k, p, portions: withGrams(portions).map(([label, g]) => ({ label, g })), aliases: aliases || "" }));
 const byId = Object.fromEntries(FOODS.map(f => [f.id, f]));
 export const foodById = id => byId[id] || null;
 
@@ -217,4 +221,12 @@ export function searchFoods(q, limit = 40) {
     scored.push([(name.startsWith(words[0]) ? 0 : name.includes(words[0]) ? 1 : 2) + i / 10000, f]);
   });
   return scored.sort((a, b) => a[0] - b[0]).slice(0, limit).map(x => x[1]);
+}
+
+// A product from worldwide search (Open Food Facts), shaped like a database food.
+export function onlineFood(item) {
+  const portions = [];
+  if (item.serving && item.serving.g) portions.push({ label: "1 serving (" + item.serving.label + ")", g: item.serving.g });
+  portions.push({ label: "100 g", g: 100 }, { label: "50 g", g: 50 }, { label: "30 g", g: 30 }, { label: "1 cup (about 200 g)", g: 200 });
+  return { id: item.id, name: item.brand ? item.name + " (" + item.brand + ")" : item.name, cat: "online", k: item.k, p: item.p, portions, aliases: "", online: true };
 }
