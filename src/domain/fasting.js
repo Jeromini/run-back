@@ -183,72 +183,97 @@ export function zoneHours(days, active, dateStr, now = Date.now()) {
 }
 
 // ---------- routines ----------
-// A routine repeats a fast on a pattern: { pattern: "daily" | "days" | "alternate", days: [0-6],
-// anchor: "YYYY-MM-DD" (for alternate), hours, start: "HH:MM", on: true }.
-// A fast belongs to the day it starts (a 16:8 from 8 pm Monday is Monday's fast).
+// A routine names the days you fast on and when each fast starts:
+//   { on, pattern: "daily" | "days" | "alternate", days: [0-6], anchor: "YYYY-MM-DD",
+//     hours, start: "HH:MM", startMode: "before" | "same", since, skip: [dates], times: { date: "HH:MM" } }
+// The "fast day" is the day the fast is for. With startMode "before", Monday's fast starts the
+// evening before (Sunday at `start`); with "same" it starts on Monday at `start`.
 export const ROUTINE_PRESETS = [
-  { id: "daily-16", name: "16:8 every day", blurb: "Fast 8 pm to 12 pm, eat 12 to 8 pm", pattern: "daily", hours: 16, start: "20:00" },
-  { id: "daily-18", name: "18:6 every day", blurb: "Fast 7 pm to 1 pm", pattern: "daily", hours: 18, start: "19:00" },
-  { id: "daily-14", name: "14:10 every day", blurb: "A gentle daily rhythm", pattern: "daily", hours: 14, start: "20:00" },
-  { id: "weekdays-16", name: "16:8 on weekdays", blurb: "Weekends off", pattern: "days", days: [1, 2, 3, 4, 5], hours: 16, start: "20:00" },
-  { id: "omad", name: "OMAD on weekdays", blurb: "One meal a day, Monday to Friday", pattern: "days", days: [1, 2, 3, 4, 5], hours: 23, start: "19:00" },
-  { id: "2x24", name: "24 h twice a week", blurb: "Dinner to dinner, Monday and Thursday", pattern: "days", days: [1, 4], hours: 24, start: "19:00" },
-  { id: "adf", name: "Alternate-day fasting", blurb: "36 h fast every other day", pattern: "alternate", hours: 36, start: "20:00" },
-  { id: "weekly-36", name: "Weekly 36 h", blurb: "Sunday evening to Tuesday morning", pattern: "days", days: [0], hours: 36, start: "20:00" }
+  { id: "daily-16", name: "16:8 every day", blurb: "Fast 8 pm to 12 pm, eat 12 to 8 pm", pattern: "daily", hours: 16, start: "20:00", startMode: "same" },
+  { id: "daily-18", name: "18:6 every day", blurb: "Fast 7 pm to 1 pm", pattern: "daily", hours: 18, start: "19:00", startMode: "same" },
+  { id: "daily-14", name: "14:10 every day", blurb: "A gentle daily rhythm", pattern: "daily", hours: 14, start: "20:00", startMode: "same" },
+  { id: "weekdays-16", name: "16:8 on weekdays", blurb: "Weekends off", pattern: "days", days: [1, 2, 3, 4, 5], hours: 16, start: "20:00", startMode: "before" },
+  { id: "mwf-24", name: "24 h on Mon, Wed, Fri", blurb: "Each fast runs 8 pm the evening before to 8 pm", pattern: "days", days: [1, 3, 5], hours: 24, start: "20:00", startMode: "before" },
+  { id: "2x24", name: "24 h twice a week", blurb: "Monday and Thursday, dinner to dinner", pattern: "days", days: [1, 4], hours: 24, start: "19:00", startMode: "before" },
+  { id: "omad", name: "OMAD on weekdays", blurb: "One meal a day, Monday to Friday", pattern: "days", days: [1, 2, 3, 4, 5], hours: 23, start: "19:00", startMode: "before" },
+  { id: "adf", name: "Alternate-day fasting", blurb: "36 h fast every other day", pattern: "alternate", hours: 36, start: "20:00", startMode: "before" },
+  { id: "weekly-36", name: "Weekly 36 h", blurb: "Monday's fast: Sunday 8 pm to Tuesday 8 am", pattern: "days", days: [1], hours: 36, start: "20:00", startMode: "before" }
 ];
 const dateOf = ms => { const d = new Date(ms); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
 const dayMs = dateStr => { const [y, m, d] = dateStr.split("-").map(Number); return new Date(y, m - 1, d).getTime(); };
-const shiftDate = (dateStr, n) => { const [y, m, d] = dateStr.split("-").map(Number); return dateOf(new Date(y, m - 1, d + n).getTime()); };
+export const shiftDate = (dateStr, n) => { const [y, m, d] = dateStr.split("-").map(Number); return dateOf(new Date(y, m - 1, d + n).getTime()); };
 
-export function isScheduled(r, dateStr) {
+// Is `dateStr` one of the routine's fast days (ignoring skips)?
+export function onPattern(r, dateStr) {
   if (!r || !r.on) return false;
   if (r.pattern === "daily") return true;
   if (r.pattern === "days") return (r.days || []).includes(new Date(dayMs(dateStr)).getDay());
   if (r.pattern === "alternate") return Math.round((dayMs(dateStr) - dayMs(r.anchor || dateStr)) / 86400000) % 2 === 0;
   return false;
 }
-export function startAt(r, dateStr) {
-  const [hh, mm] = (r.start || "20:00").split(":").map(Number), [y, m, d] = dateStr.split("-").map(Number);
+export const isSkipped = (r, dateStr) => !!(r && Array.isArray(r.skip) && r.skip.includes(dateStr));
+export const isScheduled = (r, dateStr) => onPattern(r, dateStr) && !isSkipped(r, dateStr);
+// When the fast for `fastDay` starts and ends.
+export function startFor(r, fastDay) {
+  const t = (r.times && r.times[fastDay]) || r.start || "20:00", [hh, mm] = t.split(":").map(Number);
+  const sd = r.startMode === "before" ? shiftDate(fastDay, -1) : fastDay, [y, m, d] = sd.split("-").map(Number);
   return new Date(y, m - 1, d, hh, mm).getTime();
 }
-// Next scheduled start at or after `now`.
-export function nextStart(r, now = Date.now()) {
+export const endFor = (r, fastDay) => startFor(r, fastDay) + r.hours * H;
+export const startAt = startFor;
+// The next scheduled fast that hasn't started yet: { day, start, end }.
+export function nextFast(r, now = Date.now()) {
   if (!r || !r.on) return null;
-  for (let i = 0; i < 15; i++) { const ds = shiftDate(dateOf(now), i); if (isScheduled(r, ds) && startAt(r, ds) >= now) return startAt(r, ds); }
+  for (let i = -1; i < 16; i++) { const ds = shiftDate(dateOf(now), i); if (isScheduled(r, ds) && startFor(r, ds) >= now) return { day: ds, start: startFor(r, ds), end: endFor(r, ds) }; }
   return null;
 }
+export const nextStart = (r, now = Date.now()) => { const n = nextFast(r, now); return n ? n.start : null; };
 // A scheduled start in the last few hours that hasn't been acted on (so the app can prompt).
-export function dueStart(r, active, lastFast, now = Date.now(), graceH = 4) {
+export function dueFast(r, active, lastFast, now = Date.now(), graceH = 4) {
   if (!r || !r.on || active) return null;
-  for (const ds of [dateOf(now), shiftDate(dateOf(now), -1)]) {
-    const t = isScheduled(r, ds) ? startAt(r, ds) : null;
-    if (t && t <= now && now - t < graceH * H && !(lastFast && lastFast.s >= t - 3 * H)) return t;
+  for (const i of [-1, 0, 1]) {
+    const ds = shiftDate(dateOf(now), i);
+    if (!isScheduled(r, ds)) continue;
+    const t = startFor(r, ds);
+    if (t <= now && now - t < graceH * H && !(lastFast && Math.abs(lastFast.s - t) < 6 * H)) return { day: ds, start: t, end: t + r.hours * H };
   }
   return null;
 }
-// This week's scheduled fasts and whether each was kept.
-export function adherence(r, days, active, weekFirstDate, now = Date.now()) {
+export const dueStart = (r, active, lastFast, now = Date.now(), graceH = 4) => { const d = dueFast(r, active, lastFast, now, graceH); return d ? d.start : null; };
+
+// Status of each day from `firstDate` for `n` days: off | skipped | done | live | due | missed | short | upcoming.
+export function routineDays(r, days, active, firstDate, n = 7, now = Date.now()) {
   const fasts = Object.values(days).flatMap(d => fastsOf(d));
   if (active) fasts.push({ s: active.s, e: now, g: active.h, live: true });
-  return Array.from({ length: 7 }, (_, i) => {
-    const ds = shiftDate(weekFirstDate, i), sched = isScheduled(r, ds);
-    // days before the routine began don't count against it
-    if (!sched || (r.since && ds < r.since)) return { date: ds, status: "off" };
-    const f = fasts.find(x => dateOf(x.s) === ds);
-    if (f && (f.e - f.s) / H >= (r.hours || f.g) - 0.5) return { date: ds, status: "done" };
-    if (f && f.live) return { date: ds, status: "live" };
-    const t = startAt(r, ds);
-    if (t > now) return { date: ds, status: "upcoming" };
-    if (now - t < 4 * H && !f) return { date: ds, status: "due" };
-    return { date: ds, status: f ? "short" : "missed" };
+  return Array.from({ length: n }, (_, i) => {
+    const ds = shiftDate(firstDate, i);
+    if (!onPattern(r, ds) || (r.since && ds < r.since)) return { date: ds, status: "off" };
+    const start = startFor(r, ds), end = start + r.hours * H, base = { date: ds, start, end };
+    if (isSkipped(r, ds)) return { ...base, status: "skipped" };
+    // the fast that belongs to this day started within 6 hours of the scheduled time
+    const f = fasts.find(x => Math.abs(x.s - start) < 6 * H);
+    if (f && f.live) return { ...base, status: "live", fast: f };
+    if (f && (f.e - f.s) / H >= r.hours - 0.5) return { ...base, status: "done", fast: f };
+    if (start > now) return { ...base, status: "upcoming" };
+    if (!f && now - start < 4 * H) return { ...base, status: "due" };
+    return { ...base, status: f ? "short" : "missed", fast: f };
   });
 }
+export const adherence = (r, days, active, weekFirstDate, now = Date.now()) => routineDays(r, days, active, weekFirstDate, 7, now);
 
 const DAYN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAYL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 export function routineLabel(r) { const h = r.hours; return h < 24 ? h + ":" + (24 - h) : h % 24 === 0 ? h / 24 + (h === 24 ? " day" : " days") : h + " h"; }
-export function routineSummary(r) {
-  const when = r.pattern === "daily" ? "every day" : r.pattern === "alternate" ? "every other day"
-    : (r.days || []).length === 5 && [1, 2, 3, 4, 5].every(d => r.days.includes(d)) ? "on weekdays" : "on " + (r.days || []).slice().sort().map(d => DAYN[d]).join(", ");
-  return `${routineLabel(r)} ${when}, starting ${fmt12(r.start)}`;
-}
 export const fmt12 = hhmm => { const [h, m] = (hhmm || "20:00").split(":").map(Number); return (h % 12 || 12) + ":" + String(m).padStart(2, "0") + (h < 12 ? " am" : " pm"); };
+const tsLabel = ts => { const d = new Date(ts); return DAYN[d.getDay()] + " " + fmt12(String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0")); };
+export function routineSummary(r) {
+  const hrs = r.hours + " h";
+  const when = r.pattern === "daily" ? "every day" : r.pattern === "alternate" ? "every other day"
+    : (r.days || []).length === 5 && [1, 2, 3, 4, 5].every(d => r.days.includes(d)) ? "on weekdays" : "on " + (r.days || []).slice().sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7)).map(d => DAYN[d]).join(", ");
+  return `${hrs} fasts ${when}, starting ${fmt12(r.start)} ${r.startMode === "before" ? "the evening before" : "on the day"}`;
+}
+// "Monday's fast: Sun 8:00 pm to Mon 8:00 pm"
+export function spanText(r, fastDay) {
+  const s = startFor(r, fastDay), e = s + r.hours * H, d = new Date(dayMs(fastDay));
+  return `${DAYL[d.getDay()]}'s fast: ${tsLabel(s)} to ${tsLabel(e)}`;
+}

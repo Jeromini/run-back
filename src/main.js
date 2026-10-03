@@ -7,7 +7,7 @@ import { today } from "./lib/dates.js";
 import { state, S, setRenderer } from "./core/state.js";
 import { connect } from "./core/auth.js";
 import { renderToday } from "./views/today.js";
-import { renderFast, tickFast } from "./views/fast.js";
+import { renderFast, tickFast, checkStagePopup } from "./views/fast.js";
 import { renderFood, resetFood } from "./views/food.js";
 import { renderTrends } from "./views/trends.js";
 import { renderCrew, captureInvite, refreshCrew } from "./views/crew.js";
@@ -63,7 +63,7 @@ act("sheet-close", closeSheet);
 document.addEventListener("keydown", e => { if (e.key === "Escape" && sheetOpen()) closeSheet(); });
 
 // one-second ticker for live clocks (fasting); skips while someone is typing
-setInterval(() => { if (!typing()) tickFast(); }, 1000);
+setInterval(() => { if (!typing()) { tickFast(); checkStagePopup(); } }, 1000);
 // a new day while the app is open: move Today along
 let lastDay = today();
 setInterval(() => { const t = today(); if (t !== lastDay) { if (state.sel === lastDay) state.sel = t; lastDay = t; render(); } }, 60000);

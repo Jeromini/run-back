@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { runFor, sessionFor, weekOf, blocksTotal } from "../src/domain/plan.js";
-import { stageAt, coach, windowFor, fastStats, planById, planFor, STAGES, zoneHours, EVIDENCE, hourNote, isScheduled, nextStart, dueStart, adherence, ROUTINE_PRESETS } from "../src/domain/fasting.js";
+import { stageAt, coach, windowFor, fastStats, planById, planFor, STAGES, zoneHours, EVIDENCE, hourNote, isScheduled, nextStart, dueStart, adherence, ROUTINE_PRESETS, startFor, nextFast, spanText, routineDays, dueFast } from "../src/domain/fasting.js";
 import { bmi, bmiClass, waterTarget, burned, buckets, series, weeklyTrend, avg7, weekCounts, streakWeeks } from "../src/domain/metrics.js";
 import { context, evaluate, nextUp } from "../src/domain/achievements.js";
 import { iso, addDays, parse } from "../src/lib/dates.js";
@@ -153,6 +153,30 @@ describe("fasting routines", () => {
   it("doesn't count days before the routine began", () => {
     const wk = adherence({ ...weekdays, since: "2026-10-07" }, {}, null, "2026-10-04", new Date(2026, 9, 8, 9).getTime());
     expect(wk.map(x => x.status)).toEqual(["off", "off", "off", "missed", "upcoming", "upcoming", "off"]);
+  });
+  const mwf = { on: true, pattern: "days", days: [1, 3, 5], hours: 24, start: "20:00", startMode: "before" };
+  it("Monday's fast starts Sunday 8 pm and ends Monday 8 pm", () => {
+    expect(startFor(mwf, "2026-10-05")).toBe(new Date(2026, 9, 4, 20).getTime());
+    expect(spanText(mwf, "2026-10-05")).toBe("Monday's fast: Sun 8:00 pm to Mon 8:00 pm");
+    expect(spanText({ ...mwf, startMode: "same" }, "2026-10-05")).toBe("Monday's fast: Mon 8:00 pm to Tue 8:00 pm");
+  });
+  it("on Saturday, the next fast is Monday's, starting Sunday evening", () => {
+    const n = nextFast(mwf, new Date(2026, 9, 3, 12).getTime());
+    expect(n.day).toBe("2026-10-05");
+    expect(n.start).toBe(new Date(2026, 9, 4, 20).getTime());
+  });
+  it("skips and per-day start times", () => {
+    const r = { ...mwf, skip: ["2026-10-05"], times: { "2026-10-07": "18:30" } };
+    expect(nextFast(r, new Date(2026, 9, 3, 12).getTime()).day).toBe("2026-10-07");
+    expect(startFor(r, "2026-10-07")).toBe(new Date(2026, 9, 6, 18, 30).getTime());
+  });
+  it("flags the fast as due on Sunday night and tracks the week", () => {
+    const sun9 = new Date(2026, 9, 4, 21).getTime();
+    expect(dueFast(mwf, null, null, sun9).day).toBe("2026-10-05");
+    const s = new Date(2026, 9, 4, 20, 10).getTime();
+    const days = { "2026-10-05": { date: "2026-10-05", fasts: [{ s, e: s + 24.1 * H, g: 24 }] } };
+    const st = routineDays({ ...mwf, since: "2026-10-04" }, days, null, "2026-10-04", 7, new Date(2026, 9, 6, 9).getTime()).map(x => x.status);
+    expect(st).toEqual(["off", "done", "off", "upcoming", "off", "upcoming", "off"]);
   });
   it("ships sensible presets", () => {
     ROUTINE_PRESETS.forEach(p => { expect(p.hours).toBeGreaterThanOrEqual(12); expect(p.start).toMatch(/^\d\d:\d\d$/); });

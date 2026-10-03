@@ -1,14 +1,14 @@
 // Fast tab: the dial, stages, the Fast + Train coach, stats and history.
-import { act, onChange, openSheet, closeSheet, confirmTap, toast, ICON } from "../lib/dom.js";
+import { act, onChange, openSheet, closeSheet, confirmTap, toast, sheetOpen, ICON } from "../lib/dom.js";
 import { esc, mmss, hm } from "../lib/format.js";
 import { pad } from "../lib/dates.js";
 import { iso, addDays, today, nice, clock, dayClock, localInput, DOW } from "../lib/dates.js";
 import { stackedBars } from "../lib/charts.js";
 import { FAST_PLANS, CUSTOM_FAST } from "../config.js";
-import { state, day, render } from "../core/state.js";
+import { state, S, day, render } from "../core/state.js";
 import { saveDay, saveProfile } from "../core/store.js";
 import { isPro } from "../core/premium.js";
-import { planFor, stageAt, STAGES, fastStats, allFasts, windowFor, EXTENDED_H, SUPERVISED_H, zoneHours, ZONES, EVIDENCE, hourNote, ROUTINE_PRESETS, routineSummary, routineLabel, nextStart, dueStart, adherence, fmt12 } from "../domain/fasting.js";
+import { planFor, stageAt, STAGES, fastStats, allFasts, windowFor, EXTENDED_H, SUPERVISED_H, zoneHours, ZONES, EVIDENCE, hourNote, ROUTINE_PRESETS, routineSummary, routineLabel, nextFast, dueFast, routineDays, onPattern, spanText, shiftDate, fmt12 } from "../domain/fasting.js";
 import { weekStart } from "../lib/dates.js";
 import { pushSupport, remindersOn, enableReminders, disableReminders } from "../features/push.js";
 import { coachCard } from "./today.js";
@@ -21,6 +21,7 @@ const ZONE_COLORS = ["color-mix(in srgb, var(--fast) 35%, transparent)", "color-
 let editStart = false, extAck = false, customOpen = false, lastHour = null, remindState = null, draft = null;
 // "52:10:33" reads badly on a multi-day fast, so show days once past 24 hours
 const fastClock = sec => { sec = Math.max(0, Math.floor(sec)); if (sec < 86400) return mmss(sec); const d = Math.floor(sec / 86400), r = sec % 86400; return `${d}d ${pad(Math.floor(r / 3600))}:${pad(Math.floor(r % 3600 / 60))}:${pad(r % 60)}`; };
+const stageIdx = h => STAGES.indexOf(STAGES.find(s => s.name === stageAt(h).name));
 const hoursLabel = h => (h === 0 ? "Start" : h % 24 === 0 ? (h / 24) + (h === 24 ? " day" : " days") : h + " h");
 
 function dial(fa) {
@@ -158,7 +159,7 @@ export function tickFast() {
 function startFast(at) {
   const plan = planFor(state.profile);
   if (plan.hours >= EXTENDED_H && !extAck) { toast("Read the checklist and tick it first"); return; }
-  state.profile.fastActive = { s: at, h: plan.hours };
+  state.profile.fastActive = { s: at, h: plan.hours, seen: stageIdx((Date.now() - at) / H) };
   editStart = false; extAck = false; saveProfile(); buzz(30);
   toast("Fast started. Goal " + clock(at + plan.hours * H)); render();
 }
@@ -232,77 +233,133 @@ act("fast-custom-save", () => {
 act("fast-weigh", () => { state.view = "today"; state.sel = today(); render(); setTimeout(() => { const i = document.getElementById("q-w"); if (i) { i.scrollIntoView({ block: "center" }); i.focus(); } }, 60); });
 
 // ---------- routine, live notes, reminders ----------
+const DAYN3 = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const hhmm = ts => { const d = new Date(ts); return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
+const shortT = ts => fmt12(hhmm(ts)).replace(":00", "").replace(" ", "");
+const mondayOf = ds => { const d = new Date(ds + "T12:00"); return shiftDate(ds, -((d.getDay() + 6) % 7)); };
+
 function dueBanner() {
-  const p = state.profile, r = p.routine, t = dueStart(r, p.fastActive, allFasts(state.days)[0]);
-  if (!t) return "";
-  return `<div class="card" style="border-color:var(--fast)"><div class="card-head"><h3>Your ${esc(routineLabel(r))} fast was due at ${esc(fmt12(r.start))}</h3></div>
-    <div class="row"><button class="btn fast" data-act="routine-start" data-at="${t}">I started at ${esc(fmt12(r.start))}</button><button class="btn" data-act="routine-start" data-at="now">Start now</button></div></div>`;
+  const p = state.profile, r = p.routine, due = dueFast(r, p.fastActive, allFasts(state.days)[0]);
+  if (!due) return "";
+  return `<div class="card" style="border-color:var(--fast)"><div class="card-head"><h3>Your fast was due at ${esc(fmt12(hhmm(due.start)))}</h3></div>
+    <p class="note">${esc(spanText(r, due.day))}</p>
+    <div class="row"><button class="btn fast" data-act="routine-start" data-at="${due.start}" data-day="${due.day}">I started at ${esc(fmt12(hhmm(due.start)))}</button><button class="btn" data-act="routine-start" data-at="now" data-day="${due.day}">Start now</button></div>
+    <button class="linkbtn" data-act="routine-skip" data-day="${due.day}">Skip this one</button></div>`;
 }
 function liveCard(elH) {
-  const n = hourNote(elH), nextIn = n.next ? (n.next.at - elH) * 3600 : null;
-  return `<div class="card live-card"><div class="card-head"><span class="eyebrow"><i class="live-dot" aria-hidden="true"></i> Live &middot; hour ${n.hour}</span><span class="note">${esc(stageAt(elH).name)}</span></div>
+  const n = hourNote(elH), nextIn = n.next ? (n.next.at - elH) * 3600 : null, st = stageAt(elH), idx = STAGES.indexOf(STAGES.find(s => s.name === st.name));
+  return `<div class="card live-card"><div class="card-head"><span class="eyebrow"><i class="live-dot" aria-hidden="true"></i> Live &middot; hour ${n.hour}</span><span class="note">Stage ${idx + 1} of ${STAGES.length}: ${esc(st.name)}</span></div>
     <h3 style="font-size:19px">${esc(n.title)}</h3><p class="note">${esc(n.text)}</p>
     ${n.next ? `<p class="note">Next, at hour ${n.next.at} (in ${hm(nextIn)}): <b style="color:var(--ink)">${esc(n.next.title)}</b></p>` : ""}</div>`;
 }
-const STATUS = { done: ["Done", "var(--good)"], live: ["Fasting", "var(--fast)"], due: ["Due", "var(--fast)"], missed: ["Missed", "var(--bad)"], short: ["Short", "var(--warn)"], upcoming: ["", "var(--line)"], off: ["", "transparent"] };
+const STATUS = { done: ["Kept", "var(--good)"], live: ["Now", "var(--fast)"], due: ["Due", "var(--fast)"], missed: ["Missed", "var(--bad)"], short: ["Short", "var(--warn)"], upcoming: ["", "var(--fast-soft)"], skipped: ["Skipped", "var(--line)"], off: ["", "transparent"] };
 function routineCard() {
   const p = state.profile, r = p.routine;
   if (!r || !r.on) return `<div class="card"><div class="card-head"><h3>Make fasting a routine</h3></div>
-    <p class="note">Pick a pattern, like 16:8 every day or 24 hours twice a week. The app tracks how well you keep it, reminds you when to start and when you're done, and tells you what's happening at each stage.</p>
+    <p class="note">Pick your fasting days, like Monday, Wednesday and Friday, and when each fast starts. The app shows them on a calendar, tracks how well you keep them, reminds you when to start and when you're done, and pops up each stage as you reach it.</p>
     <button class="btn fast" data-act="routine-edit">${ICON.cal} Set up a routine</button></div>`;
-  const ws = weekStart(today()), wk = adherence(r, state.days, p.fastActive, iso(ws)), sched = wk.filter(x => x.status !== "off"), kept = wk.filter(x => x.status === "done").length;
-  const ns = nextStart(r);
+  const first = mondayOf(today()), grid = routineDays(r, state.days, p.fastActive, first, 14);
+  // the evening a fast begins, so the whole span is visible: Sunday "from 8pm", Monday "to 8pm"
+  const starts = {};
+  routineDays(r, state.days, p.fastActive, shiftDate(first, -1), 16).forEach(x => { if (x.start && x.status !== "off" && x.status !== "skipped") starts[iso(new Date(x.start))] = x.start; });
+  const before = r.startMode === "before";
+  const thisWeek = grid.slice(0, 7).filter(x => x.status !== "off" && x.status !== "skipped"), kept = thisWeek.filter(x => x.status === "done").length;
+  const nf = nextFast(r);
   if (remindState === null) remindersOn().then(v => { remindState = v; if (state.view === "fast") render(); });
   return `<div class="card"><div class="card-head"><h3>Your routine</h3><button class="linkbtn" data-act="routine-edit">Edit</button></div>
-    <p><b>${esc(routineSummary(r))}</b></p>
-    <div class="weekdots">${wk.map(x => { const d = new Date(x.date + "T12:00"); const [lbl, col] = STATUS[x.status];
-      return `<div class="wd ${x.status}"><span>${"SMTWTFS"[d.getDay()]}</span><i style="background:${col}"></i><small>${lbl}</small></div>`; }).join("")}</div>
-    <p class="note">${kept} of ${sched.length} kept this week${ns && !p.fastActive ? ` &middot; next fast starts ${esc(dayClock(ns))}` : ""}.</p>
-    <label class="switch"><span>Reminders on this phone<small>Before and at the start, at each new stage, 1 hour before the goal, and when you're done</small></span><input type="checkbox" data-act="remind-toggle"${remindState ? " checked" : ""}></label></div>`;
+    <p class="note">${esc(routineSummary(r))}</p>
+    ${nf && !p.fastActive ? `<div class="nextfast"><span class="eyebrow">Next fast</span><b>${esc(spanText(r, nf.day))}</b><span class="note">Starts in ${hm((nf.start - Date.now()) / 1000)}</span></div>` : ""}
+    <div class="rcal" role="grid" aria-label="Fasting calendar, two weeks">
+      ${["M", "T", "W", "T", "F", "S", "S"].map(d => `<span class="rh">${d}</span>`).join("")}
+      ${grid.map(x => { const d = new Date(x.date + "T12:00"), isToday = x.date === today(), [lbl, col] = STATUS[x.status];
+        const st = before && starts[x.date];
+        return x.status === "off"
+          ? `<div class="rc off${st ? " starts" : ""}${isToday ? " today" : ""}"><b>${d.getDate()}</b>${st ? `<i class="half" aria-hidden="true"></i><small>from ${shortT(st)}</small>` : ""}</div>`
+          : `<button class="rc ${x.status}${st ? " starts" : ""}${isToday ? " today" : ""}" data-act="routine-day-open" data-day="${x.date}" aria-label="${esc(spanText(r, x.date))}${lbl ? ", " + lbl : ""}">
+              <b>${d.getDate()}</b><i style="background:${col}"></i><small>${lbl || (before ? "to " + shortT(x.end) : shortT(x.start))}</small></button>`; }).join("")}
+    </div>
+    <div class="row note" style="gap:12px"><span><i class="legend-dot" style="background:var(--fast)"></i>Fast day</span>${before ? `<span><i class="legend-dot half" aria-hidden="true"></i>Fast starts that evening</span>` : ""}<span><i class="legend-dot" style="background:var(--good)"></i>Kept</span><span><i class="legend-dot" style="background:var(--bad)"></i>Missed</span><span>Tap a day to change it</span></div>
+    <p class="note">${kept} of ${thisWeek.length} kept this week.</p>
+    <label class="switch"><span>Reminders on this phone<small>30 minutes before and at the start, at each new stage, 1 hour before the end, and when you're done</small></span><input type="checkbox" data-act="remind-toggle"${remindState ? " checked" : ""}></label></div>`;
 }
+
+// one day of the routine: see its span, skip it, move it, or start it
+act("routine-day-open", el => {
+  const r = state.profile.routine, ds = el.dataset.day, x = routineDays(r, state.days, state.profile.fastActive, ds, 1)[0], skipped = x.status === "skipped";
+  const startsSoon = !state.profile.fastActive && x.start && Math.abs(x.start - Date.now()) < 6 * H;
+  openSheet({ title: "Fast day", html: `<h1 class="big-title" style="font-size:28px">${esc(nice(ds))}</h1>
+    <div class="card"><b>${esc(spanText(r, ds))}</b><p class="note">${r.hours} hours${skipped ? " &middot; skipped" : x.status === "done" ? " &middot; kept" : x.status === "missed" ? " &middot; missed" : ""}</p></div>
+    ${x.status === "upcoming" || x.status === "due" || skipped ? `<div class="card"><label class="f">Start time for this day only<input type="time" id="rd-time" value="${esc(hhmm(x.start))}"></label>
+      <p class="note">${r.startMode === "before" ? "This is the evening before " + esc(nice(ds)) + "." : "This is on " + esc(nice(ds)) + "."} Ends ${r.hours} hours later.</p>
+      <button class="btn" data-act="routine-day-time" data-day="${ds}">Save time for this day</button></div>` : ""}
+    <div class="row">
+      ${startsSoon && !skipped ? `<button class="btn fast" data-act="routine-start" data-at="now" data-day="${ds}">Start this fast now</button>` : ""}
+      ${x.status === "upcoming" || x.status === "due" || skipped ? `<button class="btn${skipped ? " primary" : ""}" data-act="routine-skip" data-day="${ds}">${skipped ? "Put it back" : "Skip this fast"}</button>` : ""}
+    </div>` });
+});
+act("routine-skip", el => {
+  const r = state.profile.routine, ds = el.dataset.day, s = new Set(r.skip || []);
+  const wasSkipped = s.has(ds); wasSkipped ? s.delete(ds) : s.add(ds);
+  r.skip = [...s].filter(d => d >= shiftDate(today(), -14)); saveProfile(); closeSheet();
+  toast(wasSkipped ? "Back on your schedule" : "Skipped " + nice(ds)); render();
+});
+act("routine-day-time", el => {
+  const r = state.profile.routine, ds = el.dataset.day, v = document.getElementById("rd-time").value;
+  if (!v) return;
+  r.times = { ...(r.times || {}) };
+  if (v === r.start) delete r.times[ds]; else r.times[ds] = v;
+  saveProfile(); closeSheet(); toast(spanText(r, ds)); render();
+});
+
 function routineHtml() {
-  const d = draft;
-  const days = [1, 2, 3, 4, 5, 6, 0];
+  const d = draft, days = [1, 2, 3, 4, 5, 6, 0];
+  const preview = { ...d, on: true, since: today(), skip: [], times: {} };
+  const upcoming = [];
+  for (let i = 0; i < 21 && upcoming.length < 3; i++) { const ds = shiftDate(today(), i); if (onPattern(preview, ds)) upcoming.push(ds); }
   return `<h1 class="big-title">Fasting routine</h1>
-    <p class="note">Start with a preset or build your own. You can change it any time.</p>
+    <p class="note">Choose a preset or build your own. You can change it, skip a day or move a start time any time.</p>
     <div class="eyebrow">Presets</div>
-    <div class="plans">${ROUTINE_PRESETS.map(pr => `<button class="plan${d.preset === pr.id ? " on" : ""}" data-act="routine-preset" data-id="${pr.id}">${pr.hours >= 19 && !isPro() ? `<span class="lock">${ICON.lock}</span>` : ""}<b style="font-size:22px">${esc(pr.name)}</b><span>${esc(pr.blurb)}</span></button>`).join("")}</div>
-    <div class="card"><h3>Or build your own</h3>
-      <div class="eyebrow">Which days?</div>
-      <div class="seg">${[["daily", "Every day"], ["days", "Chosen days"], ["alternate", "Every other day"]].map(([v, l]) => `<button type="button" data-act="routine-pattern" data-v="${v}" class="${d.pattern === v ? "on" : ""}">${l}</button>`).join("")}</div>
-      ${d.pattern === "days" ? `<div class="chips">${days.map(x => `<button class="chip${(d.days || []).includes(x) ? " on" : ""}" data-act="routine-day" data-d="${x}">${["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][x]}</button>`).join("")}</div>` : ""}
-      <div class="eyebrow">How long?</div>
-      <div class="chips">${[12, 13, 14, 16, 18, 19, 20, 23, 24, 36, 48, 72].map(h => `<button class="chip${d.hours === h ? " on" : ""}" data-act="routine-hours" data-h="${h}">${routineLabel({ hours: h })}</button>`).join("")}</div>
-      <label class="f">Fast starts at<input type="time" id="rt-start" value="${esc(d.start)}"></label>
-      <p class="note" id="rt-sum">${esc(routineSummary({ ...d, on: true }))}</p>
+    <div class="plans">${ROUTINE_PRESETS.map(pr => `<button class="plan${d.preset === pr.id ? " on" : ""}" data-act="routine-preset" data-id="${pr.id}">${pr.hours >= 19 && !isPro() ? `<span class="lock">${ICON.lock}</span>` : ""}<b style="font-size:21px">${esc(pr.name)}</b><span>${esc(pr.blurb)}</span></button>`).join("")}</div>
+    <div class="card"><h3>Build your own</h3>
+      <div class="eyebrow">1. Which days do you fast?</div>
+      <div class="seg">${[["days", "Choose days"], ["daily", "Every day"], ["alternate", "Every other day"]].map(([v, l]) => `<button type="button" data-act="routine-pattern" data-v="${v}" class="${d.pattern === v ? "on" : ""}">${l}</button>`).join("")}</div>
+      ${d.pattern === "days" ? `<div class="daypick">${days.map(x => `<button class="${(d.days || []).includes(x) ? "on" : ""}" data-act="routine-day" data-d="${x}" aria-pressed="${(d.days || []).includes(x)}">${DAYN3[x]}</button>`).join("")}</div>` : ""}
+      <div class="eyebrow">2. How long is each fast?</div>
+      <div class="chips">${[12, 13, 14, 16, 18, 20, 23, 24, 36, 48, 72].map(h => `<button class="chip${d.hours === h ? " on" : ""}" data-act="routine-hours" data-h="${h}">${h} h</button>`).join("")}</div>
+      <div class="eyebrow">3. When does each fast start?</div>
+      <div class="seg">${[["before", "The evening before"], ["same", "On the day"]].map(([v, l]) => `<button type="button" data-act="routine-mode" data-v="${v}" class="${d.startMode === v ? "on" : ""}">${l}</button>`).join("")}</div>
+      <label class="f">Start time (usually after your last meal)<input type="time" id="rt-start" value="${esc(d.start)}" data-chg="routine-time"></label>
+      <div class="preview"><span class="eyebrow">Your next fasts</span>${upcoming.length ? upcoming.map(ds => `<div>${ICON.timer}<span>${esc(spanText(preview, ds))}</span></div>`).join("") : `<p class="note">Pick at least one day.</p>`}</div>
       <button class="btn fast big" data-act="routine-save">Save routine</button>
       ${state.profile.routine && state.profile.routine.on ? `<button class="btn ghost" data-act="routine-off">Turn routine off</button>` : ""}</div>`;
 }
 const redraw = () => { const b = document.getElementById("rt-body"); if (b) b.innerHTML = routineHtml(); };
 act("routine-edit", () => {
   const r = state.profile.routine;
-  draft = r ? { ...r } : { pattern: "daily", days: [1, 2, 3, 4, 5], hours: 16, start: "20:00", preset: null };
+  draft = r ? { startMode: "same", ...r } : { pattern: "days", days: [1, 3, 5], hours: 24, start: "20:00", startMode: "before", preset: null };
   openSheet({ title: "Routine", html: `<div id="rt-body" style="display:flex;flex-direction:column;gap:14px">${routineHtml()}</div>` });
 });
-act("routine-preset", el => { const pr = ROUTINE_PRESETS.find(x => x.id === el.dataset.id); draft = { pattern: pr.pattern, days: pr.days || [1, 2, 3, 4, 5], hours: pr.hours, start: pr.start, preset: pr.id }; redraw(); });
+act("routine-preset", el => { const pr = ROUTINE_PRESETS.find(x => x.id === el.dataset.id); draft = { pattern: pr.pattern, days: pr.days || [1, 2, 3, 4, 5], hours: pr.hours, start: pr.start, startMode: pr.startMode, preset: pr.id }; redraw(); });
 act("routine-pattern", el => { draft.pattern = el.dataset.v; draft.preset = null; redraw(); });
+act("routine-mode", el => { draft.startMode = el.dataset.v; draft.preset = null; redraw(); });
 act("routine-day", el => { const d = Number(el.dataset.d), s = new Set(draft.days || []); s.has(d) ? s.delete(d) : s.add(d); draft.days = [...s]; draft.preset = null; redraw(); });
 act("routine-hours", el => { draft.hours = Number(el.dataset.h); draft.preset = null; redraw(); });
+onChange("routine-time", el => { if (el.value) { draft.start = el.value; draft.preset = null; redraw(); } });
 act("routine-save", () => {
   const t = document.getElementById("rt-start"); if (t && t.value) draft.start = t.value;
   if (draft.pattern === "days" && !(draft.days || []).length) { toast("Pick at least one day"); return; }
   if (draft.hours >= 19 && !isPro()) { closeSheet(); openPaywall("fastPlansPlus"); return; }
   const prev = state.profile.routine;
-  state.profile.routine = { on: true, pattern: draft.pattern, days: draft.days, hours: draft.hours, start: draft.start, anchor: draft.anchor || today(),
-    since: prev && prev.on && prev.since ? prev.since : today() };
+  state.profile.routine = { on: true, pattern: draft.pattern, days: draft.days, hours: draft.hours, start: draft.start, startMode: draft.startMode || "same",
+    anchor: draft.anchor || today(), since: prev && prev.on && prev.since ? prev.since : today(), skip: (prev && prev.skip) || [], times: {} };
   state.profile.tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  saveProfile(); closeSheet(); toast("Routine saved: " + routineSummary(state.profile.routine)); render();
+  saveProfile(); closeSheet(); toast("Routine saved"); render();
 });
 act("routine-off", () => { state.profile.routine = { ...state.profile.routine, on: false }; saveProfile(); closeSheet(); toast("Routine turned off"); render(); });
 act("routine-start", el => {
   const at = el.dataset.at === "now" ? Date.now() : Number(el.dataset.at), r = state.profile.routine;
-  state.profile.fastActive = { s: at, h: r.hours }; saveProfile(); buzz(30);
-  toast("Fast started. Goal " + dayClock(at + r.hours * H)); render();
+  state.profile.fastActive = { s: at, h: r.hours, seen: stageIdx((Date.now() - at) / H) }; saveProfile(); buzz(30); closeSheet();
+  toast("Fast started. Ends " + dayClock(at + r.hours * H)); render();
 });
 act("remind-toggle", async el => {
   if (el.checked) {
@@ -310,3 +367,27 @@ act("remind-toggle", async el => {
     catch (e) { el.checked = false; remindState = false; toast(e.message); }
   } else { await disableReminders(); remindState = false; toast("Reminders off"); }
 });
+
+// ---------- stage pop-ups ----------
+// When a fast enters a new stage, show it on screen (whatever tab is open). If the app was closed,
+// the latest stage shows when it's next opened. Phone notifications cover the closed-app case.
+let popOpen = false;
+export function checkStagePopup() {
+  const fa = state.profile.fastActive;
+  if (!fa || popOpen || S.workoutLive || document.hidden || sheetOpen() || !document.getElementById("stagepop")) return;
+  const elH = (Date.now() - fa.s) / H, st = stageAt(elH), idx = STAGES.indexOf(STAGES.find(s => s.name === st.name));
+  if (fa.seen == null) { fa.seen = idx; saveProfile(); return; }   // fasts started before this feature
+  if (idx <= fa.seen || idx === 0) return;
+  fa.seen = idx; saveProfile(); popOpen = true; buzz([40, 60, 40]);
+  const box = document.getElementById("stagepop");
+  box.innerHTML = `<div class="pop" role="dialog" aria-modal="true" aria-labelledby="pop-t">
+    <div class="pop-k"><span>Stage ${idx + 1} of ${STAGES.length}</span><span>Hour ${Math.floor(elH)}</span></div>
+    <div class="pop-bar">${STAGES.map((s, i) => `<i class="${i < idx ? "done" : i === idx ? "now" : ""}"></i>`).join("")}</div>
+    <h2 id="pop-t">${esc(st.name)}</h2><span class="ev ev-${st.ev}">${EVIDENCE[st.ev]}</span>
+    <p>${esc(st.text)}</p>
+    <ul class="changes">${st.changes.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
+    ${st.next ? `<p class="note">Next: <b>${esc(st.next.name)}</b> in ${hm(st.nextIn * 3600)}</p>` : ""}
+    <button class="btn fast big" data-act="pop-close">Keep going</button></div>`;
+  box.hidden = false;
+}
+act("pop-close", () => { const b = document.getElementById("stagepop"); b.hidden = true; b.innerHTML = ""; popOpen = false; if (state.view === "fast") render(); });

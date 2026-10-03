@@ -8,7 +8,7 @@ import { saveDay, saveProfile } from "../core/store.js";
 import { isPro } from "../core/premium.js";
 import { RHYTHM, sessionFor, weekOf, blocksTotal, runSeconds } from "../domain/plan.js";
 import { weekCounts, streakWeeks, runDist, runSecs, crossSecs, strengthDone } from "../domain/metrics.js";
-import { coach, allFasts, planFor } from "../domain/fasting.js";
+import { coach, allFasts, planFor, nextFast, dueFast, spanText, routineLabel } from "../domain/fasting.js";
 import { waterCard } from "../features/water.js";
 import { strengthCard, afterRender as strengthAfter } from "../features/strength.js";
 import { openWorkout } from "../features/workout.js";
@@ -44,6 +44,11 @@ function fastMini() {
   }
   const last = allFasts(state.days)[0];
   const next = last ? last.e + Math.max(1, 24 - plan.hours) * H : null;
+  const r = state.profile.routine, nf = r && r.on ? nextFast(r) : null, due = r && r.on ? dueFast(r, null, last) : null;
+  if (due || nf) return `<button class="fastmini" data-act="tab" data-v="fast">
+    ${ring(0, { size: 56, stroke: 6, color: "var(--fast)", inner: `<span style="color:var(--fast)">${ICON.timer}</span>` })}
+    <div><div class="t">${due ? "Your fast is due now" : "Next fast " + (nf.start - Date.now() < 24 * H ? "in " + hm((nf.start - Date.now()) / 1000) : "")}</div><div class="s">${esc(spanText(r, (due || nf).day))}</div></div>
+    <span class="pill fast">${esc(routineLabel(r))}</span></button>`;
   return `<button class="fastmini" data-act="tab" data-v="fast">
     ${ring(0, { size: 56, stroke: 6, color: "var(--fast)", inner: `<span style="color:var(--fast)">${ICON.timer}</span>` })}
     <div><div class="t">Eating window</div><div class="s">${next ? (Date.now() > next ? "Time to start your " + plan.label + " fast" : "Next fast at " + clock(next)) : "Start your first " + plan.label + " fast"}</div></div>
