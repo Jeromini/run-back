@@ -19,6 +19,7 @@ import { fmtDist, paceOf } from "../features/activity.js";
 import { unlockRow } from "../features/paywall.js";
 import { GUIDES } from "../domain/guides.js";
 import { guideRow } from "../features/guides.js";
+import { journeyStrip } from "./journey.js";
 
 const H = 3600000;
 const tone = { good: ICON.bolt, caution: ICON.timer, stop: ICON.close, info: ICON.star };
@@ -113,6 +114,7 @@ export function renderToday(root) {
     <div><button class="datebtn" data-act="open-cal">${ICON.cal} ${DOWL[now.getDay()]} ${now.getDate()} ${MONL[now.getMonth()]}</button>
       <div class="hello" style="margin-top:4px"><h1>${wk ? (wk <= 9 ? "Week " + wk + ": Build" : "Week " + wk + ": Speed") : "Starts " + esc(nice(p.startDate))}</h1></div>
       <div class="phase" style="margin-top:8px"><div class="track">${Array.from({ length: 12 }, (_, i) => `<i class="${i + 1 < wk ? "on" : i + 1 === wk ? "now" : ""}"></i>`).join("")}</div><span>${Math.min(wk, 12)}/12</span></div></div>
+    ${journeyStrip()}
     ${fastMini()}
     <div class="card"><div class="rings">${rings([{ v: c.runs, max: 3, color: "var(--accent)" }, { v: c.cross, max: 2, color: "var(--violet)" }, { v: c.weighs, max: 7, color: "var(--rose)" }])}
       <div class="legend"><div><i style="background:var(--accent)"></i><span>Runs</span><b>${c.runs}/3</b></div>

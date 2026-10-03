@@ -12,13 +12,14 @@ import { renderFood, resetFood } from "./views/food.js";
 import { renderTrends } from "./views/trends.js";
 import { renderCrew, captureInvite, refreshCrew } from "./views/crew.js";
 import { renderMe, applyTheme } from "./views/me.js";
+import { renderJourney } from "./views/journey.js";
 import { checkBadges } from "./features/badges.js";
 import "./features/paywall.js";
 import "./features/guides.js";
 import "./features/calendar.js";
 
-const VIEWS = { today: renderToday, fast: renderFast, food: renderFood, trends: renderTrends, crew: renderCrew, me: renderMe };
-const TAB_ICONS = { today: "run", fast: "timer", food: "food", trends: "chart", crew: "crew" };
+const VIEWS = { today: renderToday, journey: renderJourney, fast: renderFast, food: renderFood, trends: renderTrends, crew: renderCrew, me: renderMe };
+const TAB_ICONS = { today: "run", journey: "flag", fast: "timer", food: "food", trends: "chart", crew: "crew" };
 
 // static chrome
 (() => {

@@ -13,6 +13,7 @@ import { pickerHtml, setFoodCtx } from "../features/foodpicker.js";
 const MEALS = ["Breakfast", "Lunch", "Dinner", "Snacks"];
 let fdate = today(), meal = null, editTargets = false;
 export const resetFood = () => { fdate = today(); meal = null; };
+export const setFoodDate = d => { fdate = d > today() ? today() : d; meal = null; };
 const mealNow = () => { const h = new Date().getHours(); return h < 10 ? "Breakfast" : h < 15 ? "Lunch" : h < 21 ? "Dinner" : "Snacks"; };
 const uidGen = () => Math.random().toString(36).slice(2, 9);
 
