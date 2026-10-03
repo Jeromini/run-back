@@ -66,7 +66,7 @@ export function openWorkout(session, date, opts = {}) {
   session.blocks.forEach(b => { segs.push({ kind: b[0], len: b[1], at: t, label: b[2] || null }); t += b[1]; });
   const p = state.profile;
   W = { session, date, segs, total: t, runs: segs.filter(x => x.kind !== "w").length, phase: "pre", voice: p.voice !== false, gpsOn: p.gps !== false, idx: -1, segDist: segs.map(() => 0), half: false, lastCount: null, gps: null,
-    where: "outdoor", act: session.kind === "cross" ? activityById(opts.type || "walk-out") : null, manualDist: "" };
+    where: "outdoor", act: opts.type ? activityById(opts.type) : session.kind === "cross" ? activityById("walk-out") : null, manualDist: "", free: !!opts.free };
   if (W.act) W.gpsOn = W.gpsOn && W.act.gps;
   setSound(p.beeps !== false); setVoice(W.voice);
   S.workoutLive = true;
@@ -280,7 +280,10 @@ function saveWorkout() {
   const md = $("sm-dist") ? Number($("sm-dist").value) : 0;
   if (dist < 20 && md > 0) dist = Math.round(md * UNIT_M[du()]);
   const intensity = W.rpe ? (W.rpe <= 4 ? 0 : W.rpe <= 6 ? 1 : 2) : 1;
-  if (s.kind === "run") Object.assign(d, { runDone: true, runTitle: s.title + (W.where === "treadmill" ? " (treadmill)" : ""), runWhere: W.where, runAct: W.where === "treadmill" ? "run-tread" : "run-out", runDur: Math.round(W.elapsed), runMin: Math.round(W.elapsed / 60), runDistM: dist || null, route: W.route.length > 1 ? W.route : null, ints: W.ints, splits: W.gps && W.gps.splits.length ? W.gps.splits.map(Math.round) : null });
+  if (W.free) {
+    const rec = { id: Math.random().toString(36).slice(2, 9), type: W.act.id, min: Math.max(1, Math.round(W.elapsed / 60)), int: intensity, distM: dist || null, route: W.route.length > 1 ? W.route : null };
+    d.acts = [...(Array.isArray(d.acts) ? d.acts : []), rec];
+  } else if (s.kind === "run") Object.assign(d, { runDone: true, runTitle: s.title + (W.where === "treadmill" ? " (treadmill)" : ""), runWhere: W.where, runAct: W.where === "treadmill" ? "run-tread" : "run-out", runDur: Math.round(W.elapsed), runMin: Math.round(W.elapsed / 60), runDistM: dist || null, route: W.route.length > 1 ? W.route : null, ints: W.ints, splits: W.gps && W.gps.splits.length ? W.gps.splits.map(Math.round) : null });
   else Object.assign(d, { crossDone: true, crossDur: Math.round(W.elapsed), crossMin: Math.round(W.elapsed / 60), crossDistM: dist || null, crossRoute: W.route.length > 1 ? W.route : null, crossType: W.act.name, crossAct: W.act.id, crossInt: intensity });
   if (W.rpe) d.rpe = W.rpe;
   if (W.pain) d.pain = W.pain;

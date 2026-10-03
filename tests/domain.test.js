@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { runFor, sessionFor, weekOf, blocksTotal } from "../src/domain/plan.js";
-import { stageAt, coach, windowFor, fastStats, planById, planFor, STAGES } from "../src/domain/fasting.js";
+import { stageAt, coach, windowFor, fastStats, planById, planFor, STAGES, zoneHours, EVIDENCE, hourNote, isScheduled, nextStart, dueStart, adherence, ROUTINE_PRESETS } from "../src/domain/fasting.js";
 import { bmi, bmiClass, waterTarget, burned, buckets, series, weeklyTrend, avg7, weekCounts, streakWeeks } from "../src/domain/metrics.js";
 import { context, evaluate, nextUp } from "../src/domain/achievements.js";
 import { iso, addDays, parse } from "../src/lib/dates.js";
@@ -35,12 +35,12 @@ describe("plan", () => {
 
 describe("fasting", () => {
   it("names stages by hours", () => {
-    expect(stageAt(2).name).toBe("Digesting");
-    expect(stageAt(13).name).toBe("Fat-burning shift");
+    expect(stageAt(2).name).toBe("Blood sugar rises");
+    expect(stageAt(13).name).toBe("Fat burning");
     expect(stageAt(13).nextIn).toBe(5);
-    expect(stageAt(30).name).toBe("Glycogen largely used");
-    expect(stageAt(50).name).toBe("Hormone shift");
-    expect(stageAt(80).name).toBe("Deep ketosis");
+    expect(stageAt(30).name).toBe("Autophagy ramps up");
+    expect(stageAt(50).name).toBe("Growth hormone peak");
+    expect(stageAt(80).name).toBe("Immune renewal (research)");
     expect(stageAt(100).next).toBe(null);
   });
   it("offers multi-day and custom plans", () => {
@@ -51,6 +51,17 @@ describe("fasting", () => {
     expect(planFor({ fastPlan: "custom", fastCustomH: 500 }).hours).toBe(168);
     expect(planFor({ fastPlan: "custom", fastCustomH: 2 }).hours).toBe(12);
   });
+  it("labels evidence honestly", () => {
+    STAGES.forEach(s => expect(EVIDENCE[s.ev]).toBeTruthy());
+    expect(STAGES.find(s => /autophagy/i.test(s.name)).ev).toBe("early");
+    expect(STAGES.find(s => /immune/i.test(s.name)).ev).toBe("early");
+    expect(STAGES.find(s => /autophagy/i.test(s.name)).text).toMatch(/animal/);
+  });
+  it("gives a live note for every hour", () => {
+    expect(hourNote(0).title).toBe("Your fast has started");
+    expect(hourNote(16.5)).toMatchObject({ hour: 16, at: 16, next: { at: 18 } });
+    expect(hourNote(120).next).toBe(null);
+  });
   it("stages run in order and cover beyond three days", () => {
     STAGES.forEach((s, i) => { if (i) expect(s.from).toBeGreaterThan(STAGES[i - 1].from); expect(s.changes.length).toBeGreaterThan(0); });
     expect(STAGES[STAGES.length - 1].from).toBeGreaterThan(72);
@@ -58,6 +69,22 @@ describe("fasting", () => {
   it("allows a full day of eating after an extended fast", () => {
     const e = Date.UTC(2026, 9, 5, 12);
     expect(windowFor(null, { s: e - 72 * H, e, g: 72 }, 72, e).closesAt).toBe(e + 24 * H);
+  });
+  it("splits a fast into zones per calendar day", () => {
+    // 20 h fast from 8 pm on 1 Oct to 4 pm on 2 Oct (local time)
+    const s = new Date(2026, 9, 1, 20).getTime(), e = s + 20 * H;
+    const days = { "2026-10-02": { date: "2026-10-02", fasts: [{ s, e, g: 16 }] } };
+    const d1 = zoneHours(days, null, "2026-10-01"), d2 = zoneHours(days, null, "2026-10-02");
+    expect(d1.zones).toEqual([4, 0, 0, 0]);
+    expect(d2.zones).toEqual([8, 6, 2, 0]);
+    expect(d2.goalHit).toBe(true);
+    expect(d1.goalHit).toBe(null);
+  });
+  it("counts the fast in progress", () => {
+    const now = new Date(2026, 9, 3, 12).getTime(), active = { s: now - 30 * H, h: 72 };
+    const z = zoneHours({}, active, "2026-10-03", now).zones;
+    expect(z[0] + z[1] + z[2] + z[3]).toBeCloseTo(12);
+    expect(z[3]).toBeCloseTo(6);
   });
   it("falls back to 16:8 for unknown plans", () => {
     expect(planById("nope").hours).toBe(16);
@@ -94,6 +121,41 @@ describe("fasting", () => {
     expect(st.count).toBe(2);
     expect(st.longest).toBeCloseTo(16);
     expect(st.hitRate).toBe(0.5);
+  });
+});
+
+describe("fasting routines", () => {
+  const weekdays = { on: true, pattern: "days", days: [1, 2, 3, 4, 5], hours: 16, start: "20:00" };
+  it("knows which days are scheduled", () => {
+    expect(isScheduled(weekdays, "2026-10-05")).toBe(true);  // Monday
+    expect(isScheduled(weekdays, "2026-10-04")).toBe(false); // Sunday
+    const alt = { on: true, pattern: "alternate", anchor: "2026-10-01", hours: 36, start: "20:00" };
+    expect(isScheduled(alt, "2026-10-03")).toBe(true);
+    expect(isScheduled(alt, "2026-10-04")).toBe(false);
+    expect(isScheduled({ ...weekdays, on: false }, "2026-10-05")).toBe(false);
+  });
+  it("finds the next start, skipping off days", () => {
+    const sat = new Date(2026, 9, 3, 10).getTime(); // Saturday morning
+    expect(nextStart(weekdays, sat)).toBe(new Date(2026, 9, 5, 20).getTime());
+  });
+  it("prompts when a scheduled fast is due and not started", () => {
+    const mon = new Date(2026, 9, 5, 21).getTime();
+    expect(dueStart(weekdays, null, null, mon)).toBe(new Date(2026, 9, 5, 20).getTime());
+    expect(dueStart(weekdays, { s: mon - 3600000, h: 16 }, null, mon)).toBe(null);
+    expect(dueStart(weekdays, null, { s: new Date(2026, 9, 5, 19, 30).getTime(), e: mon }, mon)).toBe(null);
+  });
+  it("scores the week", () => {
+    const mon8 = new Date(2026, 9, 5, 20).getTime();
+    const days = { "2026-10-06": { date: "2026-10-06", fasts: [{ s: mon8, e: mon8 + 16.2 * H, g: 16 }] } };
+    const wk = adherence(weekdays, days, null, "2026-10-04", new Date(2026, 9, 7, 9).getTime());
+    expect(wk.map(x => x.status)).toEqual(["off", "done", "missed", "upcoming", "upcoming", "upcoming", "off"]);
+  });
+  it("doesn't count days before the routine began", () => {
+    const wk = adherence({ ...weekdays, since: "2026-10-07" }, {}, null, "2026-10-04", new Date(2026, 9, 8, 9).getTime());
+    expect(wk.map(x => x.status)).toEqual(["off", "off", "off", "missed", "upcoming", "upcoming", "off"]);
+  });
+  it("ships sensible presets", () => {
+    ROUTINE_PRESETS.forEach(p => { expect(p.hours).toBeGreaterThanOrEqual(12); expect(p.start).toMatch(/^\d\d:\d\d$/); });
   });
 });
 

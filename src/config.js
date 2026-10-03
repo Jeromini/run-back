@@ -6,6 +6,9 @@ export const SUPABASE_URL = "https://bxmjxupypptofjrcofcb.supabase.co";
 // Publishable key: safe in the browser; row-level security protects every table.
 export const SUPABASE_KEY = "sb_publishable_dDGbEpmSv3wEwkAXHVn6xQ_5-aZEXGx";
 
+// Public key for Web Push (the private half is in the database vault).
+export const VAPID_PUBLIC = "BBWHhxaMvXcG-6Y_H1wv21f0DmmFs_IDD2EYkoMLmWHoEbpKPHwgBm8G60XWnDXSR20LuRHk3v0bOtl8VIfqmdo";
+
 // Shown on the paywall. Checkout is not connected yet (see premium.js).
 export const PRICES = [
   { id: "annual", label: "Annual", price: "$59.99", per: "per year", note: "$5.00 a month, save 50%" },

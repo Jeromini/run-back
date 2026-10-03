@@ -80,3 +80,24 @@ export function ring(p, { size = 120, stroke = 12, color = "var(--accent)", inne
   return `<div class="ringbox" style="width:${size}px;height:${size}px"><svg viewBox="0 0 ${size} ${size}"><circle cx="${C}" cy="${C}" r="${r}" fill="none" stroke="${color}" stroke-opacity=".15" stroke-width="${stroke}"/>
     ${p > 0 ? `<circle cx="${C}" cy="${C}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${(c * Math.min(1, p)).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${C} ${C})"/>` : ""}</svg><div class="ringmid">${inner}</div></div>`;
 }
+
+// Stacked bars: series = [{ values, color }], bottom to top. barColor(i) may outline a bar (goal met / missed).
+export function stackedBars({ labels, series, target = null, targetLabel = "", fmt = v => Math.round(v), height = 180, marks = [] }) {
+  const H = height, L = 36, R = 10, T = 16, B = 34, totals = labels.map((_, i) => series.reduce((a, s) => a + (s.values[i] || 0), 0));
+  const top = niceMax(Math.max(target || 0, ...totals) * 1.08), bw = (W - L - R) / labels.length, y = v => T + (H - T - B) * (1 - v / top);
+  let g = "";
+  for (let i = 0; i <= 4; i++) { const v = top * i / 4, yy = y(v); g += `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" class="grid"/><text x="${L - 6}" y="${yy + 4}" text-anchor="end">${fmt(v)}</text>`; }
+  labels.forEach((l, i) => {
+    const x = L + i * bw + bw * 0.2, w = bw * 0.6;
+    let acc = 0;
+    series.forEach(s => {
+      const v = s.values[i] || 0; if (!v) return;
+      const y0 = y(acc), y1 = y(acc + v); acc += v;
+      g += `<rect x="${x.toFixed(1)}" y="${y1.toFixed(1)}" width="${w.toFixed(1)}" height="${Math.max(1, y0 - y1).toFixed(1)}" fill="${s.color}"/>`;
+    });
+    g += `<text x="${(x + w / 2).toFixed(1)}" y="${H - 18}" text-anchor="middle"${i === labels.length - 1 ? ' class="hl"' : ""}>${esc(l)}</text>`;
+    if (marks[i] != null) g += `<circle cx="${(x + w / 2).toFixed(1)}" cy="${H - 6}" r="4" fill="${marks[i] ? "var(--good)" : "var(--warn)"}" stroke="none"/>`;
+  });
+  if (target) { const yy = y(target); g += `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" class="target"/>${targetLabel ? `<text x="${W - R}" y="${yy - 5}" text-anchor="end" class="target-t">${esc(targetLabel)}</text>` : ""}`; }
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">${g}</svg>`;
+}

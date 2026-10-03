@@ -589,3 +589,39 @@ details.manual[open] summary { margin-bottom: 12px; }
 .tl-row.done .tl-n b { color: var(--muted); }
 .tl-body { padding: 0 0 12px 82px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
 @media (max-width: 380px) { .tl-body { padding-left: 24px; } }
+/* Evidence chips, live card, routine week */
+.ev { display: inline-block; vertical-align: middle; margin-left: 6px; font-family: var(--body); font-size: 10.5px; font-weight: 800; letter-spacing: .04em; padding: 2px 7px; border-radius: 999px; }
+.ev-strong { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+.ev-human { background: color-mix(in srgb, var(--water) 18%, transparent); color: var(--water); }
+.ev-early { background: color-mix(in srgb, var(--violet) 20%, transparent); color: var(--violet); }
+.live-card { border-color: color-mix(in srgb, var(--fast) 45%, var(--line)); background: linear-gradient(180deg, color-mix(in srgb, var(--fast) 10%, var(--surface)), var(--surface) 70%); }
+.live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--bad); margin-right: 4px; vertical-align: middle; }
+@media (prefers-reduced-motion: no-preference) { .live-dot { animation: blink 1.6s ease-in-out infinite; } @keyframes blink { 50% { opacity: .25; } } }
+.weekdots { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+.wd span { display: block; font-size: 11px; font-weight: 700; color: var(--muted); }
+.wd i { display: block; width: 26px; height: 26px; border-radius: 50%; margin: 4px auto 2px; border: 2px solid var(--line); }
+.wd.off i { border-style: dashed; }
+.wd.done i, .wd.live i, .wd.due i, .wd.missed i, .wd.short i { border-color: transparent; }
+.wd small { font-size: 10px; color: var(--muted); font-weight: 600; display: block; min-height: 12px; }
+/* Crew */
+.crew-head { background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 14%, var(--surface)), var(--surface) 75%); }
+.meter { display: flex; flex-direction: column; gap: 5px; font-size: 14px; font-weight: 600; }
+.meter b { font-family: var(--display); font-size: 18px; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 16px; flex: none; }
+.brow { grid-template-columns: 26px 38px 1fr auto !important; }
+.brow .rk.gold { color: var(--fast); }
+.brow .right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.brow .pts { font-family: var(--display); font-size: 24px; font-weight: 800; line-height: 1; }
+.statline { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.stc { font-size: 11.5px; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
+.stc.run { background: var(--accent-soft); color: var(--accent); }
+.stc.train { background: var(--violet-soft); color: var(--violet); }
+.stc.fast { background: var(--fast-soft); color: var(--fast); }
+.cheer { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 800; cursor: pointer; }
+.cheer svg { width: 14px; height: 14px; }
+.cheer.on { background: var(--fast); border-color: var(--fast); color: #2a1d02; }
+.cheers { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 800; color: var(--fast); }
+.cheers svg { width: 13px; height: 13px; }
+.steps { display: flex; flex-direction: column; gap: 12px; }
+.steps > div { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; }
+.steps .n { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-family: var(--display); font-weight: 800; font-size: 18px; }

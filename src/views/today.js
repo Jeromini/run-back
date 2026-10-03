@@ -12,7 +12,7 @@ import { coach, allFasts, planFor } from "../domain/fasting.js";
 import { waterCard } from "../features/water.js";
 import { strengthCard, afterRender as strengthAfter } from "../features/strength.js";
 import { openWorkout } from "../features/workout.js";
-import { pickActivity, openLogActivity } from "../features/activitylog.js";
+import { pickActivity, openLogActivity, startFreeWorkout } from "../features/activitylog.js";
 import { activityById, activityKcal, INTENSITY } from "../domain/activities.js";
 import { actsOf, currentWeight, toKg } from "../domain/metrics.js";
 import { fmtDist, paceOf } from "../features/activity.js";
@@ -64,6 +64,9 @@ function hero() {
     h += `<div class="donebox"><div><b>${dist ? fmtDist(dist) : "-"}</b><span>${p.dunit}</span></div><div><b>${dur ? mmss(dur) : "-"}</b><span>time</span></div><div><b>${paceOf(dur, dist)}</b><span>avg /${p.dunit}</span></div></div>
       <div class="sub"><button type="button" data-act="open-activity" data-date="${state.sel}" data-kind="${s.kind}">View activity</button>${s.blocks ? `<button type="button" data-act="start-session">Do it again</button>` : ""}</div>`;
   } else if (s.blocks) h += `<button class="go" data-act="start-session">${ICON.play} Start ${s.kind === "run" ? "run" : "cardio"}</button>`;
+  if (s.kind === "rest" || s.kind === "pre") h += `<p style="font-size:14px;opacity:.9">Feel like moving? Rest days are for easy movement, but it's your call.</p>
+    <button class="go" data-act="free-workout">${ICON.play} Start a workout</button>`;
+  if (!done) h += `<div class="sub">${s.kind === "rest" || s.kind === "pre" ? "" : `<button type="button" data-act="free-workout">Do something different</button>`}<button type="button" data-act="add-activity">Log an activity</button></div>`;
   if (s.kind === "run" && wk && wk <= 9 && !done) h += `<p style="font-size:13px;opacity:.8">Easy means full sentences. Your 2021 half pace (6:43/mi) is the long-term goal, not today's.</p>`;
   return h + `</div>`;
 }
@@ -136,6 +139,7 @@ act("start-session", () => {
   else openWorkout(s, state.sel);
 });
 act("add-activity", () => openLogActivity(state.sel));
+act("free-workout", () => startFreeWorkout(state.sel, openWorkout));
 act("log-plan-manual", () => { const s = sessionFor(state.sel, state.profile); openLogActivity(state.sel, s.kind === "run" ? { type: "run-out" } : {}); });
 act("focus-weight", () => { const i = document.getElementById("q-w"); if (i) { i.scrollIntoView({ block: "center" }); i.focus(); } });
 act("q-wsave", () => {

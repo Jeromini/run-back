@@ -32,6 +32,24 @@ const rowHtml = a => `<button class="frow" data-act="act-choose" data-id="${a.id
 onInput("act-q", el => { pickQ = el.value; $("act-list").innerHTML = listHtml(); });
 act("act-choose", el => { const a = activityById(el.dataset.id), cb = pickCb; closeSheet(); if (cb) cb(a); });
 
+// ---------- free workout ----------
+// Any activity, any day: pick the activity, then the length, then the guided timer runs.
+export function startFreeWorkout(date, startFn) {
+  pickActivity(a => {
+    openSheet({ title: "Workout", html: `<h1 class="big-title" style="font-size:28px">${esc(a.name)}</h1>
+      <div class="card"><div class="eyebrow">How long?</div>
+      <div class="chips" style="justify-content:center">${[10, 15, 20, 30, 45, 60, 75, 90].map(m => `<button class="chip" data-act="free-go" data-m="${m}" data-id="${a.id}">${m} min</button>`).join("")}</div>
+      <p class="note" style="text-align:center">The timer counts down with voice cues. End early any time and it saves what you did.</p></div>` });
+    freeStart = startFn; freeDate = date;
+  }, "What do you want to do?");
+}
+let freeStart = null, freeDate = null;
+act("free-go", el => {
+  const a = activityById(el.dataset.id), m = Number(el.dataset.m), fn = freeStart;
+  closeSheet();
+  fn({ kind: a.run ? "run" : "cross", title: a.name, how: "Your own session, logged as an extra activity.", blocks: [["w", m * 60, "Easy cardio"]] }, freeDate, { type: a.id, free: true });
+});
+
 // ---------- manual log ----------
 export function openLogActivity(date, preset = {}) {
   const s = sessionFor(date, state.profile), d = state.days[date] || {};
