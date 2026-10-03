@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { runFor, sessionFor, weekOf, blocksTotal } from "../src/domain/plan.js";
-import { stageAt, coach, windowFor, fastStats, planById } from "../src/domain/fasting.js";
+import { stageAt, coach, windowFor, fastStats, planById, planFor, STAGES } from "../src/domain/fasting.js";
 import { bmi, bmiClass, waterTarget, burned, buckets, series, weeklyTrend, avg7, weekCounts, streakWeeks } from "../src/domain/metrics.js";
 import { context, evaluate, nextUp } from "../src/domain/achievements.js";
 import { iso, addDays, parse } from "../src/lib/dates.js";
@@ -38,7 +38,26 @@ describe("fasting", () => {
     expect(stageAt(2).name).toBe("Digesting");
     expect(stageAt(13).name).toBe("Fat-burning shift");
     expect(stageAt(13).nextIn).toBe(5);
-    expect(stageAt(30).next).toBe(null);
+    expect(stageAt(30).name).toBe("Glycogen largely used");
+    expect(stageAt(50).name).toBe("Hormone shift");
+    expect(stageAt(80).name).toBe("Deep ketosis");
+    expect(stageAt(100).next).toBe(null);
+  });
+  it("offers multi-day and custom plans", () => {
+    expect(planById("72h").hours).toBe(72);
+    expect(planById("120h").hours).toBe(120);
+    expect(planFor({ fastPlan: "custom", fastCustomH: 60 })).toMatchObject({ hours: 60, label: "60 h" });
+    expect(planFor({ fastPlan: "custom", fastCustomH: 96 }).label).toBe("4 days");
+    expect(planFor({ fastPlan: "custom", fastCustomH: 500 }).hours).toBe(168);
+    expect(planFor({ fastPlan: "custom", fastCustomH: 2 }).hours).toBe(12);
+  });
+  it("stages run in order and cover beyond three days", () => {
+    STAGES.forEach((s, i) => { if (i) expect(s.from).toBeGreaterThan(STAGES[i - 1].from); expect(s.changes.length).toBeGreaterThan(0); });
+    expect(STAGES[STAGES.length - 1].from).toBeGreaterThan(72);
+  });
+  it("allows a full day of eating after an extended fast", () => {
+    const e = Date.UTC(2026, 9, 5, 12);
+    expect(windowFor(null, { s: e - 72 * H, e, g: 72 }, 72, e).closesAt).toBe(e + 24 * H);
   });
   it("falls back to 16:8 for unknown plans", () => {
     expect(planById("nope").hours).toBe(16);

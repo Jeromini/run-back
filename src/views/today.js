@@ -8,7 +8,7 @@ import { saveDay, saveProfile } from "../core/store.js";
 import { isPro } from "../core/premium.js";
 import { RHYTHM, sessionFor, weekOf, blocksTotal, runSeconds } from "../domain/plan.js";
 import { weekCounts, streakWeeks, runDist, runSecs, crossSecs, strengthDone } from "../domain/metrics.js";
-import { coach, allFasts, planById } from "../domain/fasting.js";
+import { coach, allFasts, planFor } from "../domain/fasting.js";
 import { waterCard } from "../features/water.js";
 import { strengthCard, afterRender as strengthAfter } from "../features/strength.js";
 import { openWorkout } from "../features/workout.js";
@@ -27,14 +27,14 @@ export function coachCard(compact = false) {
   const p = state.profile, d = state.days[state.sel] || {}, s = sessionFor(state.sel, p);
   const done = s.kind === "run" ? d.runDone : s.kind === "cross" ? d.crossDone : false;
   const last = allFasts(state.days)[0] || null;
-  const c = coach({ session: s, done, active: p.fastActive, lastFast: last, planHours: planById(p.fastPlan).hours });
+  const c = coach({ session: s, done, active: p.fastActive, lastFast: last, planHours: planFor(p).hours });
   const head = `<span class="k">${tone[c.tone]} Fast + Train coach</span><h3>${esc(c.title)}</h3>`;
   if (!isPro()) return `<div class="coach ${c.tone}">${head}<div class="locked-body" aria-hidden="true"><p class="blur">${esc(c.body)}</p></div>${unlockRow("fastTrain", "See exactly when to train around your fast")}</div>`;
   return `<div class="coach ${c.tone}">${head}${compact ? "" : `<p>${esc(c.body)}</p>`}</div>`;
 }
 
 function fastMini() {
-  const fa = state.profile.fastActive, plan = planById(state.profile.fastPlan);
+  const fa = state.profile.fastActive, plan = planFor(state.profile);
   if (fa) {
     const el = (Date.now() - fa.s) / 1000, p = el / (fa.h * 3600);
     return `<button class="fastmini" data-act="tab" data-v="fast">

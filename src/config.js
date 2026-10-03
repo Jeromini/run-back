@@ -21,5 +21,10 @@ export const FAST_PLANS = [
   { id: "19:5", hours: 19, label: "19:5", pro: true, blurb: "Short eating window" },
   { id: "20:4", hours: 20, label: "20:4", pro: true, blurb: "Warrior-style" },
   { id: "omad", hours: 23, label: "OMAD", pro: true, blurb: "One meal a day" },
-  { id: "36h", hours: 36, label: "36 h", pro: true, blurb: "Occasional extended fast" }
+  { id: "36h", hours: 36, label: "36 h", pro: true, blurb: "Occasional extended fast" },
+  { id: "48h", hours: 48, label: "48 h", pro: true, blurb: "Two-day fast" },
+  { id: "72h", hours: 72, label: "72 h", pro: true, blurb: "Three-day fast" },
+  { id: "120h", hours: 120, label: "5 days", pro: true, blurb: "Medically supervised only" },
+  { id: "custom", hours: null, label: "Custom", pro: true, blurb: "Set your own, 12 h to 7 days" }
 ];
+export const CUSTOM_FAST = { min: 12, max: 168 };

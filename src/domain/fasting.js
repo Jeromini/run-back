@@ -1,19 +1,44 @@
 // Fasting: plans, stages, history stats and the Fast + Train coach. Pure functions.
 // Stage wording sticks to well-established physiology and avoids exact-hour claims about
 // autophagy, growth hormone or immunity, which the evidence does not support.
-import { FAST_PLANS } from "../config.js";
+import { FAST_PLANS, CUSTOM_FAST } from "../config.js";
 import { clock, dayClock } from "../lib/dates.js";
 import { fastsOf } from "./metrics.js";
 
 const H = 3600000;
 export const planById = id => FAST_PLANS.find(p => p.id === id) || FAST_PLANS.find(p => p.id === "16:8");
+// The plan in force for a profile, resolving "custom" to the user's chosen length.
+export function planFor(profile) {
+  const p = planById(profile.fastPlan);
+  if (p.id !== "custom") return p;
+  const h = Math.max(CUSTOM_FAST.min, Math.min(CUSTOM_FAST.max, Math.round(profile.fastCustomH || 24)));
+  return { ...p, hours: h, label: h % 24 === 0 && h >= 48 ? h / 24 + " days" : h + " h" };
+}
+export const EXTENDED_H = 36;        // from here the app shows the extended-fast checklist
+export const SUPERVISED_H = 72;      // beyond this, medical supervision is advised
 
+// What happens in the body as a fast goes on. Timings are typical for a healthy adult and
+// vary with diet, activity and body composition. Wording sticks to what human studies show;
+// where evidence is mainly from animals (autophagy), it says so.
 export const STAGES = [
-  { from: 0, name: "Digesting", text: "Your last meal is being absorbed. Blood sugar and insulin are higher, and your body runs mainly on that food." },
-  { from: 4, name: "Settling", text: "Insulin drifts back towards baseline. Your body starts drawing on stored glycogen and more fat between meals." },
-  { from: 12, name: "Fat-burning shift", text: "With glycogen lower, a larger share of your energy comes from fat. Hunger often comes in waves and passes in 15-20 minutes." },
-  { from: 18, name: "Deep fast", text: "Ketone levels typically begin to rise. Drink water, and keep any training easy unless you have eaten." },
-  { from: 24, name: "Extended fast", text: "Past 24 hours, skip hard training, add electrolytes, and break the fast if you feel dizzy, faint or unwell." }
+  { from: 0, name: "Digesting", text: "Your last meal is being absorbed and your body runs mainly on that food.",
+    changes: ["Blood sugar and insulin are raised after eating", "Nutrients are being stored as glycogen and fat"] },
+  { from: 4, name: "Blood sugar settling", text: "Insulin drifts back towards baseline and your body starts drawing on stored energy.",
+    changes: ["Insulin falls, glucagon rises", "Liver glycogen starts supplying blood sugar", "Fat release from fat cells begins to increase"] },
+  { from: 12, name: "Fat-burning shift", text: "With liver glycogen running lower, a larger share of your energy comes from fat.",
+    changes: ["Fat becomes a bigger share of the fuel mix", "Hunger comes in waves around usual meal times and passes in 15-20 minutes", "Water and black coffee or tea are fine"] },
+  { from: 18, name: "Ketosis begins", text: "Your liver starts turning fat into ketones, an alternative fuel for muscles and brain.",
+    changes: ["Ketones begin to rise in the blood", "Many people notice steadier energy once past the hunger waves", "Keep training easy unless you have eaten"] },
+  { from: 24, name: "Glycogen largely used", text: "Liver glycogen is mostly depleted, so your body makes the glucose it needs from other sources.",
+    changes: ["Gluconeogenesis: glucose made from glycerol, lactate and some amino acids", "Ketones commonly around 0.5 mmol/L", "Salt and water loss rise: add electrolytes", "Skip hard training from here on"] },
+  { from: 36, name: "Fat-adapted", text: "Fat and ketones are now your main fuel, and the brain is starting to use ketones meaningfully.",
+    changes: ["Ketones typically 1 mmol/L or more", "Headaches or low energy usually mean you need more salt and water", "Sleep can be lighter"] },
+  { from: 48, name: "Hormone shift", text: "Studies of 2-day fasts show growth hormone rising several-fold, which helps protect muscle while fat is used.",
+    changes: ["Growth hormone rises markedly", "Insulin at its lowest", "Many people find hunger eases as hunger hormones settle", "Feeling dizzy on standing is a sign to break the fast"] },
+  { from: 72, name: "Deep ketosis", text: "Ketones are high and supply a large share of the brain's energy. In animal studies cell recycling (autophagy) is strongly raised by now; in humans the timing isn't established.",
+    changes: ["Ketones often 2-4 mmol/L", "Beyond 3 days, fasting should be medically supervised", "Break the fast gently: small, protein-led meals first"] },
+  { from: 96, name: "Prolonged fast", text: "Only under medical supervision. The longer the fast, the higher the risk from electrolyte imbalance and from refeeding too quickly.",
+    changes: ["Electrolyte levels need monitoring", "Refeeding syndrome is a real risk after 5 or more days", "Reintroduce food over 1-2 days"] }
 ];
 export function stageAt(hours) {
   let s = STAGES[0];
@@ -39,14 +64,16 @@ export function fastStats(days) {
   };
 }
 
+// Daily plans leave (24 - fast) hours to eat; after a fast of a day or more, allow a full day of eating.
+const eatGap = h => (h >= 24 ? 24 : Math.max(1, 24 - h));
 // When the eating window opens and closes, and when the next fast should start.
 export function windowFor(active, lastFast, planHours, now = Date.now()) {
   if (active) {
     const goalAt = active.s + active.h * H;
-    return { fasting: true, goalAt, opensAt: goalAt, closesAt: goalAt + Math.max(1, 24 - active.h) * H };
+    return { fasting: true, goalAt, opensAt: goalAt, closesAt: goalAt + eatGap(active.h) * H };
   }
   if (lastFast) {
-    const closesAt = lastFast.e + Math.max(1, 24 - planHours) * H;
+    const closesAt = lastFast.e + eatGap(planHours) * H;
     return { fasting: false, opensAt: lastFast.e, closesAt, nextFastAt: closesAt, overdue: now > closesAt };
   }
   return { fasting: false, opensAt: null, closesAt: null, nextFastAt: null };

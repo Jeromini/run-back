@@ -571,3 +571,21 @@ details.manual[open] summary { margin-bottom: 12px; }
 .stepper .btn { min-height: 56px; border-radius: 16px; }
 .online-h { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 2px 4px; border-top: 1px solid var(--line); margin-top: 4px; }
 .picker .chips { max-height: 380px; overflow-y: auto; }
+
+/* Fasting timeline */
+.dial .clock.long { font-size: clamp(40px, 12vw, 54px); }
+.changes { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; font-size: 13.5px; color: var(--muted); }
+.timeline { display: flex; flex-direction: column; }
+.tl-row { border-top: 1px solid var(--line); }
+.tl-row:first-child { border-top: 0; }
+.tl-row summary { list-style: none; display: grid; grid-template-columns: 14px 58px 1fr; gap: 10px; align-items: center; padding: 11px 0; cursor: pointer; }
+.tl-row summary::-webkit-details-marker { display: none; }
+.tl-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--faint); }
+.tl-row.done .tl-dot { background: var(--fast); border-color: var(--fast); }
+.tl-row.now .tl-dot { background: var(--fast); border-color: var(--fast); box-shadow: 0 0 0 4px var(--fast-soft); }
+.tl-h { font-family: var(--display); font-size: 17px; font-weight: 800; color: var(--fast); }
+.tl-n b { display: block; font-size: 15px; }
+.tl-n small { display: block; color: var(--muted); font-size: 12.5px; font-weight: 600; }
+.tl-row.done .tl-n b { color: var(--muted); }
+.tl-body { padding: 0 0 12px 82px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+@media (max-width: 380px) { .tl-body { padding-left: 24px; } }

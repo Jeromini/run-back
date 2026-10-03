@@ -8,7 +8,7 @@ import { saveProfile, sb } from "../core/store.js";
 import { isPro } from "../core/premium.js";
 import { signOut, changePassword } from "../core/auth.js";
 import { weekOf } from "../domain/plan.js";
-import { planById } from "../domain/fasting.js";
+import { planFor } from "../domain/fasting.js";
 import { badgesSummary } from "../features/badges.js";
 
 const ftIn = cm => { const t = cm / 2.54; let f = Math.floor(t / 12), i = Math.round(t - f * 12); if (i === 12) { f++; i = 0; } return [f, i]; };
@@ -40,7 +40,7 @@ export function renderMe(root) {
     <div class="card"><h3>Training plan</h3>
       <p class="note">You're in week ${weekOf(today(), p) || "-"}. Repeat a week when the runs feel hard or something aches. Weeks repeated so far: ${p.weekOffset || 0}.</p>
       <div class="row"><button class="btn" data-act="week-repeat">Repeat this week</button><button class="btn ghost" data-act="week-unrepeat">Undo a repeat</button></div></div>
-    <div class="card"><h3>Fasting</h3><div class="card-head"><span class="note">Current plan</span><button class="planbtn" data-act="fast-plans">${ICON.timer} ${esc(planById(p.fastPlan).label)}</button></div></div>
+    <div class="card"><h3>Fasting</h3><div class="card-head"><span class="note">Current plan</span><button class="planbtn" data-act="fast-plans">${ICON.timer} ${esc(planFor(p).label)}</button></div></div>
     <div class="card"><h3>Workouts</h3>
       <label class="switch">Voice coaching<input type="checkbox" data-chg="pref" data-k="voice"${p.voice !== false ? " checked" : ""}></label>
       <label class="switch">GPS distance and pace<input type="checkbox" data-chg="pref" data-k="gps"${p.gps !== false ? " checked" : ""}></label>
