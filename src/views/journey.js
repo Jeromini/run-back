@@ -17,6 +17,7 @@ import { openWorkout } from "../features/workout.js";
 import { openLogActivity, startFreeWorkout } from "../features/activitylog.js";
 import { fmtDist } from "../features/activity.js";
 import { setFoodDate } from "./food.js";
+import { celebrate } from "../features/celebrate.js";
 
 const H = 3600000;
 const LOOK = {
@@ -218,6 +219,10 @@ function totalsHtml(j) {
 
 function milestonesHtml(j, ctx) {
   const list = milestones(j, state.days, today(), ctx, state.profile.unit), got = list.filter(m => m.date);
+  // celebrate milestones reached since the last visit (the first visit just records them)
+  const ids = got.map(m => m.id);
+  if (!j.seenMs) { j.seenMs = ids; saveProfile(); }
+  else { const fresh = got.filter(m => !j.seenMs.includes(m.id)); if (fresh.length) { j.seenMs = ids; saveProfile(); fresh.slice(-2).forEach(m => celebrate({ title: m.label, sub: `${j.name}, day ${dayNumber(j, m.date)}.`, cta: "Keep going" })); } }
   const next = list.filter(m => !m.date).slice(0, 3);
   return `<div class="card"><div class="card-head"><h3>Milestones</h3><span class="pill">${got.length} of ${list.length}</span></div>
     <div class="jmiles">${got.slice().sort((a, b) => (a.date < b.date ? 1 : -1)).map(m => `<div class="ms got"><i>${ICON.star}</i><span><b>${esc(m.label)}</b><small>${esc(nice(m.date))}</small></span></div>`).join("")}

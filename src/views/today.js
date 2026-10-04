@@ -19,6 +19,7 @@ import { actsOf, currentWeight, toKg } from "../domain/metrics.js";
 import { fmtDist, paceOf } from "../features/activity.js";
 import { unlockRow } from "../features/paywall.js";
 import { journeyStrip } from "./journey.js";
+import { setupCard } from "../features/onboarding.js";
 
 const H = 3600000;
 const tone = { good: ICON.bolt, caution: ICON.timer, stop: ICON.close, info: ICON.star };
@@ -141,6 +142,7 @@ export function renderToday(root) {
     <div class="tdhead"><h1>${other ? esc(nice(state.sel)) : "Today"}</h1>
       ${other ? `<button class="linkbtn" data-act="pick-day" data-d="${t}">Back to today</button>` : ""}
       <button class="datebtn" data-act="open-cal" aria-label="Open calendar">${ICON.cal} ${other ? "Calendar" : DOWL[now.getDay()].slice(0, 3) + " " + now.getDate() + " " + MONL[now.getMonth()].slice(0, 3)}</button></div>
+    ${other ? "" : setupCard()}
     ${other ? "" : fastMini()}
     ${hero()}
     ${quickRow()}

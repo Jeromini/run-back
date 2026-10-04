@@ -11,6 +11,9 @@ export const sb = (() => {
 })();
 
 let dirty = {}, seq = Date.now(), flushT = null, flushing = false;
+const pulledCbs = [];
+// runs after each successful pull from the server, once the real profile is in memory
+export const onPulled = fn => pulledCbs.push(fn);
 const lsKey = () => "runback.v2:" + (S.uid || "local");
 
 export function lsLoad() {
@@ -73,6 +76,7 @@ export async function pull() {
     if (!p.data) dirty.profile = ++seq;
     lsSave();
     if (!typing()) render();
+    pulledCbs.forEach(fn => fn());
     flush();
   } catch (e) { setSync("offline"); }
 }

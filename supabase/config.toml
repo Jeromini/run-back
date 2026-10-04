@@ -1,0 +1,13 @@
+# Supabase CLI config for the Run Back backend.
+# Only the settings that matter for redeploying are recorded here.
+project_id = "bxmjxupypptofjrcofcb"
+
+# Food search proxy (Open Food Facts). Called by signed-in users via supabase.functions.invoke,
+# so the gateway checks the JWT.
+[functions.food-search]
+verify_jwt = true
+
+# Fasting push reminders. Called every 5 minutes by pg_cron, not by users. JWT checking is off;
+# the function authenticates the call itself with the x-cron-secret header.
+[functions.push-tick]
+verify_jwt = false

@@ -36,7 +36,8 @@ export function renderMe(root) {
         <label class="f">Goal weight (${p.unit})<input type="number" id="s-goal" inputmode="decimal" step="0.1" value="${esc(p.goalWeight || "")}"></label></div>
       <label class="f">Plan start date<input type="date" id="s-startdate" value="${esc(p.startDate || "")}"></label>
       <label class="f">Injuries or health notes<textarea id="s-health" placeholder="Anything that affects training or fasting">${esc(p.health || "")}</textarea></label>
-      <button class="btn primary big" data-act="me-save">Save</button></div>
+      <button class="btn primary big" data-act="me-save">Save</button>
+      <button class="linkbtn" data-act="onb-open">Run the setup again</button></div>
     <div class="card"><h3>Training plan</h3>
       <p class="note">You're in week ${weekOf(today(), p) || "-"}. Repeat a week when the runs feel hard or something aches. Weeks repeated so far: ${p.weekOffset || 0}.</p>
       <div class="row"><button class="btn" data-act="week-repeat">Repeat this week</button><button class="btn ghost" data-act="week-unrepeat">Undo a repeat</button></div></div>

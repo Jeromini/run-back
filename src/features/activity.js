@@ -1,6 +1,4 @@
 // Activity history (runs, cardio, strength), route maps and the detail sheet.
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
 import { act, openSheet, closeSheet, confirmTap, toast, ICON } from "../lib/dom.js";
 import { esc, mmss, fmtPace, UNIT_M, num } from "../lib/format.js";
 import { nice } from "../lib/dates.js";
@@ -29,7 +27,17 @@ export function routeSvg(route, stroke = "var(--accent)") {
 }
 export function drawMap(el, route, dark) {
   if (!route || route.length < 2) { el.innerHTML = `<div class="empty" style="height:100%;display:grid;place-items:center"><div><b>No route</b>GPS was off or had no signal for this session.</div></div>`; return; }
-  if (!navigator.onLine) { el.innerHTML = routeSvg(route); return; }
+  // the route sketch shows at once; the map library loads only when a map is actually needed
+  el.innerHTML = routeSvg(route);
+  if (!navigator.onLine) return;
+  Promise.all([import("leaflet"), import("leaflet/dist/leaflet.css")]).then(([mod]) => {
+    if (!el.isConnected) return;
+    const L = mod.default || mod;
+    el.innerHTML = "";
+    paintMap(L, el, route, dark);
+  }).catch(() => {});
+}
+function paintMap(L, el, route, dark) {
   try {
     const m = L.map(el, { zoomControl: false, scrollWheelZoom: false });
     const isDark = dark || matchMedia("(prefers-color-scheme: dark)").matches && document.documentElement.dataset.theme !== "light";

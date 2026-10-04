@@ -155,13 +155,13 @@ export function coach({ session, done, active, lastFast, planHours, now = Date.n
 }
 
 // Hours spent in each fasting zone on a given local day, across completed fasts and the one
-// in progress. Zones follow the stage timeline: settling (0-12 h), fat-burning (12-18 h),
-// ketosis (18-24 h) and deep fast (24 h+).
+// in progress. Zones follow the stage timeline: glycogen (0-12 h), fat burning (12-18 h),
+// ketosis (18-24 h) and past a day (24 h+). Names match the stage timeline.
 export const ZONES = [
-  { from: 0, to: 12, name: "Settling" },
-  { from: 12, to: 18, name: "Fat-burning" },
+  { from: 0, to: 12, name: "Glycogen" },
+  { from: 12, to: 18, name: "Fat burning" },
   { from: 18, to: 24, name: "Ketosis" },
-  { from: 24, to: Infinity, name: "Deep fast" }
+  { from: 24, to: Infinity, name: "Past a day" }
 ];
 export function zoneHours(days, active, dateStr, now = Date.now()) {
   const [y, m, d] = dateStr.split("-").map(Number);
