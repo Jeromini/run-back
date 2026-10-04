@@ -143,8 +143,8 @@ export function renderTrends(root) {
     const acts = activities(), runs = acts.filter(a => a.kind === "run");
     body = `<div class="stats"><div class="stat"><b>${runs.length}</b><span>runs</span></div><div class="stat"><b>${fmtDist(runs.reduce((a, x) => a + x.dist, 0))}</b><span>${p.dunit} run</span></div><div class="stat"><b>${acts.filter(a => a.kind === "strength").length}</b><span>strength</span></div></div>` + feedHtml(acts);
   } else body = roadmap();
-  root.innerHTML = `<section class="view"><h1 class="big-title">Trends</h1>
-    <div class="subnav">${segHtml("tr-tab", [["overview", "Overview"], ["activity", "Activities"], ["plan", "Plan"]], tab, 'data-act="trends-tab"')}</div>${body}</section>`;
+  root.innerHTML = `<section class="view"><h1 class="big-title">Progress</h1>
+    <div class="subnav"><div class="toptabs" role="tablist" data-act="trends-tab">${[["overview", "Overview"], ["activity", "Activities"], ["plan", "Run plan"]].map(([v, l]) => `<button role="tab" aria-selected="${tab === v}" class="${tab === v ? "on" : ""}" data-v="${v}">${l}</button>`).join("")}</div></div>${body}</section>`;
 }
 
 act("trends-tab", (el, ev) => { const b = ev.target.closest("button"); if (b) { state.trendsTab = b.dataset.v; render(); } });

@@ -13,6 +13,8 @@ import { renderTrends } from "./views/trends.js";
 import { renderCrew, captureInvite, refreshCrew } from "./views/crew.js";
 import { renderMe, applyTheme } from "./views/me.js";
 import { renderJourney } from "./views/journey.js";
+import { renderMore } from "./views/more.js";
+import "./features/quickadd.js";
 import { checkBadges } from "./features/badges.js";
 import "./features/paywall.js";
 import "./features/guides.js";
@@ -21,8 +23,8 @@ import { maybeOnboard } from "./features/onboarding.js";
 import { onPulled, sb } from "./core/store.js";
 import { initErrorReporting } from "./lib/errors.js";
 
-const VIEWS = { today: renderToday, journey: renderJourney, fast: renderFast, food: renderFood, trends: renderTrends, crew: renderCrew, me: renderMe };
-const TAB_ICONS = { today: "run", journey: "flag", fast: "timer", food: "food", trends: "chart", crew: "crew" };
+const VIEWS = { today: renderToday, journey: renderJourney, fast: renderFast, food: renderFood, trends: renderTrends, crew: renderCrew, me: renderMe, more: renderMore };
+const TAB_ICONS = { today: "run", journey: "flag", fast: "timer", food: "food", trends: "chart" };
 
 // static chrome
 (() => {
@@ -30,7 +32,8 @@ const TAB_ICONS = { today: "run", journey: "flag", fast: "timer", food: "food", 
   $("brand").innerHTML = `${esc(a)} <span>${esc(b.join(" "))}</span>`;
   document.querySelectorAll("#tabs button").forEach(btn => { btn.innerHTML = ICON[TAB_ICONS[btn.dataset.v]] + btn.textContent; });
   document.querySelector('[data-act="open-guides"]').innerHTML = ICON.book;
-  document.querySelector('[data-act="go-me"]').innerHTML = ICON.user;
+  document.querySelector('[data-act="go-more"]').innerHTML = ICON.user;
+  $("fab").innerHTML = ICON.plus;
   $("sh-back").innerHTML = ICON.back;
 })();
 
@@ -43,7 +46,10 @@ function render() {
   lastView = state.view;
   fn(main);
   window.scrollTo(0, y);
-  document.querySelectorAll("#tabs button").forEach(b => { const on = b.dataset.v === state.view; b.classList.toggle("on", on); b.setAttribute("aria-current", on ? "page" : "false"); });
+  // screens reached from More keep the More (profile) button lit instead of a tab
+  const sub = { crew: "more", me: "more" }[state.view] || state.view;
+  document.querySelectorAll("#tabs button").forEach(b => { const on = b.dataset.v === sub; b.classList.toggle("on", on); b.setAttribute("aria-current", on ? "page" : "false"); });
+  const mb = document.querySelector('[data-act="go-more"]'); if (mb) mb.classList.toggle("on", sub === "more");
   const pro = document.querySelector("#brand .pro-tag");
   if (S.pro && !pro) $("brand").insertAdjacentHTML("beforeend", '<span class="pro-tag">PRO</span>');
   if (!S.pro && pro) pro.remove();

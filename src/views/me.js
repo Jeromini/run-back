@@ -20,7 +20,7 @@ export function applyTheme() {
 
 export function renderMe(root) {
   const p = state.profile, [ft, inch] = p.heightCm ? ftIn(p.heightCm) : ["", ""];
-  root.innerHTML = `<section class="view"><h1 class="big-title">Profile</h1>
+  root.innerHTML = `<section class="view"><button class="backlink" data-act="go-more">${ICON.back} More</button><h1 class="big-title">My profile</h1>
     ${isPro()
       ? `<button class="card" data-act="paywall" style="text-align:left;cursor:pointer;border-color:var(--gold-2)"><div class="card-head"><h3>${esc(APP_NAME)} Premium</h3><span class="pro-tag">ACTIVE</span></div><p class="note">Every feature unlocked. Thank you for your support.</p></button>`
       : `<div class="card" style="border-color:var(--gold-2)"><div class="card-head"><h3>Go Premium</h3><span class="pro-tag">PRO</span></div><p class="note">The Fast + Train coach, every fasting plan, deep trends, the full guide library and data export.</p><button class="btn gold" data-act="paywall">${ICON.star} See Premium</button></div>`}
@@ -78,4 +78,4 @@ act("week-repeat", () => { state.profile.weekOffset = (state.profile.weekOffset 
 act("week-unrepeat", () => { state.profile.weekOffset = Math.max(0, (state.profile.weekOffset || 0) - 1); saveProfile(); render(); });
 act("me-pw", async () => { const i = document.getElementById("s-newpw"); if (await changePassword(i.value)) i.value = ""; });
 act("me-signout", () => signOut());
-act("go-me", () => { state.view = "me"; render(); window.scrollTo(0, 0); });
+act("go-me", () => { state.view = "more"; render(); window.scrollTo(0, 0); });

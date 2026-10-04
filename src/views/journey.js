@@ -370,6 +370,12 @@ act("j-mood", (el, ev) => {
   el.querySelectorAll("button").forEach(x => x.classList.toggle("on", Number(x.dataset.v) === d.journal.mood));
 });
 
+// Current kept-day streak for the More header (null when there is no journey).
+export function journeyStreak() {
+  const j = J(); if (!j || !j.on) return null;
+  return journeyStats(j, state.days, today(), ctxFor(j)).streak;
+}
+
 // Compact strip for Today.
 export function journeyStrip() {
   const j = J(); if (!j || !j.on) return `<button class="jstrip" data-act="tab" data-v="journey"><i>${ICON.flag}</i><div><b>Start My Journey</b><span>Training, fasting, water and food in one plan</span></div><i class="go">${ICON.next}</i></button>`;

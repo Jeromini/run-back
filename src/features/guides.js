@@ -13,10 +13,14 @@ export const guideRow = g => `<button class="guide" data-act="open-guide" data-i
   <div><b>${esc(g.title)}</b><span>${esc(g.cat)} &middot; ${g.mins} min read</span></div>
   ${!g.free && !isPro() ? `<span class="lock" aria-label="Premium">${ICON.lock}</span>` : `<span class="note">${ICON.next.replace("<svg", '<svg width="18" height="18"')}</span>`}</button>`;
 
+export const guideTile = g => `<button class="gtile" data-act="open-guide" data-id="${g.id}">
+  <span class="gart ${g.tone}">${ICON[ART[g.cat]] || ICON.book}${!g.free && !isPro() ? `<i class="gpro" aria-label="Premium">${ICON.lock}</i>` : ""}</span>
+  <b>${esc(g.title)}</b><small>${g.mins} min read</small></button>`;
+
 export function openGuides() {
   const cats = [...new Set(GUIDES.map(g => g.cat))];
   openSheet({ title: "Guides", html: `<h1 class="big-title">Guides</h1><p class="note">Short, practical reads on fasting, training and food. No hype.</p>` +
-    cats.map(c => `<div class="eyebrow" style="margin-top:6px">${esc(c)}</div><div class="guides">${GUIDES.filter(g => g.cat === c).map(guideRow).join("")}</div>`).join("") });
+    cats.map(c => `<h2 class="sect">${esc(c)}</h2><div class="gtiles">${GUIDES.filter(g => g.cat === c).map(guideTile).join("")}</div>`).join("") });
 }
 export function openGuide(id) {
   const g = GUIDES.find(x => x.id === id); if (!g) return;

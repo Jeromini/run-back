@@ -42,7 +42,7 @@ function paintMap(L, el, route, dark) {
     const m = L.map(el, { zoomControl: false, scrollWheelZoom: false });
     const isDark = dark || matchMedia("(prefers-color-scheme: dark)").matches && document.documentElement.dataset.theme !== "light";
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "&copy; OpenStreetMap contributors", className: isDark ? "tiles-dark" : "" }).addTo(m);
-    const line = L.polyline(route, { color: isDark ? "#3cc7be" : "#0a7f7a", weight: 5, opacity: .95, lineJoin: "round" }).addTo(m);
+    const line = L.polyline(route, { color: isDark ? "#5b96f7" : "#2f6fe4", weight: 5, opacity: .95, lineJoin: "round" }).addTo(m);
     L.circleMarker(route[0], { radius: 6, color: "#fff", weight: 2, fillColor: "#23824f", fillOpacity: 1 }).addTo(m);
     L.circleMarker(route[route.length - 1], { radius: 6, color: "#fff", weight: 2, fillColor: "#b8382f", fillOpacity: 1 }).addTo(m);
     m.fitBounds(line.getBounds(), { padding: [24, 24] });
@@ -89,7 +89,7 @@ export function intervalTable(ints, dark) {
   return `<div class="tablewrap"><table class="ints"><thead><tr><th>Interval</th><th>Time</th><th>${du()}</th><th>Pace</th></tr></thead><tbody>${ints.map(x => {
     if (x.k === "w" && (x.label === "Warm-up" || x.label === "Cool-down")) return "";
     const lbl = x.k === "w" ? "Walk" : (x.k === "h" ? "Quick " : "Jog ") + (++n);
-    const col = x.k === "r" ? (dark ? "#3cc7be" : "var(--accent)") : x.k === "h" ? "#f5be4a" : "#8fa3bb";
+    const col = x.k === "r" ? (dark ? "#5b96f7" : "var(--accent)") : x.k === "h" ? "#f5be4a" : "#8fa3bb";
     return `<tr><td><span class="k" style="background:${col}"></span>${lbl}</td><td>${mmss(x.sec)}</td><td>${x.m ? fmtDist(x.m) : "-"}</td><td>${x.m > 20 ? fmtPace(x.sec / (x.m / UNIT_M[du()])) : "-"}</td></tr>`;
   }).join("")}</tbody></table></div>`;
 }
