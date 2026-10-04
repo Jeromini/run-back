@@ -16,7 +16,7 @@ export const PILLARS = [
   { id: "strength", label: "Strength", kind: "week", def: 2, max: 7, unit: "sessions", blurb: "A strength session with sets ticked off" },
   { id: "fast", label: "Fast", kind: "day", blurb: "Follows your fasting routine, or your daily plan" },
   { id: "water", label: "Water", kind: "day", blurb: "Hit your daily water target" },
-  { id: "food", label: "Food", kind: "day", blurb: "Log what you eat and stay within your calorie target" },
+  { id: "food", label: "Food", kind: "day", blurb: "Keep your diet, or log what you eat within your calorie target" },
   { id: "weight", label: "Weigh-in", kind: "week", def: 7, max: 7, unit: "weigh-ins", blurb: "Step on the scale" },
   { id: "note", label: "Daily note", kind: "day", blurb: "One line on how the day went" }
 ];
@@ -55,7 +55,8 @@ const trained = d => !!(d && (ranToday(d) || otherCardio(d) || strengthDone(d) |
 // A fast counts for the day it ends on. "Long enough" is the plan length less half an hour.
 const fastKept = (d, hours) => fastsOf(d).some(f => (f.e - f.s) / H >= Math.max(10, hours - 0.5));
 
-// ctx: { waterTarget(date) -> ml, kcalTarget, fastHours, fastDay(date) -> null | "off" | "done" | "missed" | "pending" }
+// ctx: { waterTarget(date) -> ml, kcalTarget, fastHours, fastDay(date) -> null | "off" | "done" | "missed" | "pending",
+//        dietStatus(date) -> null (no diet) | "kept" | "close" | "off" | "empty" }
 // Returns, for one date, each active goal: { id, done, applies }.
 export function dayChecks(j, d, date, ctx) {
   return activePillars(j).map(p => {
@@ -65,7 +66,12 @@ export function dayChecks(j, d, date, ctx) {
     else if (p.id === "strength") done = strengthDone(d);
     else if (p.id === "weight") done = !!(d && d.weight);
     else if (p.id === "water") done = !!(d && d.water && d.water >= ctx.waterTarget(date));
-    else if (p.id === "food") { const t = foodTotals(d); done = t.n > 0 && (!ctx.kcalTarget || t.k <= ctx.kcalTarget * 1.05); }
+    else if (p.id === "food") {
+      // with a diet chosen, the food goal is keeping the diet; otherwise logging within the calorie target
+      const ds = ctx.dietStatus ? ctx.dietStatus(date) : null;
+      if (ds) done = ds === "kept";
+      else { const t = foodTotals(d); done = t.n > 0 && (!ctx.kcalTarget || t.k <= ctx.kcalTarget * 1.05); }
+    }
     else if (p.id === "note") done = !!(d && d.journal && (d.journal.text || "").trim());
     else if (p.id === "fast") {
       const s = ctx.fastDay ? ctx.fastDay(date) : null;

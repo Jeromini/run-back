@@ -53,7 +53,7 @@ const entry = () => {
   // remember the shop for next time
   if (c.brand !== state.profile.lastBrand) { state.profile.lastBrand = c.brand; saveProfile(); }
   const n = drinkNutrition(c);
-  return { n: drinkLabel(c), k: n.k, p: n.p, drink: { ...c } };
+  return { n: drinkLabel(c), k: n.k, p: n.p, c: n.c, f: n.f, fb: 0, t: n.t, drink: { ...c } };
 };
 
 act("db-brand", el => { c.brand = el.dataset.v; const d = drinkById(c.drink); c.size = defaultSize(d, c.brand); if (c.brand === "starbucks" && c.milk === "whole" && typeof d.milk === "number") c.milk = "2pc"; draw(); });

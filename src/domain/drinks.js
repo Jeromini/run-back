@@ -124,7 +124,20 @@ export function drinkNutrition(c) {
   if (c.drizzle) k += 15 * Math.min(1.3, scale);
   if (c.foam) k += 70 * Math.min(1.3, scale);
   if (c.shot) k += 3;
-  return { k: Math.round(k), p: Math.round(p * 10) / 10, ml, sizeLabel: label };
+  // fat comes from the milk (and cream toppings); the rest of the calories are carbohydrate
+  const FAT = { whole: 3.3, "2pc": 2, skim: 0.1, oat: 1.5, almond: 1.1, soy: 1.8, coconut: 2, halfhalf: 11.5, creamer: 9, none: 0 };
+  let f = milkMl * (FAT[c.milk] || 0) / 100;
+  if (c.whip) f += 7 * Math.min(1.3, scale);
+  if (c.foam) f += 5 * Math.min(1.3, scale);
+  const carbs = Math.max(0, (k - 4 * p - 9 * f) / 4);
+  const t = [];
+  if (milkMl && ["whole", "2pc", "skim", "halfhalf"].includes(c.milk)) t.push("dairy");
+  if (c.milk === "soy") t.push("soy");
+  if (c.milk === "oat") t.push("grain");
+  const sweet = d.sugarLevel ? c.sugarLevel > 0 || c.pearls : (SWEET.find(x => x.id === c.sweet) || SWEET[0]).k > 0 && (c.sweetQty || 0) > 0;
+  if (sweet || c.drizzle || c.whip) t.push("sugar", "sweetened");
+  if (c.whip || c.foam || c.milk === "creamer") t.push("processed");
+  return { k: Math.round(k), p: Math.round(p * 10) / 10, c: Math.round(carbs * 10) / 10, f: Math.round(f * 10) / 10, fb: 0, t, ml, sizeLabel: label };
 }
 
 // A readable name for the log, e.g. "Grande Latte (Starbucks), oat milk, 2 pumps syrup".

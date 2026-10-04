@@ -1,0 +1,308 @@
+// Carbohydrate, fat and fibre per 100 g (or 100 ml for drinks), matching foods.js, foods-world.js and the chain drinks.
+// Typical nutrition-table values (USDA FoodData Central style), rounded to 0.5 g. Net carbs = carbs - fibre.
+// Each value is checked against the calories in foods.js: 4 x protein + 4 x carbs + 9 x fat lands within 15% of kcal
+// (alcoholic drinks excepted, since alcohol supplies 7 kcal per gram on its own).
+// [carbs, fat, fibre]
+export const MACROS = {
+  // ---- chicken, meat and fish ----
+  "chk-breast-grill": [0, 3.6, 0], "chk-breast-skin": [0, 7.8, 0], "chk-breast-fried": [9, 13, 0.4],
+  "chk-thigh": [0, 8.2, 0], "chk-thigh-skin": [0, 15, 0], "chk-drum": [0, 5.7, 0], "chk-drum-skin": [0, 11.2, 0],
+  "chk-leg": [0, 15, 0], "chk-wing": [0, 19.5, 0], "chk-wing-fried": [3, 22, 0.1], "chk-fried-leg": [8, 16.5, 0.3],
+  "chk-rotis": [0, 12.5, 0], "chk-nugget": [16, 19.5, 1], "turkey": [0, 2, 0],
+  "beef-ground": [0, 15.5, 0], "beef-steak": [0, 7.5, 0], "beef-stew": [7, 7, 1], "pork-chop": [0, 10.5, 0],
+  "bacon": [1.4, 42, 0], "sausage": [2, 28.5, 0], "ham": [1.5, 5.5, 0], "goat-curry": [3, 9.5, 0.8], "oxtail": [3, 16.5, 0.5],
+  "snapper": [0, 2, 0], "mahi": [0, 1, 0], "salmon": [0, 12.5, 0], "tuna-can": [0, 1, 0], "tilapia": [0, 2.5, 0],
+  "fish-fried": [17, 11.5, 0.6], "shrimp": [0.2, 0.3, 0], "conch": [1.5, 1.2, 0], "sardines": [0, 11.5, 0],
+  // ---- eggs and dairy ----
+  "egg": [0.7, 9.5, 0], "egg-fried": [0.8, 15, 0], "egg-scram": [2, 12, 0], "egg-white": [0.7, 0.2, 0], "omelette": [1, 15, 0],
+  "milk-whole": [4.8, 3.3, 0], "milk-skim": [5, 0.1, 0], "greek-0": [3.6, 0.4, 0], "greek-2": [3.9, 2, 0],
+  "yog-flav": [16, 2.5, 0], "cottage": [4.3, 2.3, 0], "cheddar": [1.3, 33, 0], "cheese-processed": [7, 25, 0], "mozz": [3, 17, 0],
+  // ---- rice, bread and starch ----
+  "rice-white": [28, 0.3, 0.4], "rice-brown": [23.5, 0.8, 1.8], "rice-fried": [22, 6, 1], "pasta": [31, 0.9, 1.8],
+  "noodles-instant": [26, 7.5, 1], "bread-white": [49, 3.2, 2.7], "bread-ww": [41, 3.4, 7], "bagel": [50, 1.6, 2.3],
+  "tortilla": [49, 7.5, 3], "roll": [50, 4.5, 2.5], "oats-dry": [66, 7, 10], "porridge": [12, 1.5, 1.7],
+  "cereal": [84, 0.4, 3], "granola": [64, 18, 6], "potato-boiled": [20, 0.1, 1.8], "potato-mash": [16, 4.5, 1.5],
+  "fries": [41, 15, 3.8], "sweet-potato": [20.7, 0.2, 3.3], "corn": [21, 1.2, 2.4], "pancake": [28, 10, 1], "crackers": [70, 12, 2.5],
+  // ---- Caribbean ----
+  "rice-peas": [28, 4.5, 3], "jerk-chicken": [2, 12.5, 0.3], "brown-stew-chk": [4, 10, 0.7], "curry-chk": [4, 9.5, 1],
+  "ackee-salt": [4, 14, 2], "callaloo": [5, 0.8, 2.5], "plantain-fried": [38, 9.5, 2.3], "plantain-boiled": [31, 0.2, 2.3],
+  "breadfruit": [28, 0.5, 5], "yam": [27.5, 0.2, 4], "green-banana": [22, 0.2, 2], "dumpling-boiled": [46, 2, 1.6],
+  "johnny-cake": [48, 16.5, 1.8], "festival": [52, 14, 1.5], "coco-bread": [50, 11, 1.8], "patty": [26, 16, 1.2],
+  "conch-fritter": [27, 15.5, 1], "fish-tea": [5, 1, 0.8], "cassava": [27, 0.3, 1.8], "bammy": [50, 1.5, 2], "macaroni-pie": [21, 9.5, 1],
+  // ---- beans and lentils ----
+  "beans-black": [23.7, 0.5, 8.7], "beans-kidney": [22.8, 0.5, 6.4], "chickpeas": [27.4, 2.6, 7.6], "lentils": [20, 0.4, 7.9],
+  "baked-beans": [17, 0.5, 4], "hummus": [14.3, 9.6, 6], "tofu": [3, 8.5, 2.3],
+  // ---- vegetables ----
+  "salad": [3.3, 0.2, 2], "broccoli": [7, 0.4, 3.3], "mixed-veg": [13, 0.2, 4.4], "cabbage": [5.5, 0.1, 1.9],
+  "carrots": [9.6, 0.2, 2.8], "tomato": [3.9, 0.2, 1.2], "cucumber": [3.6, 0.1, 0.5], "spinach": [3.8, 0.3, 2.4],
+  "green-beans": [7.9, 0.3, 3.2], "peppers": [6, 0.3, 2.1], "onion": [9.3, 0.1, 1.7], "coleslaw": [13, 10.5, 1.5], "potato-salad": [11, 9.5, 1.3],
+  // ---- fruit ----
+  "banana": [22.8, 0.3, 2.6], "apple": [13.8, 0.2, 2.4], "orange": [11.8, 0.1, 2.4], "mango": [15, 0.4, 1.6],
+  "pineapple": [13.1, 0.1, 1.4], "papaya": [10.8, 0.3, 1.7], "watermelon": [7.6, 0.2, 0.4], "berries": [10.5, 0.3, 2.2],
+  "grapes": [18.1, 0.2, 0.9], "avocado": [8.5, 14.7, 6.7], "dates": [75, 0.4, 8], "raisins": [79, 0.5, 3.7],
+  // ---- nuts, oils and sauces ----
+  "olive-oil": [0, 100, 0], "butter": [0.1, 81, 0], "pb": [20, 50, 6], "mayo": [0.6, 75, 0], "almonds": [21.6, 50, 12.5],
+  "peanuts": [16, 49, 8.5], "cashews": [30, 44, 3.3], "ketchup": [27, 0.1, 0.3], "bbq": [40, 0.6, 0.9], "dressing": [8, 44, 0],
+  "sugar": [100, 0, 0], "honey": [82, 0, 0.2], "jam": [62, 0.1, 1],
+  // ---- drinks ----
+  "oj": [10.4, 0.2, 0.2], "soda": [10.6, 0, 0], "diet-soda": [0, 0, 0], "beer": [3.6, 0, 0], "wine": [2.6, 0, 0], "rum": [0, 0, 0],
+  "rum-punch": [16, 0, 0.1], "smoothie": [13.5, 0.3, 1.3], "shake": [8, 5, 1], "coconut-water": [3.7, 0.2, 1.1], "sports-drink": [6.5, 0, 0],
+  // ---- snacks and treats ----
+  "chips": [53, 34, 4.4], "chocolate": [59, 30, 3.4], "protein-bar": [33, 10, 6], "granola-bar": [64, 20, 4], "cookie": [66, 22, 2],
+  "cake": [55, 16, 1], "ice-cream": [24, 11, 0.7], "popcorn": [58, 28, 10], "donut": [51, 25, 1.7], "muffin": [50, 18, 1.5],
+  // ---- takeaway and meals ----
+  "pizza": [33, 10, 2.3], "burger": [24, 12.5, 1.3], "hotdog": [24, 17, 1], "sandwich-chk": [24, 10.5, 1.3], "burrito": [24, 7.5, 3],
+  "sushi": [28, 2, 1], "chicken-salad": [4, 6, 1.5], "soup": [5, 1, 0.8], "chow-mein": [18, 5.5, 1.5],
+  // ---- African ----
+  "jollof": [26, 4.5, 1], "ng-fried-rice": [26, 5.5, 1.3], "waakye": [26, 2.5, 3], "egusi": [5, 18, 2], "efo-riro": [4, 8.5, 2],
+  "okra-soup": [6, 5, 2], "pepper-soup": [2, 3.5, 0.4], "groundnut-soup": [7, 10.5, 2], "mafe": [7, 11, 1.8],
+  "pounded-yam": [28, 0.2, 4], "fufu": [37, 0.3, 1.6], "eba": [39, 0.3, 1.6], "banku": [29, 0.6, 1.5], "kenkey": [31, 1, 2],
+  "ugali": [24.5, 0.7, 1.5], "sukuma": [5, 2.5, 3], "nyama-choma": [0, 14, 0], "suya": [5, 14.5, 1.5], "moi-moi": [13, 7, 4],
+  "akara": [20, 17.5, 5], "puff-puff": [48, 16, 1.5], "beans-porridge": [19, 5, 5.5], "injera": [26, 1, 3], "doro-wat": [5, 10, 1.3],
+  "shiro": [14, 7, 4], "tibs": [3, 12, 0.8], "chapati-ea": [46, 10, 2.5], "pilau": [24, 4.5, 1], "thieboudienne": [18, 5, 1.5],
+  "yassa": [6, 8, 1], "bobotie": [7, 11.5, 1], "boerewors": [2, 26.5, 0], "kelewele": [32, 7.5, 2], "couscous": [23.2, 0.2, 1.4],
+  "tagine": [7, 6, 1.5],
+  // ---- Indian ----
+  "tikka-masala": [6, 8.5, 1], "butter-chicken": [5, 10, 0.8], "chicken-curry-in": [4, 7, 1], "korma": [6, 12, 1],
+  "rogan-josh": [4, 9, 1], "tandoori": [2, 5.5, 0.3], "chana-masala": [17, 4.5, 4.5], "dal": [14, 3.5, 3.5], "rajma": [15, 4, 4.5],
+  "palak-paneer": [5, 11.5, 2], "paneer-tikka": [6, 19.5, 1], "aloo-gobi": [11, 4, 2.5], "biryani": [22, 5.5, 1],
+  "basmati": [25, 0.4, 0.5], "jeera-rice": [26, 3.5, 0.6], "naan": [48, 6.5, 2], "garlic-naan": [48, 7.5, 2], "roti": [50, 7, 5],
+  "paratha": [45, 12.5, 4], "puri": [45, 19, 3], "dosa": [28, 4, 1.5], "masala-dosa": [27, 6, 2], "idli": [27, 0.5, 1.5],
+  "sambar": [9, 2.5, 2.5], "upma": [22, 5, 1.5], "poha": [22, 3.5, 1], "samosa": [30, 13.5, 2.5], "pakora": [28, 17.5, 4],
+  "vada-pav": [30, 8, 2], "raita": [5, 3, 0.4], "gulab-jamun": [50, 11.5, 0.5], "kheer": [21, 4.5, 0.2], "lassi": [15, 2, 0], "chai": [7, 1.8, 0],
+  // ---- Chinese ----
+  "sweet-sour": [26, 9, 0.8], "kung-pao": [8, 8, 1.5], "general-tso": [24, 11, 0.6], "beef-broccoli": [6, 6, 1.2],
+  "mapo-tofu": [4, 8.5, 1], "char-siu": [12, 14.5, 0], "roast-duck": [0, 24.5, 0], "dumplings": [24, 8, 1.2],
+  "potstickers": [25, 11, 1.2], "siu-mai": [18, 9.5, 0.8], "har-gow": [22, 4.5, 0.6], "bao": [36, 6.5, 1.5],
+  "spring-roll": [28, 13, 2], "wonton-soup": [6, 1.3, 0.3], "hot-sour": [4.5, 1.3, 0.5], "congee": [10, 0.8, 0.2], "chow-fun": [24, 6.5, 1],
+  // ---- Japanese and Korean ----
+  "nigiri": [27, 1.2, 0.3], "sashimi": [0, 10.5, 0], "ramen": [12, 4.5, 0.8], "udon": [13, 0.5, 0.6], "miso-soup": [3, 1, 0.5],
+  "teriyaki": [7, 8, 0.2], "katsu": [15, 15, 0.8], "katsu-curry": [23, 5.5, 1.2], "gyoza": [24, 8, 1.2], "tempura": [20, 14.5, 1],
+  "edamame": [9, 5, 5], "onigiri": [37, 0.5, 0.6], "bento": [24, 3.5, 0.8], "kimchi": [2.4, 0.5, 1.6], "bibimbap": [18, 3, 1.5],
+  "bulgogi": [8, 10, 0.4], "kfc-korean": [18, 16, 0.5], "pork-belly": [0, 45, 0], "japchae": [24, 4.5, 1.5], "kimbap": [24, 2.5, 1],
+  "tteokbokki": [34, 1.2, 0.8],
+  // ---- Southeast Asian ----
+  "pad-thai": [22, 6, 1.2], "green-curry": [5, 9.5, 1], "massaman": [9, 10, 1.5], "tom-yum": [3, 1.5, 0.5], "som-tam": [10, 0.5, 2],
+  "mango-sticky": [36, 5, 1.5], "pho": [6.5, 1.5, 0.3], "banh-mi": [28, 8.5, 1.5], "fresh-roll": [19, 1.5, 1],
+  "nasi-goreng": [24, 5.5, 1], "nasi-lemak": [24, 7, 1], "mee-goreng": [24, 5.5, 1.5], "laksa": [11, 5, 0.8], "satay": [8, 13, 1],
+  "rendang": [5, 11.5, 1.2], "chicken-rice": [21, 6, 0.4], "adobo": [2, 12, 0.1], "pancit": [20, 4, 1.2], "sinigang": [3, 1.5, 0.8],
+  "lumpia": [23, 14, 1.3], "lechon": [0, 30, 0],
+  // ---- Middle Eastern and Greek ----
+  "falafel": [32, 17.8, 4.9], "shawarma": [22, 10, 1.5], "doner": [24, 12, 1.5], "shish": [2, 5.5, 0.3], "kofta": [4, 18, 0.5],
+  "kabsa": [21, 5, 0.8], "mujaddara": [24, 4.5, 4], "tabbouleh": [13, 7, 2.5], "fattoush": [9, 5, 2], "baba-ganoush": [7, 8.5, 2.5],
+  "pita": [55.7, 1.2, 2.2], "labneh": [4.5, 10, 0], "manakish": [42, 13, 2.5], "shakshuka": [6, 7, 1.5], "ful": [14, 3, 5],
+  "koshari": [26, 3, 3], "lentil-soup": [8.5, 1.2, 2.5], "greek-salad": [4.5, 8.5, 1.3], "feta": [4.1, 21.3, 0], "moussaka": [7, 9.5, 1.5],
+  "souvlaki": [2, 10, 0.2], "gyro": [24, 10, 1.5], "spanakopita": [24, 19, 1.8], "dolma": [16, 8, 2.5], "baklava": [48, 24, 2.5],
+  // ---- Latin American ----
+  "taco-beef": [16, 12, 2.2], "taco-chicken": [16, 9, 2], "taco-fish": [18, 10, 1.8], "corn-tortilla": [44.6, 2.9, 6.3],
+  "quesadilla": [26, 16, 1.6], "enchilada": [15, 8, 2], "nachos": [34, 17, 3], "guacamole": [8.5, 14, 6], "salsa": [6, 0.2, 1.5],
+  "refried": [13, 1.5, 4.5], "mexican-rice": [25, 3, 1], "tamal": [21, 11, 2], "pozole": [7, 2.5, 1.5], "fajitas": [5, 5, 1.3],
+  "chilaquiles": [20, 10.5, 2.5], "elote": [18, 7.5, 2], "churros": [48, 23, 1.5], "empanada": [27, 17, 1.5], "arepa": [44, 2.5, 3],
+  "arepa-filled": [32, 10, 2], "pupusa": [27, 10, 2.5], "gallo-pinto": [23, 3, 3.5], "arroz-pollo": [18, 4.5, 1], "feijoada": [12, 7, 4],
+  "picanha": [0, 19, 0], "pao-queijo": [38, 17, 0.3], "ceviche": [4, 1.5, 0.6], "lomo-saltado": [10, 7, 1.3], "ropa-vieja": [5, 8.5, 1.2],
+  "picadillo": [6, 11, 1.3], "cuban-sandwich": [24, 11.5, 1.2], "tostones": [36, 9.5, 2.3], "mofongo": [28, 8.5, 2],
+  "tres-leches": [40, 10.5, 0.3], "horchata": [15, 1, 0.2],
+  // ---- European ----
+  "bolognese": [17, 3.5, 1.5], "lasagne": [12, 6.5, 1], "carbonara": [22, 7.5, 1], "risotto": [20, 4.5, 0.8], "paella": [19, 4.5, 0.8],
+  "tortilla-espanola": [14, 10, 1.3], "gazpacho": [5, 2, 1], "fish-chips": [22, 8.5, 2], "full-english": [10, 12, 1.5],
+  "shepherds-pie": [10, 5.5, 1.3], "roast-beef": [0, 9.5, 0], "roast-potatoes": [22, 6, 2], "yorkshire": [30, 11, 1],
+  "croissant": [45.8, 21, 2.6], "pain-choc": [46, 23, 2.5], "quiche": [17, 19.5, 0.7], "ratatouille": [7, 3, 2], "crepe": [30, 9.5, 0.8],
+  "waffle": [33, 14, 1.5], "schnitzel": [12, 15, 0.6], "bratwurst": [2.5, 26.5, 0], "pretzel": [70, 3, 2.5], "goulash": [6, 5, 1],
+  "pierogi": [28, 6, 1.5], "borscht": [6, 1, 1.3], "tiramisu": [28, 16.5, 0.5], "gelato": [28, 9, 0.5],
+  // ---- American ----
+  "ribs": [6, 19, 0.2], "pulled-pork": [24, 9, 1.2], "cheesesteak": [20, 11, 1], "grilled-cheese": [28, 19, 1.5], "blt": [22, 14.5, 1.8],
+  "club": [19, 11, 1.5], "pbj": [44, 14.5, 3], "bagel-cc": [42, 9.5, 1.8], "caesar": [8, 12, 1.5], "cobb": [3, 10, 1.3],
+  "chili": [9, 4.5, 3], "meatloaf": [9, 12, 0.5], "clam-chowder": [9, 4, 0.6], "biscuits-gravy": [20, 11, 0.6], "cornbread": [48, 12, 2.5],
+  "apple-pie": [37, 12.5, 1.8], "cheesecake": [26, 22, 0.4], "brownie": [56, 23, 2], "milkshake": [17, 3.2, 0.3], "energy-drink": [11, 0, 0],
+  // ---- more Caribbean ----
+  "dhalpuri": [26, 8.5, 2.5], "doubles": [28, 10, 4], "pelau": [21, 5, 2], "stew-peas": [12, 6.5, 3.5], "escovitch": [5, 12, 0.8],
+  "saltfish-fritter": [28, 12.5, 1], "bun-cheese": [56, 9.5, 1.5], "coucou": [14, 6.5, 1.5],
+  // ---- chain coffee drinks (per 100 ml) ----
+  "sb-caramel-frap": [11.4, 3.4, 0], "sb-mocha-frap": [11.2, 3.2, 0.4], "sb-javachip-frap": [13, 3.8, 0.4], "sb-caramel-mac": [7.4, 1.5, 0],
+  "sb-psl": [11, 3, 0], "sb-white-mocha": [11.8, 3.6, 0], "sb-mocha": [9.5, 3.2, 0.6], "sb-chai": [9, 0.9, 0], "sb-bsose": [4.5, 0.7, 0.2],
+  "sb-vscb": [3, 1.2, 0], "sb-pink": [5, 1, 0.2], "sb-refresher": [5.2, 0, 0], "sb-hot-choc": [9.5, 3, 0.6], "dd-iced-cs": [5.5, 1.5, 0],
+  "dd-caramel-swirl": [7.5, 1.4, 0], "dd-frozen": [14, 3, 0], "th-double": [7, 2.6, 0], "th-iced-capp": [9.5, 3.5, 0],
+  "mc-latte": [3.2, 2.1, 0], "mc-caramel-frappe": [16, 4, 0], "mc-iced-coffee": [3.6, 0.7, 0], "costa-latte": [3.6, 1.4, 0],
+  "costa-flat-white": [3.3, 1.6, 0], "pret-oat-flat-white": [4.5, 2, 0.3]
+};
+
+// Diet tags: what a food is made of, used to check diets (vegan, paleo, gluten-free...).
+// meat (beef, pork, lamb, goat), poultry, fish, shellfish, egg, dairy, grain, gluten, legume, soy, nut,
+// veg, fruit, starch (potato, cassava, yam, plantain, corn), sugar (added sugar or sweets),
+// processed (processed meat or ultra-processed), alcohol, oil, sweetened (sugary drink)
+// Wheat, barley and rye carry both grain and gluten; rice, oats, corn and teff carry grain only.
+// Peanuts carry nut and legume, so both nut-free and legume-free (paleo) checks catch them.
+export const TAGS = {
+  // ---- chicken, meat and fish ----
+  "chk-breast-grill": ["poultry"], "chk-breast-skin": ["poultry"], "chk-breast-fried": ["poultry", "grain", "gluten", "oil"],
+  "chk-thigh": ["poultry"], "chk-thigh-skin": ["poultry"], "chk-drum": ["poultry"], "chk-drum-skin": ["poultry"],
+  "chk-leg": ["poultry"], "chk-wing": ["poultry"], "chk-wing-fried": ["poultry", "grain", "gluten", "oil"],
+  "chk-fried-leg": ["poultry", "grain", "gluten", "oil"], "chk-rotis": ["poultry"],
+  "chk-nugget": ["poultry", "grain", "gluten", "processed", "oil"], "turkey": ["poultry"],
+  "beef-ground": ["meat"], "beef-steak": ["meat"], "beef-stew": ["meat", "veg", "starch", "grain", "gluten"], "pork-chop": ["meat"],
+  "bacon": ["meat", "processed"], "sausage": ["meat", "processed"], "ham": ["meat", "processed"],
+  "goat-curry": ["meat", "veg", "oil"], "oxtail": ["meat", "veg", "legume"],
+  "snapper": ["fish"], "mahi": ["fish"], "salmon": ["fish"], "tuna-can": ["fish"], "tilapia": ["fish"],
+  "fish-fried": ["fish", "grain", "gluten", "oil"], "shrimp": ["shellfish"], "conch": ["shellfish"], "sardines": ["fish", "oil"],
+  // ---- eggs and dairy ----
+  "egg": ["egg"], "egg-fried": ["egg", "oil"], "egg-scram": ["egg", "dairy"], "egg-white": ["egg"], "omelette": ["egg", "dairy"],
+  "milk-whole": ["dairy"], "milk-skim": ["dairy"], "greek-0": ["dairy"], "greek-2": ["dairy"], "yog-flav": ["dairy", "sugar"],
+  "cottage": ["dairy"], "cheddar": ["dairy"], "cheese-processed": ["dairy", "processed"], "mozz": ["dairy"],
+  // ---- rice, bread and starch ----
+  "rice-white": ["grain"], "rice-brown": ["grain"], "rice-fried": ["grain", "egg", "veg", "soy", "oil"], "pasta": ["grain", "gluten"],
+  "noodles-instant": ["grain", "gluten", "processed", "oil"], "bread-white": ["grain", "gluten"], "bread-ww": ["grain", "gluten"],
+  "bagel": ["grain", "gluten"], "tortilla": ["grain", "gluten", "oil"], "roll": ["grain", "gluten"], "oats-dry": ["grain"],
+  "porridge": ["grain"], "cereal": ["grain", "sugar", "processed"], "granola": ["grain", "nut", "sugar", "oil"],
+  "potato-boiled": ["starch"], "potato-mash": ["starch", "dairy"], "fries": ["starch", "oil", "processed"],
+  "sweet-potato": ["starch", "veg"], "corn": ["starch"], "pancake": ["grain", "gluten", "egg", "dairy"],
+  "crackers": ["grain", "gluten", "processed"],
+  // ---- Caribbean ----
+  "rice-peas": ["grain", "legume"], "jerk-chicken": ["poultry"], "brown-stew-chk": ["poultry", "veg", "oil"],
+  "curry-chk": ["poultry", "veg", "starch", "oil"], "ackee-salt": ["fish", "fruit", "veg", "oil"], "callaloo": ["veg"],
+  "plantain-fried": ["starch", "oil"], "plantain-boiled": ["starch"], "breadfruit": ["starch", "fruit"], "yam": ["starch"],
+  "green-banana": ["starch", "fruit"], "dumpling-boiled": ["grain", "gluten"], "johnny-cake": ["grain", "gluten", "oil"],
+  "festival": ["grain", "gluten", "sugar", "oil"], "coco-bread": ["grain", "gluten", "dairy"],
+  "patty": ["meat", "grain", "gluten", "oil"], "conch-fritter": ["shellfish", "grain", "gluten", "oil"],
+  "fish-tea": ["fish", "veg", "starch"], "cassava": ["starch"], "bammy": ["starch"], "macaroni-pie": ["grain", "gluten", "dairy", "egg"],
+  // ---- beans and lentils ----
+  "beans-black": ["legume"], "beans-kidney": ["legume"], "chickpeas": ["legume"], "lentils": ["legume"],
+  "baked-beans": ["legume", "sugar"], "hummus": ["legume", "oil"], "tofu": ["soy", "legume"],
+  // ---- vegetables ----
+  "salad": ["veg"], "broccoli": ["veg"], "mixed-veg": ["veg"], "cabbage": ["veg"], "carrots": ["veg"], "tomato": ["veg"],
+  "cucumber": ["veg"], "spinach": ["veg"], "green-beans": ["veg"], "peppers": ["veg"], "onion": ["veg"],
+  "coleslaw": ["veg", "egg", "oil", "sugar"], "potato-salad": ["starch", "egg", "oil", "veg"],
+  // ---- fruit ----
+  "banana": ["fruit"], "apple": ["fruit"], "orange": ["fruit"], "mango": ["fruit"], "pineapple": ["fruit"], "papaya": ["fruit"],
+  "watermelon": ["fruit"], "berries": ["fruit"], "grapes": ["fruit"], "avocado": ["fruit"], "dates": ["fruit"], "raisins": ["fruit"],
+  // ---- nuts, oils and sauces ----
+  "olive-oil": ["oil"], "butter": ["dairy"], "pb": ["nut", "legume"], "mayo": ["egg", "oil"], "almonds": ["nut"],
+  "peanuts": ["nut", "legume"], "cashews": ["nut"], "ketchup": ["veg", "sugar"], "bbq": ["veg", "sugar"],
+  "dressing": ["oil", "egg", "dairy"], "sugar": ["sugar"], "honey": ["sugar"], "jam": ["fruit", "sugar"],
+  // ---- drinks ----
+  "oj": ["fruit"], "soda": ["sugar", "sweetened", "processed"], "diet-soda": ["processed"], "beer": ["alcohol", "grain", "gluten"],
+  "wine": ["alcohol", "fruit"], "rum": ["alcohol"], "rum-punch": ["alcohol", "fruit", "sugar", "sweetened"], "smoothie": ["fruit"],
+  "shake": ["dairy", "processed"], "coconut-water": ["fruit"], "sports-drink": ["sugar", "sweetened", "processed"],
+  // ---- snacks and treats ----
+  "chips": ["starch", "oil", "processed"], "chocolate": ["sugar", "dairy", "processed"], "protein-bar": ["dairy", "sugar", "processed"],
+  "granola-bar": ["grain", "nut", "sugar", "oil", "processed"], "cookie": ["grain", "gluten", "sugar", "dairy", "processed"],
+  "cake": ["grain", "gluten", "sugar", "egg", "dairy"], "ice-cream": ["dairy", "sugar"], "popcorn": ["grain", "oil", "processed"],
+  "donut": ["grain", "gluten", "sugar", "oil", "processed"], "muffin": ["grain", "gluten", "sugar", "egg", "oil"],
+  // ---- takeaway and meals ----
+  "pizza": ["grain", "gluten", "dairy"], "burger": ["meat", "grain", "gluten", "dairy", "processed"],
+  "hotdog": ["meat", "processed", "grain", "gluten"], "sandwich-chk": ["poultry", "grain", "gluten", "oil", "processed"],
+  "burrito": ["meat", "grain", "gluten", "legume", "dairy"], "sushi": ["grain", "fish", "veg"], "chicken-salad": ["poultry", "veg", "oil"],
+  "soup": ["poultry", "veg"], "chow-mein": ["grain", "gluten", "veg", "soy", "oil"],
+  // ---- African ----
+  "jollof": ["grain", "veg", "oil"], "ng-fried-rice": ["grain", "veg", "oil"], "waakye": ["grain", "legume"],
+  "egusi": ["veg", "oil", "meat", "fish"], "efo-riro": ["veg", "oil", "meat", "fish"], "okra-soup": ["veg", "oil", "meat", "fish"],
+  "pepper-soup": ["meat", "fish", "veg"], "groundnut-soup": ["nut", "legume", "meat", "veg"], "mafe": ["nut", "legume", "meat", "veg"],
+  "pounded-yam": ["starch"], "fufu": ["starch"], "eba": ["starch"], "banku": ["grain", "starch"], "kenkey": ["grain"], "ugali": ["grain"],
+  "sukuma": ["veg", "oil"], "nyama-choma": ["meat"], "suya": ["meat", "nut", "legume"], "moi-moi": ["legume", "oil"],
+  "akara": ["legume", "oil"], "puff-puff": ["grain", "gluten", "sugar", "oil"], "beans-porridge": ["legume", "oil"], "injera": ["grain"],
+  "doro-wat": ["poultry", "egg", "veg", "dairy"], "shiro": ["legume", "oil"], "tibs": ["meat", "veg", "oil"],
+  "chapati-ea": ["grain", "gluten", "oil"], "pilau": ["grain", "meat", "oil"], "thieboudienne": ["fish", "grain", "veg", "oil"],
+  "yassa": ["poultry", "veg", "oil"], "bobotie": ["meat", "egg", "grain", "gluten", "fruit"], "boerewors": ["meat", "processed"],
+  "kelewele": ["starch", "oil"], "couscous": ["grain", "gluten"], "tagine": ["poultry", "veg", "fruit", "oil"],
+  // ---- Indian ----
+  "tikka-masala": ["poultry", "dairy", "veg", "oil"], "butter-chicken": ["poultry", "dairy", "veg"],
+  "chicken-curry-in": ["poultry", "veg", "oil"], "korma": ["poultry", "dairy", "nut", "oil"], "rogan-josh": ["meat", "dairy", "veg", "oil"],
+  "tandoori": ["poultry", "dairy"], "chana-masala": ["legume", "veg", "oil"], "dal": ["legume", "veg", "oil"],
+  "rajma": ["legume", "veg", "oil"], "palak-paneer": ["dairy", "veg", "oil"], "paneer-tikka": ["dairy", "veg"],
+  "aloo-gobi": ["starch", "veg", "oil"], "biryani": ["grain", "poultry", "dairy", "oil"], "basmati": ["grain"],
+  "jeera-rice": ["grain", "oil"], "naan": ["grain", "gluten", "dairy"], "garlic-naan": ["grain", "gluten", "dairy"],
+  "roti": ["grain", "gluten"], "paratha": ["grain", "gluten", "oil"], "puri": ["grain", "gluten", "oil"],
+  "dosa": ["grain", "legume", "oil"], "masala-dosa": ["grain", "legume", "starch", "oil"], "idli": ["grain", "legume"],
+  "sambar": ["legume", "veg", "oil"], "upma": ["grain", "gluten", "veg", "oil"], "poha": ["grain", "veg", "oil"],
+  "samosa": ["grain", "gluten", "starch", "veg", "oil"], "pakora": ["legume", "veg", "oil"],
+  "vada-pav": ["grain", "gluten", "starch", "legume", "oil"], "raita": ["dairy", "veg"],
+  "gulab-jamun": ["dairy", "grain", "gluten", "sugar", "oil"], "kheer": ["dairy", "grain", "sugar"], "lassi": ["dairy", "sugar"],
+  "chai": ["dairy", "sugar"],
+  // ---- Chinese ----
+  "sweet-sour": ["poultry", "grain", "gluten", "sugar", "oil", "veg"], "kung-pao": ["poultry", "nut", "legume", "veg", "soy", "oil"],
+  "general-tso": ["poultry", "grain", "gluten", "sugar", "soy", "oil"], "beef-broccoli": ["meat", "veg", "soy", "oil"],
+  "mapo-tofu": ["soy", "legume", "meat", "oil"], "char-siu": ["meat", "sugar", "soy"], "roast-duck": ["poultry"],
+  "dumplings": ["meat", "grain", "gluten", "veg"], "potstickers": ["meat", "grain", "gluten", "veg", "oil"],
+  "siu-mai": ["meat", "shellfish", "grain", "gluten"], "har-gow": ["shellfish", "grain", "gluten", "starch"],
+  "bao": ["meat", "grain", "gluten", "sugar"], "spring-roll": ["grain", "gluten", "veg", "oil"],
+  "wonton-soup": ["meat", "grain", "gluten", "veg"], "hot-sour": ["soy", "egg", "veg"], "congee": ["grain", "poultry"],
+  "chow-fun": ["grain", "meat", "soy", "veg", "oil"],
+  // ---- Japanese and Korean ----
+  "nigiri": ["grain", "fish"], "sashimi": ["fish"], "ramen": ["grain", "gluten", "meat", "egg", "soy"], "udon": ["grain", "gluten", "soy"],
+  "miso-soup": ["soy", "legume"], "teriyaki": ["poultry", "soy", "sugar"], "katsu": ["poultry", "meat", "grain", "gluten", "egg", "oil"],
+  "katsu-curry": ["grain", "gluten", "poultry", "veg", "oil"], "gyoza": ["meat", "grain", "gluten", "veg"],
+  "tempura": ["shellfish", "veg", "grain", "gluten", "oil"], "edamame": ["soy", "legume"], "onigiri": ["grain"],
+  "bento": ["grain", "poultry", "soy", "veg"], "kimchi": ["veg"], "bibimbap": ["grain", "veg", "egg", "meat", "oil"],
+  "bulgogi": ["meat", "soy", "sugar"], "kfc-korean": ["poultry", "grain", "gluten", "sugar", "oil"], "pork-belly": ["meat"],
+  "japchae": ["starch", "veg", "oil", "soy"], "kimbap": ["grain", "veg", "egg"], "tteokbokki": ["grain", "sugar"],
+  // ---- Southeast Asian ----
+  "pad-thai": ["grain", "egg", "nut", "legume", "oil"], "green-curry": ["poultry", "veg"], "massaman": ["meat", "starch", "nut", "veg"],
+  "tom-yum": ["shellfish", "veg"], "som-tam": ["fruit", "veg", "nut"], "mango-sticky": ["grain", "fruit", "sugar"],
+  "pho": ["grain", "meat"], "banh-mi": ["grain", "gluten", "meat", "veg", "processed"], "fresh-roll": ["grain", "shellfish", "veg"],
+  "nasi-goreng": ["grain", "egg", "oil", "soy"], "nasi-lemak": ["grain", "egg", "fish", "nut", "oil"],
+  "mee-goreng": ["grain", "gluten", "egg", "oil", "soy"], "laksa": ["grain", "shellfish", "poultry"],
+  "satay": ["poultry", "nut", "legume", "sugar"], "rendang": ["meat", "veg"], "chicken-rice": ["poultry", "grain"],
+  "adobo": ["poultry", "soy"], "pancit": ["grain", "poultry", "veg", "soy"], "sinigang": ["meat", "veg"],
+  "lumpia": ["meat", "grain", "gluten", "veg", "oil"], "lechon": ["meat"],
+  // ---- Middle Eastern and Greek ----
+  "falafel": ["legume", "oil"], "shawarma": ["poultry", "grain", "gluten", "veg", "oil"],
+  "doner": ["meat", "grain", "gluten", "veg", "processed"], "shish": ["poultry"], "kofta": ["meat", "veg"],
+  "kabsa": ["grain", "poultry", "veg", "oil"], "mujaddara": ["legume", "grain", "oil", "veg"],
+  "tabbouleh": ["grain", "gluten", "veg", "oil"], "fattoush": ["veg", "grain", "gluten", "oil"], "baba-ganoush": ["veg", "oil"],
+  "pita": ["grain", "gluten"], "labneh": ["dairy"], "manakish": ["grain", "gluten", "oil"], "shakshuka": ["egg", "veg", "oil"],
+  "ful": ["legume", "oil"], "koshari": ["grain", "gluten", "legume", "veg", "oil"], "lentil-soup": ["legume", "veg"],
+  "greek-salad": ["veg", "dairy", "oil"], "feta": ["dairy"], "moussaka": ["meat", "veg", "dairy", "starch", "grain", "gluten"],
+  "souvlaki": ["meat", "poultry"], "gyro": ["meat", "grain", "gluten", "dairy", "veg", "processed"],
+  "spanakopita": ["grain", "gluten", "dairy", "veg", "egg"], "dolma": ["grain", "veg", "oil"], "baklava": ["grain", "gluten", "nut", "sugar"],
+  // ---- Latin American ----
+  "taco-beef": ["meat", "grain", "dairy", "veg"], "taco-chicken": ["poultry", "grain", "veg"], "taco-fish": ["fish", "grain", "veg", "oil"],
+  "corn-tortilla": ["grain"], "quesadilla": ["grain", "gluten", "dairy"], "enchilada": ["poultry", "grain", "dairy", "veg"],
+  "nachos": ["grain", "dairy", "oil", "processed"], "guacamole": ["fruit", "veg"], "salsa": ["veg"], "refried": ["legume", "oil"],
+  "mexican-rice": ["grain", "veg", "oil"], "tamal": ["grain", "meat", "oil"], "pozole": ["meat", "grain", "veg"],
+  "fajitas": ["poultry", "veg", "oil"], "chilaquiles": ["grain", "dairy", "egg", "oil", "veg"], "elote": ["starch", "dairy", "egg"],
+  "churros": ["grain", "gluten", "sugar", "oil"], "empanada": ["meat", "grain", "gluten", "oil"], "arepa": ["grain"],
+  "arepa-filled": ["grain", "dairy", "meat"], "pupusa": ["grain", "dairy", "legume"], "gallo-pinto": ["grain", "legume", "oil"],
+  "arroz-pollo": ["grain", "poultry", "veg"], "feijoada": ["legume", "meat", "processed"], "picanha": ["meat"],
+  "pao-queijo": ["starch", "dairy", "egg"], "ceviche": ["fish", "veg"], "lomo-saltado": ["meat", "starch", "veg", "soy", "oil"],
+  "ropa-vieja": ["meat", "veg", "oil"], "picadillo": ["meat", "veg", "oil"],
+  "cuban-sandwich": ["meat", "processed", "dairy", "grain", "gluten"], "tostones": ["starch", "oil"], "mofongo": ["starch", "oil", "meat"],
+  "tres-leches": ["grain", "gluten", "dairy", "egg", "sugar"], "horchata": ["grain", "sugar", "sweetened"],
+  // ---- European ----
+  "bolognese": ["grain", "gluten", "meat", "veg"], "lasagne": ["grain", "gluten", "meat", "dairy", "veg"],
+  "carbonara": ["grain", "gluten", "egg", "dairy", "meat", "processed"], "risotto": ["grain", "dairy", "veg"],
+  "paella": ["grain", "shellfish", "fish", "veg", "oil"], "tortilla-espanola": ["egg", "starch", "oil", "veg"], "gazpacho": ["veg", "oil"],
+  "fish-chips": ["fish", "starch", "grain", "gluten", "oil"],
+  "full-english": ["egg", "meat", "processed", "legume", "grain", "gluten", "oil"],
+  "shepherds-pie": ["meat", "starch", "veg", "dairy"], "roast-beef": ["meat"], "roast-potatoes": ["starch", "oil"],
+  "yorkshire": ["grain", "gluten", "egg", "dairy", "oil"], "croissant": ["grain", "gluten", "dairy"],
+  "pain-choc": ["grain", "gluten", "dairy", "sugar"], "quiche": ["egg", "dairy", "grain", "gluten", "meat", "processed"],
+  "ratatouille": ["veg", "oil"], "crepe": ["grain", "gluten", "egg", "dairy", "sugar"], "waffle": ["grain", "gluten", "egg", "dairy", "sugar"],
+  "schnitzel": ["meat", "grain", "gluten", "egg", "oil"], "bratwurst": ["meat", "processed"], "pretzel": ["grain", "gluten"],
+  "goulash": ["meat", "veg", "starch"], "pierogi": ["grain", "gluten", "starch", "dairy"], "borscht": ["veg"],
+  "tiramisu": ["dairy", "egg", "grain", "gluten", "sugar"], "gelato": ["dairy", "sugar"],
+  // ---- American ----
+  "ribs": ["meat", "sugar"], "pulled-pork": ["meat", "grain", "gluten", "sugar"], "cheesesteak": ["meat", "dairy", "grain", "gluten", "veg"],
+  "grilled-cheese": ["grain", "gluten", "dairy", "processed"], "blt": ["meat", "processed", "grain", "gluten", "veg", "egg"],
+  "club": ["poultry", "meat", "processed", "grain", "gluten", "veg", "egg"], "pbj": ["grain", "gluten", "nut", "legume", "fruit", "sugar"],
+  "bagel-cc": ["grain", "gluten", "dairy"], "caesar": ["veg", "dairy", "grain", "gluten", "egg", "fish", "oil"],
+  "cobb": ["poultry", "egg", "meat", "processed", "dairy", "veg", "fruit"], "chili": ["meat", "legume", "veg"],
+  "meatloaf": ["meat", "egg", "grain", "gluten", "sugar"], "clam-chowder": ["shellfish", "dairy", "starch"],
+  "biscuits-gravy": ["grain", "gluten", "dairy", "meat", "processed"], "cornbread": ["grain", "gluten", "egg", "dairy", "sugar"],
+  "apple-pie": ["fruit", "grain", "gluten", "sugar"], "cheesecake": ["dairy", "egg", "grain", "gluten", "sugar"],
+  "brownie": ["grain", "gluten", "sugar", "egg", "dairy"], "milkshake": ["dairy", "sugar", "sweetened"],
+  "energy-drink": ["sugar", "sweetened", "processed"],
+  // ---- more Caribbean ----
+  "dhalpuri": ["grain", "gluten", "legume", "poultry", "oil"], "doubles": ["grain", "gluten", "legume", "oil"],
+  "pelau": ["grain", "poultry", "legume", "sugar"], "stew-peas": ["legume", "meat", "processed"], "escovitch": ["fish", "veg", "oil"],
+  "saltfish-fritter": ["fish", "grain", "gluten", "oil"], "bun-cheese": ["grain", "gluten", "dairy", "sugar", "processed"],
+  "coucou": ["grain", "fish", "veg", "oil"],
+  // ---- chain coffee drinks ----
+  "sb-caramel-frap": ["dairy", "sugar", "sweetened"], "sb-mocha-frap": ["dairy", "sugar", "sweetened"],
+  "sb-javachip-frap": ["dairy", "sugar", "sweetened"], "sb-caramel-mac": ["dairy", "sugar", "sweetened"],
+  "sb-psl": ["dairy", "sugar", "sweetened"], "sb-white-mocha": ["dairy", "sugar", "sweetened"], "sb-mocha": ["dairy", "sugar", "sweetened"],
+  "sb-chai": ["dairy", "sugar", "sweetened"], "sb-bsose": ["grain", "sugar", "sweetened"], "sb-vscb": ["dairy", "sugar", "sweetened"],
+  "sb-pink": ["fruit", "sugar", "sweetened"], "sb-refresher": ["fruit", "sugar", "sweetened"], "sb-hot-choc": ["dairy", "sugar", "sweetened"],
+  "dd-iced-cs": ["dairy", "sugar", "sweetened"], "dd-caramel-swirl": ["dairy", "sugar", "sweetened"], "dd-frozen": ["dairy", "sugar", "sweetened"],
+  "th-double": ["dairy", "sugar", "sweetened"], "th-iced-capp": ["dairy", "sugar", "sweetened"], "mc-latte": ["dairy"],
+  "mc-caramel-frappe": ["dairy", "sugar", "sweetened"], "mc-iced-coffee": ["dairy", "sugar", "sweetened"], "costa-latte": ["dairy"],
+  "costa-flat-white": ["dairy"], "pret-oat-flat-white": ["grain"]
+};

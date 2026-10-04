@@ -8,6 +8,7 @@
 
 import { WORLD, WORLD_CATS } from "./foods-world.js";
 import { SIGNATURE } from "./drinks.js";
+import { MACROS, TAGS } from "./macros.js";
 
 export const CATS = [
   ["coffee", "Coffee & tea"], ["protein", "Meat & fish"], ["dairy", "Eggs & dairy"], ["carbs", "Rice, bread & starch"], ["carib", "Caribbean"],
@@ -199,14 +200,17 @@ const RAW = [
 const withGrams = portions => (portions.some(([, g]) => g === 100) ? portions : [...portions, ["100 g", 100]]);
 // chain signature drinks become per-100 ml foods with their cup size as the portion
 const SIG = SIGNATURE.map(([id, name, k, p, size, ml]) => [id, name, "coffee", Math.round(k / ml * 1000) / 10, Math.round(p / ml * 1000) / 10, [[size, ml]], "coffee starbucks dunkin tim hortons mccafe costa pret " + name.toLowerCase()]);
-export const FOODS = [...RAW, ...WORLD, ...SIG].map(([id, name, cat, k, p, portions, aliases]) => ({ id, name, cat, k, p, portions: withGrams(portions).map(([label, g]) => ({ label, g })), aliases: aliases || "" }));
+export const FOODS = [...RAW, ...WORLD, ...SIG].map(([id, name, cat, k, p, portions, aliases]) => {
+  const [c, f, fb] = MACROS[id] || [null, null, 0];
+  return { id, name, cat, k, p, c, f, fb, t: TAGS[id] || [], portions: withGrams(portions).map(([label, g]) => ({ label, g })), aliases: aliases || "" };
+});
 const byId = Object.fromEntries(FOODS.map(f => [f.id, f]));
 export const foodById = id => byId[id] || null;
 
-// Calories and protein for `qty` x portion.
+// Calories, protein, carbs, fat and fibre for `qty` x portion (carbs and fat null when unknown).
 export function nutrition(food, portionIndex, qty) {
-  const pt = food.portions[portionIndex] || food.portions[0], g = pt.g * qty;
-  return { g, k: Math.round(food.k * g / 100), p: Math.round(food.p * g / 10) / 10 };
+  const pt = food.portions[portionIndex] || food.portions[0], g = pt.g * qty, r1 = v => Math.round(v * g / 10) / 10;
+  return { g, k: Math.round(food.k * g / 100), p: r1(food.p), c: food.c == null ? null : r1(food.c), f: food.f == null ? null : r1(food.f), fb: r1(food.fb || 0) };
 }
 
 // Ranked search across names and aliases; every word must match.
@@ -229,5 +233,5 @@ export function onlineFood(item) {
   const portions = [];
   if (item.serving && item.serving.g) portions.push({ label: "1 serving (" + item.serving.label + ")", g: item.serving.g });
   portions.push({ label: "100 g", g: 100 }, { label: "50 g", g: 50 }, { label: "30 g", g: 30 }, { label: "1 cup (about 200 g)", g: 200 });
-  return { id: item.id, name: item.brand ? item.name + " (" + item.brand + ")" : item.name, cat: "online", k: item.k, p: item.p, portions, aliases: "", online: true };
+  return { id: item.id, name: item.brand ? item.name + " (" + item.brand + ")" : item.name, cat: "online", k: item.k, p: item.p, c: item.c ?? null, f: item.f ?? null, fb: item.fb || 0, t: [], portions, aliases: "", online: true };
 }

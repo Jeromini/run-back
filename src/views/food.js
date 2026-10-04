@@ -9,6 +9,7 @@ import { saveDay, saveProfile } from "../core/store.js";
 import { foodTotals, burned, currentWeight, toKg, weights } from "../domain/metrics.js";
 import { waterCard } from "../features/water.js";
 import { pickerHtml, setFoodCtx } from "../features/foodpicker.js";
+import { planPanel, reportPanel, myDiet, dayStatus, entryFlag, shortName } from "./diet.js";
 
 const MEALS = ["Breakfast", "Lunch", "Dinner", "Snacks"];
 let fdate = today(), meal = null, editTargets = false;
@@ -36,7 +37,16 @@ export function renderFood(root) {
   const avgP = logged.length ? Math.round(logged.reduce((a, k) => a + foodTotals(state.days[k]).p, 0) / logged.length) : 0;
   const lowFuel = kT && kT < 1600 && (d.runDone || d.crossDone);
 
-  root.innerHTML = `<section class="view">
+  const tab = state.dietTab || "log", dm = myDiet(), ds = dm && dm.diet ? dayStatus(fdate) : null;
+  const head = `<h1 class="big-title">Diet</h1>
+    <div class="subnav"><div class="toptabs" role="tablist" data-act="diet-tab">${[["log", "Food log"], ["plan", dm && dm.diet ? shortName(dm.diet) : "My diet"], ["report", "Report"]].map(([v, l]) => `<button role="tab" aria-selected="${tab === v}" class="${tab === v ? "on" : ""}" data-v="${v}">${esc(l)}</button>`).join("")}</div></div>`;
+  const nav = `<div class="datenav"><button class="iconbtn" data-act="food-day" data-n="-1" aria-label="Previous day">${ICON.back}</button>
+      <div class="t">${fdate === t ? "Today" : esc(nice(fdate))}</div>
+      <button class="iconbtn" data-act="food-day" data-n="1" aria-label="Next day"${fdate >= t ? " disabled style=\"opacity:.3\"" : ""}>${ICON.next}</button></div>`;
+  if (tab === "plan") { root.innerHTML = `<section class="view">${head}${nav}${planPanel(fdate)}</section>`; return; }
+  if (tab === "report") { root.innerHTML = `<section class="view">${head}${reportPanel()}</section>`; return; }
+  root.innerHTML = `<section class="view">${head}
+    ${ds && ds.status !== "empty" ? `<button class="dstrip ${ds.status}" data-act="diet-tab" data-v="plan"><b>${esc(dm.diet.name)}</b><span>${ds.checks.find(c => c.id === "net") ? Math.round(ds.totals.net) + " of " + ds.checks.find(c => c.id === "net").target + " g net carbs" : ds.status === "kept" ? "On plan so far" : ds.breaks.length + " item" + (ds.breaks.length === 1 ? "" : "s") + " off plan"}</span><i>${ICON.next}</i></button>` : ""}
     <div class="datenav"><button class="iconbtn" data-act="food-day" data-n="-1" aria-label="Previous day">${ICON.back}</button>
       <div class="t">${fdate === t ? "Today" : esc(nice(fdate))}</div>
       <button class="iconbtn" data-act="food-day" data-n="1" aria-label="Next day"${fdate >= t ? " disabled style=\"opacity:.3\"" : ""}>${ICON.next}</button></div>
@@ -55,7 +65,7 @@ export function renderFood(root) {
     ${segHtml("f-meal", MEALS.map(x => [x, x === "Snacks" ? "Snack" : x === "Breakfast" ? "Bkfst" : x]), m, 'data-act="food-meal"')}
     ${pickerHtml()}
     ${food.length ? MEALS.filter(x => food.some(f => f.m === x)).map(x => { const items = food.filter(f => f.m === x);
-      return `<div class="meal"><div class="meal-h">${x}<span>${num(items.reduce((a, f) => a + (Number(f.k) || 0), 0))} kcal</span></div>${items.map((f, i) => `<div class="fi${i === 0 ? " first" : ""}"><span class="nm">${esc(f.n)}${f.u ? `<small class="note" style="display:block">${esc((f.q === 0.5 ? "½" : f.q === 1.5 ? "1½" : f.q) + " x " + f.u)}</small>` : ""}</span><span class="k">${f.k || 0}</span><span class="p">${f.p ? f.p + " g" : ""}</span>
+      return `<div class="meal"><div class="meal-h">${x}<span>${num(items.reduce((a, f) => a + (Number(f.k) || 0), 0))} kcal</span></div>${items.map((f, i) => `<div class="fi${i === 0 ? " first" : ""}"><span class="nm">${esc(f.n)}${f.u ? `<small class="note" style="display:block">${esc((f.q === 0.5 ? "½" : f.q === 1.5 ? "1½" : f.q) + " x " + f.u)}</small>` : ""}${(fl => fl ? `<small class="offplan">Off plan: ${esc(fl)}</small>` : "")(entryFlag(f))}</span><span class="k">${f.k || 0}</span><span class="p">${f.p ? f.p + " g" : ""}</span>
         <button class="x" data-act="food-del" data-id="${f.id}" aria-label="Remove ${esc(f.n)}">&times;</button></div>`).join("")}</div>`; }).join("")
       : `<div class="card empty"><b>Nothing logged ${fdate === t ? "today" : "this day"}</b>Search a food above, pick a portion, and the calories are worked out for you.</div>`}
     ${waterCard(fdate)}
@@ -84,3 +94,4 @@ act("food-del", el => {
   if (!confirmTap("food" + el.dataset.id, el, "?")) return;
   const d = day(fdate); d.food = (d.food || []).filter(f => f.id !== el.dataset.id); saveDay(fdate); render();
 });
+act("diet-tab", (el, ev) => { const b = ev.target.closest("button") || el; if (b && b.dataset.v) { state.dietTab = b.dataset.v; render(); window.scrollTo(0, 0); } });

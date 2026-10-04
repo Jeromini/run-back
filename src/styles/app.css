@@ -576,8 +576,8 @@ details.manual[open] summary { margin-bottom: 12px; }
 .favs { display: flex; flex-wrap: wrap; gap: 8px; }
 .fav { display: inline-flex; align-items: center; }
 .fav .x { width: 26px; }
-.portion-total { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 8px; }
-.portion-total b { display: block; font-family: var(--display); font-size: 34px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.portion-total { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; text-align: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 8px; }
+.portion-total b { display: block; font-family: var(--display); font-size: 28px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
 .portion-total div:first-child b { color: var(--accent); }
 .portion-total div:nth-child(2) b { color: var(--rose); }
 .portion-total span { font-size: 13px; color: var(--muted); font-weight: 600; }
@@ -970,3 +970,55 @@ h2.sect { font-size: 22px; font-weight: 600; letter-spacing: -.01em; margin: 10p
 @media (min-width: 1000px) {
   .fab { right: auto; left: 37px; bottom: 32px; }
 }
+
+/* Diet */
+.dcards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.dcard { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; text-align: left; background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; padding: 13px; cursor: pointer; color: var(--ink); font: inherit; }
+.dcard b { font-size: 17px; font-weight: 600; }
+.dcard small { font-size: 13px; color: var(--muted); line-height: 1.35; }
+.dcard .pill { margin-top: 4px; }
+.dcard.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+.dring { display: grid; place-items: center; padding: 4px 0; }
+.dmac .card-head span { font-size: 15px; color: var(--muted); }
+.dmac b { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.dmac b small { color: var(--muted); font-weight: 500; margin-left: 4px; }
+.dweek { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 4px; }
+.dweek div { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.dweek i { width: 100%; height: 8px; border-radius: 4px; background: var(--surface-2); }
+.dweek .kept i { background: var(--good); } .dweek .close i { background: var(--warn); } .dweek .off i { background: var(--bad); }
+.dweek small { font-size: 12px; color: var(--muted); }
+.dweek .sel small { color: var(--ink); font-weight: 700; }
+.dchecks { display: flex; flex-direction: column; }
+.dcheck { display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); font-size: 15px; }
+.dcheck:first-child { border-top: 0; }
+.dcheck i { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; }
+.dcheck i svg { width: 14px; height: 14px; stroke-width: 3; }
+.dcheck.ok i { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+.dcheck.no i { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
+.dcheck b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.dcheck b small { color: var(--muted); font-weight: 500; margin-left: 4px; }
+.pill.warn { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); border-color: transparent; }
+.pill.bad { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); border-color: transparent; }
+.drep { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; margin-top: 4px; }
+.drep-s { display: flex; flex-direction: column; gap: 12px; }
+.drep-s b { display: block; font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.drep-s span { font-size: 13px; color: var(--muted); }
+.dcal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; text-align: center; }
+.dcal small { font-size: 12px; color: var(--muted); padding-bottom: 2px; }
+.dcal span { aspect-ratio: 1; border-radius: 10px; display: grid; place-items: center; font-size: 13px; font-weight: 600; background: var(--surface-2); color: var(--muted); }
+.dcal span:empty { background: none; }
+.dcal .kept { background: var(--good); color: #06281a; } .dcal .close { background: var(--warn); color: #2a1702; } .dcal .off { background: var(--bad); color: #330b07; }
+.dcal .fut { background: none; color: var(--faint); }
+.dcal .today { outline: 2px solid var(--ink); outline-offset: 1px; }
+.dstrip { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; color: var(--ink); font: inherit; cursor: pointer; text-align: left; }
+.dstrip b { font-size: 15px; font-weight: 600; }
+.dstrip span { font-size: 15px; color: var(--muted); }
+.dstrip i { color: var(--faint); display: grid; } .dstrip i svg { width: 18px; height: 18px; }
+.dstrip.kept { border-color: color-mix(in srgb, var(--good) 45%, var(--line)); }
+.dstrip.off { border-color: color-mix(in srgb, var(--bad) 45%, var(--line)); }
+.offplan { display: block; font-size: 12px; color: var(--bad); font-weight: 600; margin-top: 2px; }
+.dintro { text-align: left; }
+.dfit { display: flex; align-items: center; gap: 10px; border-radius: 14px; padding: 11px 14px; font-size: 15px; font-weight: 600; }
+.dfit > svg { width: 18px; height: 18px; flex: none; stroke-width: 3; }
+.dfit.ok { background: color-mix(in srgb, var(--good) 14%, transparent); color: var(--good); }
+.dfit.no { background: color-mix(in srgb, var(--bad) 14%, transparent); color: var(--bad); }

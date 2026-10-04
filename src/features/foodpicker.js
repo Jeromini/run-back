@@ -9,6 +9,8 @@ import { saveDay, saveProfile, sb } from "../core/store.js";
 import { FOODS, CATS, foodById, nutrition, searchFoods, onlineFood } from "../domain/foods.js";
 import { buzz } from "../lib/sound.js";
 import { DRINKS } from "../domain/drinks.js";
+import { myDiet } from "../views/diet.js";
+import { itemReason } from "../domain/diets.js";
 import { openDrinkBuilder } from "./drinkbuilder.js";
 
 const uidGen = () => Math.random().toString(36).slice(2, 9);
@@ -104,7 +106,9 @@ function customHtml() {
   return `<div class="picker"><div class="card-head"><b>Custom food</b><button class="linkbtn" data-act="custom-close">Close</button></div>
     <div class="addgrid"><label class="f full">Food<input id="f-n" placeholder="e.g. Mum's stew" autocomplete="off" maxlength="80"></label>
       <label class="f">Calories<input id="f-k" type="number" inputmode="numeric" placeholder="kcal"></label>
-      <label class="f">Protein (g)<input id="f-p" type="number" inputmode="decimal" placeholder="g"></label></div>
+      <label class="f">Protein (g)<input id="f-p" type="number" inputmode="decimal" placeholder="g"></label>
+      <label class="f">Carbs (g)<input id="f-c" type="number" inputmode="decimal" placeholder="optional"></label>
+      <label class="f">Fat (g)<input id="f-f" type="number" inputmode="decimal" placeholder="optional"></label></div>
     <div class="row"><button class="btn" data-act="custom-plate">Add to plate</button><button class="btn primary" data-act="custom-log">Log now</button></div></div>`;
 }
 
@@ -118,7 +122,9 @@ act("food-cat", el => { cat = el.dataset.c; query = ""; const q = $("food-q"); i
 // ---------- logging ----------
 function entry(f, pi, q) {
   const n = nutrition(f, pi, q), e = { n: f.name, k: n.k, p: n.p, fid: f.id, pi, q, u: f.portions[pi].label };
-  if (f.online) e.src = { k: f.k, p: f.p, portions: f.portions };
+  if (n.c != null) { e.c = n.c; e.f = n.f; e.fb = n.fb; }
+  if (f.t && f.t.length) e.t = f.t;
+  if (f.online) e.src = { k: f.k, p: f.p, c: f.c, f: f.f, fb: f.fb, portions: f.portions };
   return e;
 }
 function logItems(items) {
@@ -131,18 +137,25 @@ function logItems(items) {
 function openPortion(f, pi = 0, q = 1) {
   pick = { f, pi, q };
   openSheet({ title: f.online ? "Worldwide product" : CATS.find(c => c[0] === f.cat)[1], html: `<h1 class="big-title" style="font-size:30px">${esc(f.name)}</h1>
-    <div class="portion-total"><div><b id="pp-k"></b><span>kcal</span></div><div><b id="pp-p"></b><span>g protein</span></div><div><b id="pp-g"></b><span>grams</span></div></div>
+    <div class="portion-total"><div><b id="pp-k"></b><span>kcal</span></div><div><b id="pp-p"></b><span>g protein</span></div><div><b id="pp-c"></b><span>g carbs</span></div><div><b id="pp-f"></b><span>g fat</span></div></div>
+    <div id="pp-diet"></div>
     <div class="card"><div class="eyebrow">Portion</div><div class="chips" id="pp-por">${f.portions.map((pt, i) => `<button class="chip${i === pi ? " on" : ""}" data-act="pp-por" data-i="${i}">${esc(pt.label)}</button>`).join("")}</div>
       <div class="eyebrow">How many?</div>
       <div class="stepper"><button class="btn" data-act="pp-step" data-d="-0.5" aria-label="Less">${ICON.minus}</button><b id="pp-q"></b><button class="btn" data-act="pp-step" data-d="0.5" aria-label="More">${ICON.plus}</button></div>
       <div class="chips" style="justify-content:center">${[0.5, 1, 1.5, 2, 3].map(v => `<button class="chip" data-act="pp-set" data-v="${v}">${fmtQ(v)}</button>`).join("")}</div></div>
     <div class="row"><button class="btn big" data-act="pp-plate">Add to plate</button><button class="btn primary big" data-act="pp-log">Log to ${esc(ctx.meal)}</button></div>
-    <p class="note">${f.online ? `From Open Food Facts, a crowd-sourced database (${f.k} kcal and ${f.p} g protein per 100 g). Check the label if it looks off.` : `Values are typical estimates (${f.k} kcal and ${f.p} g protein per 100 g). Recipes and brands vary.`}</p>` });
+    <p class="note">${f.online ? `From Open Food Facts, a crowd-sourced database (per 100 g: ${f.k} kcal, ${f.p} g protein${f.c != null ? `, ${f.c} g carbs, ${f.f} g fat` : ""}). Check the label if it looks off.` : `Typical values per 100 g: ${f.k} kcal, ${f.p} g protein${f.c != null ? `, ${f.c} g carbs, ${f.f} g fat, ${f.fb} g fibre` : ""}. Recipes and brands vary.`}</p>` });
   paintPortion();
 }
 function paintPortion() {
   const n = nutrition(pick.f, pick.pi, pick.q);
-  $("pp-k").textContent = num(n.k); $("pp-p").textContent = n.p; $("pp-g").textContent = Math.round(n.g);
+  $("pp-k").textContent = num(n.k); $("pp-p").textContent = n.p; $("pp-c").textContent = n.c == null ? "-" : n.c; $("pp-f").textContent = n.f == null ? "-" : n.f;
+  // does this portion fit the diet you're following?
+  const dm = myDiet(), box = $("pp-diet");
+  if (box) {
+    const why = dm && dm.diet ? itemReason(dm.diet, dm.opts, { n: pick.f.name, k: n.k, p: n.p, c: n.c, f: n.f, fb: n.fb, t: pick.f.t }) : null;
+    box.innerHTML = dm && dm.diet ? `<div class="dfit ${why ? "no" : "ok"}">${why ? ICON.close : ICON.tick}<span>${why ? `Not ${esc(dm.diet.name)}: ${esc(why)}` : `Fits ${esc(dm.diet.name)}`}${n.c != null ? ` &middot; ${Math.max(0, Math.round((n.c - (n.fb || 0)) * 10) / 10)} g net carbs` : ""}</span></div>` : "";
+  }
   $("pp-q").textContent = fmtQ(pick.q);
   document.querySelectorAll("#pp-por .chip").forEach(c => c.classList.toggle("on", Number(c.dataset.i) === pick.pi));
 }
@@ -155,9 +168,9 @@ act("food-pick", el => { const f = lookup(el.dataset.id); if (f) openPortion(f);
 act("recent-pick", el => {
   const f = recents()[Number(el.dataset.i)];
   if (f.drink) { openDrinkBuilder(f.drink, drinkCallbacks); return; }
-  if (f.fid && !foodById(f.fid) && f.src) onlineById[f.fid] = { id: f.fid, name: f.n, cat: "online", k: f.src.k, p: f.src.p, portions: f.src.portions, aliases: "", online: true };
+  if (f.fid && !foodById(f.fid) && f.src) onlineById[f.fid] = { id: f.fid, name: f.n, cat: "online", k: f.src.k, p: f.src.p, c: f.src.c ?? null, f: f.src.f ?? null, fb: f.src.fb || 0, t: [], portions: f.src.portions, aliases: "", online: true };
   if (f.fid && lookup(f.fid)) { openPortion(lookup(f.fid), f.pi || 0, f.q || 1); return; }
-  logItems([{ n: f.n, k: f.k, p: f.p }]); toast(f.n + " added to " + ctx.meal); render();
+  logItems([{ n: f.n, k: f.k, p: f.p, ...(f.c != null ? { c: f.c, f: f.f, fb: f.fb } : {}), ...(f.t ? { t: f.t } : {}) }]); toast(f.n + " added to " + ctx.meal); render();
 });
 act("pp-por", el => { pick.pi = Number(el.dataset.i); paintPortion(); });
 act("pp-step", el => { pick.q = Math.max(0.5, Math.min(20, pick.q + Number(el.dataset.d))); paintPortion(); });
@@ -187,7 +200,8 @@ act("meal-del", el => {
 // ---------- custom foods ----------
 function customItem() {
   const n = ($("f-n").value || "").trim(); if (!n) { toast("Name the food"); $("f-n").focus(); return null; }
-  return { n, k: Math.round(Number($("f-k").value)) || 0, p: Math.round((Number($("f-p").value) || 0) * 10) / 10 };
+  const r1 = v => Math.round((Number(v) || 0) * 10) / 10, c = $("f-c") && $("f-c").value, fat = $("f-f") && $("f-f").value;
+  return { n, k: Math.round(Number($("f-k").value)) || 0, p: r1($("f-p").value), ...(c !== "" && c != null ? { c: r1(c), f: r1(fat), fb: 0 } : {}) };
 }
 act("custom-open", () => { showCustom = true; render(); setTimeout(() => $("f-n") && $("f-n").focus(), 30); });
 act("custom-close", () => { showCustom = false; render(); });

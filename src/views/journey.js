@@ -18,6 +18,7 @@ import { openLogActivity, startFreeWorkout } from "../features/activitylog.js";
 import { fmtDist } from "../features/activity.js";
 import { setFoodDate } from "./food.js";
 import { celebrate } from "../features/celebrate.js";
+import { dayStatus, myDiet } from "./diet.js";
 
 const H = 3600000;
 const LOOK = {
@@ -45,6 +46,7 @@ function ctxFor(j) {
     waterTarget: targetFor,
     kcalTarget: p.kcalTarget || null,
     fastHours: planFor(p).hours,
+    dietStatus: myDiet() ? date => { const r = dayStatus(date); return r ? r.status : null; } : null,
     fastDay: map ? date => { const s = map[date]; return !s || s === "off" || s === "skipped" ? "off" : s === "done" ? "done" : s === "missed" || s === "short" ? "missed" : "pending"; } : null
   };
 }

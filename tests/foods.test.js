@@ -15,13 +15,14 @@ describe("food database", () => {
     expect(FOODS.length).toBeGreaterThan(400);
   });
   it("2 large eggs = 143 kcal, 12.6 g protein", () => {
-    expect(nutrition(foodById("egg"), 0, 2)).toEqual({ g: 100, k: 143, p: 12.6 });
+    expect(nutrition(foodById("egg"), 0, 2)).toMatchObject({ g: 100, k: 143, p: 12.6 });
+    const e = nutrition(foodById("egg"), 0, 2); expect(e.c).toBeLessThan(2); expect(e.f).toBeGreaterThan(8);
   });
   it("1 fist of white rice is about 205 kcal", () => {
     expect(nutrition(foodById("rice-white"), 0, 1).k).toBe(205);
   });
   it("half portions work", () => {
-    expect(nutrition(foodById("chk-breast-grill"), 1, 0.5)).toEqual({ g: 85, k: 140, p: 26.4 });
+    expect(nutrition(foodById("chk-breast-grill"), 1, 0.5)).toMatchObject({ g: 85, k: 140, p: 26.4, c: 0 });
   });
   it("covers world dishes", () => {
     for (const q of ["jollof", "biryani", "pad thai", "pho", "falafel", "taco", "paella", "ramen", "injera", "arepa"]) expect(searchFoods(q).length).toBeGreaterThan(0);
@@ -92,5 +93,25 @@ describe("activities", () => {
   it("maps old free-text cardio types", () => {
     expect(legacyType("Cycling")).toBe("cycle-out");
     expect(legacyType("Brisk walk")).toBe("walk-out");
+  });
+});
+
+import { MACROS, TAGS } from "../src/domain/macros.js";
+import { FOODS as ALL } from "../src/domain/foods.js";
+describe("macros", () => {
+  it("every food has carbs, fat, fibre and tags, consistent with its calories", () => {
+    for (const f of ALL) {
+      expect(MACROS[f.id], f.id).toBeTruthy();
+      expect(TAGS[f.id], f.id).toBeTruthy();
+      if ((TAGS[f.id] || []).includes("alcohol")) continue;
+      const est = 4 * f.p + 4 * f.c + 9 * f.f;
+      expect(Math.abs(est - f.k) <= Math.max(25, f.k * 0.15), f.id).toBe(true);
+      expect(f.fb <= f.c, f.id).toBe(true);
+    }
+  });
+  it("rice is a grain, eggs are eggs, bacon is processed meat", () => {
+    expect(TAGS["rice-white"]).toContain("grain");
+    expect(TAGS["egg"]).toContain("egg");
+    expect(TAGS["bacon"]).toEqual(expect.arrayContaining(["meat", "processed"]));
   });
 });
