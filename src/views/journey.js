@@ -369,7 +369,10 @@ act("j-mood", (el, ev) => {
 export function journeyStrip() {
   const j = J(); if (!j || !j.on) return `<button class="jstrip" data-act="tab" data-v="journey"><i>${ICON.flag}</i><div><b>Start My Journey</b><span>Training, fasting, water and food in one plan</span></div><i class="go">${ICON.next}</i></button>`;
   const t = today(), ctx = ctxFor(j), checks = dayChecks(j, state.days[t], t, ctx).filter(c => c.applies), done = checks.filter(c => c.done).length, dn = dayNumber(j, t);
-  const label = dn < 1 ? `Starts ${nice(j.start)}` : dn > totalDays(j) ? "Journey complete" : `Day ${dn} of ${totalDays(j)}`;
-  return `<button class="jstrip" data-act="tab" data-v="journey"><i>${ICON.flag}</i><div><b>${esc(j.name)}</b><span>${esc(label)} &middot; ${done} of ${checks.length} goals today</span></div>
-    <span class="jdots">${checks.map(c => `<i class="${c.done ? "on" : ""}" style="--c:${LOOK[c.id].color}"></i>`).join("")}</span></button>`;
+  const label = dn < 1 ? `Starts ${nice(j.start)}` : dn > totalDays(j) ? "Journey complete" : `Day ${dn} of ${totalDays(j)}, week ${weekNumber(j, t)}`;
+  // lead with the next step, not a deficit
+  const next = checks.filter(c => !c.done).map(c => pillarById(c.id).label.toLowerCase()).slice(0, 3).join(", ");
+  const status = done === checks.length ? "Every goal done today" : done ? `${done} of ${checks.length} done, next: ${next}` : `Next: ${next}`;
+  return `<button class="jstrip" data-act="tab" data-v="journey"><i>${ICON.flag}</i><div><b>${esc(j.name)}</b><span>${esc(label)} &middot; ${esc(status)}</span></div>
+    <span class="jdots" aria-hidden="true">${checks.map(c => `<i class="${c.done ? "on" : ""}" style="--c:${LOOK[c.id].color}" title="${esc(pillarById(c.id).label)}"></i>`).join("")}</span></button>`;
 }

@@ -11,7 +11,7 @@ import { isPro } from "../core/premium.js";
 import { planFor, stageAt, STAGES, fastStats, allFasts, windowFor, EXTENDED_H, SUPERVISED_H, zoneHours, ZONES, EVIDENCE, hourNote, ROUTINE_PRESETS, routineSummary, routineLabel, nextFast, dueFast, routineDays, onPattern, spanText, shiftDate, fmt12 } from "../domain/fasting.js";
 import { weekStart } from "../lib/dates.js";
 import { pushSupport, remindersOn, enableReminders, disableReminders } from "../features/push.js";
-import { coachCard } from "./today.js";
+import { coachCard, openWeigh } from "./today.js";
 import { waterCard } from "../features/water.js";
 import { openPaywall } from "../features/paywall.js";
 import { buzz } from "../lib/sound.js";
@@ -230,7 +230,7 @@ act("fast-custom-save", () => {
   if (state.profile.fastActive) state.profile.fastActive.h = h;
   saveProfile(); closeSheet(); toast(hoursLabel(h) + " fast set"); render();
 });
-act("fast-weigh", () => { state.view = "today"; state.sel = today(); render(); setTimeout(() => { const i = document.getElementById("q-w"); if (i) { i.scrollIntoView({ block: "center" }); i.focus(); } }, 60); });
+act("fast-weigh", () => { state.sel = today(); openWeigh(); });
 
 // ---------- routine, live notes, reminders ----------
 const DAYN3 = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
