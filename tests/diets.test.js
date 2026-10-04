@@ -40,6 +40,10 @@ describe("diets", () => {
     expect(dayCompliance(dietById("calories"), {}, [steak, rice], { kcalTarget: 500 }).status).not.toBe("kept");
     expect(dayCompliance(dietById("high-protein"), {}, [steak, eggs], { proteinTarget: 60 }).status).toBe("kept");
   });
+  it("low carb judges the day's total, not one portion of rice", () => {
+    expect(itemReason(dietById("low-carb"), {}, rice)).toBe(null);
+    expect(dayCompliance(dietById("low-carb"), {}, [eggs, steak, rice]).status).toBe("kept");
+  });
   it("an empty day is not counted", () => {
     expect(dayCompliance(dietById("keto"), {}, []).status).toBe("empty");
   });

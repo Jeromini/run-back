@@ -989,7 +989,10 @@ h2.sect { font-size: 22px; font-weight: 600; letter-spacing: -.01em; margin: 10p
 .dweek small { font-size: 12px; color: var(--muted); }
 .dweek .sel small { color: var(--ink); font-weight: 700; }
 .dchecks { display: flex; flex-direction: column; }
-.dcheck { display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); font-size: 15px; }
+.dcheck { border-top: 1px solid var(--line); font-size: 15px; }
+.dcheck > summary { display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; list-style: none; cursor: pointer; }
+.dcheck > summary::-webkit-details-marker { display: none; }
+.dcheck > p { font-size: 13px; color: var(--muted); padding: 0 0 12px 36px; line-height: 1.45; }
 .dcheck:first-child { border-top: 0; }
 .dcheck i { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; }
 .dcheck i svg { width: 14px; height: 14px; stroke-width: 3; }
@@ -1022,3 +1025,23 @@ h2.sect { font-size: 22px; font-weight: 600; letter-spacing: -.01em; margin: 10p
 .dfit > svg { width: 18px; height: 18px; flex: none; stroke-width: 3; }
 .dfit.ok { background: color-mix(in srgb, var(--good) 14%, transparent); color: var(--good); }
 .dfit.no { background: color-mix(in srgb, var(--bad) 14%, transparent); color: var(--bad); }
+
+/* Diet guide */
+.dlead { font-size: 17px; line-height: 1.5; color: var(--ink); }
+.dgroup { display: flex; flex-direction: column; gap: 6px; }
+.dlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.dlist li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; font-size: 15px; }
+.dlist i { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; margin-top: 1px; }
+.dlist i svg { width: 12px; height: 12px; stroke-width: 3; }
+.dlist.ok i { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+.dlist.mid i { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+.dlist.no i { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
+.dday { display: flex; flex-direction: column; gap: 12px; }
+.dmeal { display: flex; flex-direction: column; }
+.dmeal > b { font-size: 13px; font-weight: 600; color: var(--muted); padding-bottom: 4px; }
+.drow { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: baseline; padding: 7px 0; border-top: 1px solid var(--line); font-size: 15px; }
+.drow small { display: block; font-size: 13px; color: var(--muted); }
+.drow em { font-style: normal; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dtot { display: flex; flex-direction: column; gap: 2px; background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
+.dtot span { font-size: 13px; color: var(--muted); }
+.dtot b { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }

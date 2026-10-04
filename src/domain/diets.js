@@ -86,8 +86,9 @@ export function itemReason(diet, opts, e) {
   const hit = (diet.avoid || []).find(t => tags.includes(t));
   if (hit) return `Has ${TAG_WORDS[hit] || hit}`;
   const cap = carbCap(diet, opts), m = entryMacros(e);
-  // only flag on carbs when they're known, not estimated from calories
-  if (cap != null && !m.est) {
+  // single high-carb foods are flagged on strict diets only (cap of 50 g or less); moderate diets
+  // judge carbs on the day's total. Only when carbs are known, not estimated from calories.
+  if (cap != null && cap <= 50 && !m.est) {
     const net = Math.max(0, m.c - m.fb);
     if (net > Math.max(5, cap * 0.4)) return `${Math.round(net)} g net carbs`;
   }

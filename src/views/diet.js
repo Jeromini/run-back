@@ -9,6 +9,7 @@ import { saveProfile } from "../core/store.js";
 import { FAMILIES, DIETS, dietById, carbCap, dayCompliance, dietReport, itemReason } from "../domain/diets.js";
 import { foodById, nutrition } from "../domain/foods.js";
 import { TAGS } from "../domain/macros.js";
+import { DIET_INFO, CHECK_HELP } from "../domain/dietinfo.js";
 
 const STATUS = { kept: ["On plan", "good"], close: ["Nearly", "warn"], off: ["Off plan", "bad"], empty: ["Nothing logged", ""] };
 let period = "W";
@@ -32,21 +33,62 @@ export const entryFlag = e => { const m = myDiet(); return m && m.diet ? itemRea
 // ---------- picker ----------
 function pickerHtml(current) {
   return FAMILIES.map(([f, label]) => `<h2 class="sect">${esc(label)}</h2><div class="dcards">${DIETS.filter(d => d.fam === f).map(d =>
-    `<button class="dcard${current === d.id ? " on" : ""}" data-act="diet-pick" data-id="${d.id}"><b>${esc(d.name)}</b><small>${esc(d.blurb)}</small>${carbCap(d, {}) != null ? `<span class="pill">${carbCap(d, {})} g net carbs</span>` : ""}</button>`).join("")}</div>`).join("");
+    `<button class="dcard${current === d.id ? " on" : ""}" data-act="diet-info" data-id="${d.id}"><b>${esc(d.name)}</b><small>${esc(d.blurb)}</small>${carbCap(d, {}) != null ? `<span class="pill">${carbCap(d, {})} g net carbs</span>` : ""}</button>`).join("")}</div>`).join("");
 }
 export function openDietPicker() {
   const m = myDiet();
   openSheet({ title: "Diet", html: `<h1 class="big-title">Choose your diet</h1>
-    <p class="note">Pick the pattern you're following. Every meal you log is checked against it, and the report shows how well you keep it day by day.</p>
+    <p class="note">Tap a diet to see how it works, what to eat and an example day. Once you follow one, every meal you log is checked against it and the report shows how well you keep it.</p>
     ${pickerHtml(m && m.diet && m.diet.id)}
     ${m ? `<button class="btn ghost" data-act="diet-off">Stop tracking a diet</button>` : ""}
     <p class="note">A tracking aid, not medical advice. Talk to your doctor before a very low carb or restrictive diet if you have diabetes, kidney disease, are pregnant or take medication.</p>` });
 }
 act("diet-open", openDietPicker);
+
+// The rules as short chips, worded from the diet's actual checks.
+function ruleChips(diet, opts) {
+  const L = diet.limits, cap = carbCap(diet, opts), out = [];
+  if (cap != null) out.push(`Net carbs under ${cap} g a day`);
+  if (L.fatPct && L.fatPct[0]) out.push(`Fat at least ${L.fatPct[0]}% of calories`);
+  if (L.fatPct && !L.fatPct[0]) out.push(`Fat under ${L.fatPct[1]}% of calories`);
+  if (L.carbPct) out.push(`Carbs ${L.carbPct[0]} to ${L.carbPct[1]}%, protein ${L.proteinPct[0]} to ${L.proteinPct[1]}%, fat ${L.fatPct[0]} to ${L.fatPct[1]}%`);
+  if (L.protein) out.push("Protein reaches your daily target");
+  if (L.kcal) out.push("Calories within your daily target");
+  if (diet.favour) out.push(`At least ${diet.favourMin} core food groups a day`);
+  if (diet.cap) Object.entries(diet.cap).forEach(([g, n]) => out.push(g === "meatAny" ? `Meat or poultry at most ${n} a day` : n === 0 ? `No ${g === "processed" ? "processed meat or food" : g}` : `${g === "meat" ? "Red meat" : g === "sugar" ? "Sugary items" : g} at most ${n} a day`));
+  if ((diet.avoid || []).length) out.push("Flags " + diet.avoid.map(t => ({ grain: "grains", legume: "beans", starch: "starchy food", sugar: "added sugar", sweetened: "sugary drinks", processed: "processed food", meat: "red meat", shellfish: "shellfish" }[t] || t)).filter((v, i, a) => a.indexOf(v) === i).join(", "));
+  return out;
+}
+function exampleDay(diet, day) {
+  const rows = day.map(([m, id, pi, q]) => { const f = foodById(id); const n = nutrition(f, pi, q); return { m, f, q, label: f.portions[pi].label, e: { n: f.name, k: n.k, p: n.p, c: n.c, f: n.f, fb: n.fb, t: f.t } }; });
+  const r = dayCompliance(diet, {}, rows.map(x => x.e), { kcalTarget: state.profile.kcalTarget || 2000, proteinTarget: state.profile.proteinTarget || 120 });
+  const meals = [...new Set(rows.map(x => x.m))];
+  const showNet = carbCap(diet, {}) != null;
+  return `<div class="dday">${meals.map(m => `<div class="dmeal"><b>${m}</b>${rows.filter(x => x.m === m).map(x => `<div class="drow"><span>${esc(x.f.name)}<small>${x.q === 1 ? "" : x.q + " x "}${esc(x.label)}</small></span><em>${showNet ? Math.max(0, Math.round((x.e.c - x.e.fb) * 10) / 10) + " g net" : num(x.e.k) + " kcal"}</em></div>`).join("")}</div>`).join("")}
+    <div class="dtot"><span>Day total</span><b>${num(r.totals.k)} kcal &middot; ${Math.round(r.totals.p)} g protein &middot; ${Math.round(r.totals.net)} g net carbs &middot; ${Math.round(r.totals.f)} g fat</b></div>
+    <div class="dfit ${r.status === "kept" ? "ok" : "no"}">${r.status === "kept" ? ICON.tick : ICON.close}<span>${r.status === "kept" ? `Checked by the app: this day keeps ${esc(shortName(diet))}` : "This day doesn't fully keep the diet with your targets"}</span></div></div>`;
+}
+export function openDietInfo(id) {
+  const diet = dietById(id), g = DIET_INFO[id], m = myDiet(), following = m && m.diet && m.diet.id === id;
+  const list = (cls, icon, items) => `<ul class="dlist ${cls}">${items.map(x => `<li><i>${icon}</i><span>${esc(x)}</span></li>`).join("")}</ul>`;
+  openSheet({ title: shortName(diet), html: `<h1 class="big-title">${esc(diet.name)}</h1>
+    <p class="dlead">${esc(g.what)}</p>
+    <div class="card"><h3>How the app checks it</h3><p class="note">${esc(g.how)}</p><div class="chips">${ruleChips(diet, following ? m.opts : {}).map(t => `<span class="pill">${esc(t)}</span>`).join("")}</div></div>
+    <div class="card"><h3>What to eat</h3>
+      <div class="dgroup"><span class="eyebrow">Eat freely</span>${list("ok", ICON.tick, g.eat)}</div>
+      <div class="dgroup"><span class="eyebrow">Go easy on</span>${list("mid", ICON.minus, g.limit)}</div>
+      <div class="dgroup"><span class="eyebrow">Avoid</span>${list("no", ICON.close, g.avoid)}</div></div>
+    <div class="card"><h3>An example day</h3><p class="note">Real foods from the app, so you can log the same day yourself.</p>${exampleDay(diet, g.day)}</div>
+    <div class="card"><h3>Good for</h3><p class="note">${esc(g.suits)}</p><h3>Take care</h3><p class="note">${esc(g.careful)}</p><h3>What the research says</h3><p class="note">${esc(g.evidence)}</p></div>
+    ${following ? `<button class="btn big" data-act="sheet-close">Back</button>` : `<button class="btn primary big" data-act="diet-pick" data-id="${id}">Follow ${esc(shortName(diet))}</button>`}
+    <p class="note">General guidance, not medical advice.</p>` });
+}
+act("diet-info", el => openDietInfo(el.dataset.id));
+act("diet-guide", () => { const m = myDiet(); if (m && m.diet) openDietInfo(m.diet.id); });
 act("diet-pick", el => {
   const prev = state.profile.diet, same = prev && prev.id === el.dataset.id;
   state.profile.diet = same ? prev : { id: el.dataset.id, since: today() };
-  saveProfile(); closeSheet(); state.dietTab = "plan"; toast(dietById(el.dataset.id).name + " set"); render();
+  saveProfile(); closeSheet(); closeSheet(); state.dietTab = "plan"; toast("Now following " + shortName(dietById(el.dataset.id))); render(); window.scrollTo(0, 0);
 });
 act("diet-off", () => { state.profile.diet = null; saveProfile(); closeSheet(); toast("Diet tracking off"); render(); });
 act("diet-carb", el => {
@@ -77,14 +119,14 @@ export function planPanel(date) {
       ${macroBar("Carbs", t.c, Math.round(t.c * 4 / kc * 100), "var(--fast)")}${macroBar("Protein", t.p, Math.round(t.p * 4 / kc * 100), "var(--rose)")}${macroBar("Fat", t.f, Math.round(t.f * 9 / kc * 100), "var(--violet)")}
       <div class="dweek">${week.map(k => { const s = dayStatus(k); return `<div class="${s && s.status !== "empty" ? s.status : "nolog"}${k === date ? " sel" : ""}"><i></i><small>${DOW[parse(k).getDay()].slice(0, 1)}</small></div>`; }).join("")}</div>
     </div>
-    ${r.checks.length ? `<div class="card"><h3>Today's checks</h3><div class="dchecks">${r.checks.map(c => `<div class="dcheck ${c.ok ? "ok" : "no"}"><i>${c.ok ? ICON.tick : ICON.close}</i><span>${esc(c.label)}</span><b>${c.dir === "all" ? `${c.value} of ${c.target}` : `${num(c.value)}${c.unit === "%" ? "%" : c.unit ? " " + c.unit : ""} <small>${c.dir === "max" ? "max " : c.dir === "min" ? "min " : ""}${c.target}${c.unit === "%" ? "%" : c.unit ? " " + c.unit : ""}</small>`}</b></div>`).join("")}</div></div>` : ""}
+    ${r.checks.length ? `<div class="card"><div class="card-head"><h3>Today's checks</h3><button class="linkbtn" data-act="diet-guide">How ${esc(shortName(diet))} works</button></div><p class="note">The day counts as on plan when every check passes, nearly when most do. Tap a check to see what it means.</p><div class="dchecks">${r.checks.map(c => `<details class="dcheck ${c.ok ? "ok" : "no"}"><summary><i>${c.ok ? ICON.tick : ICON.close}</i><span>${esc(c.label)}</span><b>${c.dir === "all" ? `${c.value} of ${c.target}` : `${num(c.value)}${c.unit === "%" ? "%" : c.unit ? " " + c.unit : ""} <small>${c.dir === "max" ? "max " : c.dir === "min" ? "min " : ""}${c.target}${c.unit === "%" ? "%" : c.unit ? " " + c.unit : ""}</small>`}</b></summary><p>${esc(CHECK_HELP[c.id] || CHECK_HELP[c.id.split("-")[0]] || "")}${c.detail ? " Today: " + esc(c.detail.join(", ")) + "." : ""}</p></details>`).join("")}</div></div>` : ""}
     ${r.breaks.length ? `<div class="card"><h3>Off plan today</h3><div class="list">${r.breaks.map(b => `<div class="li"><div><div class="a">${esc(b.name)}</div><div class="b">${esc(b.reason)}</div></div></div>`).join("")}</div></div>` : ""}
     ${r.status === "empty" ? `<div class="card empty"><b>Nothing logged ${date === today() ? "today" : "this day"}</b>Log your meals in Food and they're checked against ${esc(diet.name)} as you go.<button class="btn primary" style="margin-top:12px" data-act="diet-tab" data-v="log">Log food</button></div>` : ""}
     <div class="card"><h3>Settings</h3>
       ${diet.adjust ? `<div class="card-head"><span>Daily net carb limit</span><div class="stepper"><button data-act="diet-carb" data-d="-5" aria-label="Lower">${ICON.minus}</button><b>${cap}</b><span>g</span><button data-act="diet-carb" data-d="5" aria-label="Higher">${ICON.plus}</button></div></div>` : ""}
       ${diet.phases ? `<label class="f">Phase${segHtml("diet-ph", diet.phases.map((p, i) => [i, p[0].split(":")[0]]), opts.phase || 0, 'data-act="diet-phase"')}</label><p class="note">${esc(diet.phases[opts.phase || 0][0])}: up to ${cap} g net carbs a day.</p>` : ""}
       <p class="note">${esc(diet.blurb)} Following since ${esc(nice(opts.since || today()))}.</p>
-      <button class="btn" data-act="diet-open">Change diet</button></div>`;
+      <div class="row"><button class="btn" style="flex:1" data-act="diet-guide">How it works</button><button class="btn" style="flex:1" data-act="diet-open">Change diet</button></div></div>`;
 }
 
 // ---------- report ----------
@@ -116,7 +158,7 @@ export function reportPanel() {
     <div class="card"><h3>Daily average</h3><div class="stats four">
       <div class="stat"><b>${num(r.avg.k)}</b><span>kcal</span></div><div class="stat"><b>${num(r.avg.net)} g</b><span>net carbs</span></div>
       <div class="stat"><b>${num(r.avg.p)} g</b><span>protein</span></div><div class="stat"><b>${num(r.avg.f)} g</b><span>fat</span></div></div>
-      <p class="note">Averages cover the ${r.logged} day${r.logged === 1 ? "" : "s"} with food logged.</p></div>
+      <p class="note">Averages cover the ${r.logged} day${r.logged === 1 ? "" : "s"} with food logged. Days with nothing logged don't count for or against you.</p></div>
     ${r.breakers.length ? `<div class="card"><h3>What most often broke it</h3><div class="list">${r.breakers.map(([nm, c]) => `<div class="li"><div><div class="a">${esc(nm)}</div></div><span class="v">${c} day${c === 1 ? "" : "s"}</span></div>`).join("")}</div>
       <p class="note">Swapping these is the quickest way to raise your score.</p></div>` : ""}`;
 }
