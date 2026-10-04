@@ -7,7 +7,7 @@
 :root {
   --bg: #151a24; --bg-2: #1a202c; --surface: #222936; --surface-2: #2a3240; --raised: #313a4a;
   --ink: #f2f4f8; --muted: #a0a9b8; --faint: #6c768a; --line: #323b4b;
-  --accent: #5b96f7; --accent-2: #4683ec; --accent-ink: #ffffff; --accent-soft: #22355a;
+  --accent: #5b96f7; --accent-2: #4683ec; --accent-ink: #0b1a3a; --accent-soft: #22355a;
   --fast: #f5b544; --fast-soft: #3a3020; --rose: #f07a9b; --rose-soft: #3b2230;
   --water: #3fd0c0; --water-soft: #173a3c; --violet: #a78bfa; --violet-soft: #2c2750;
   --fast-ink: #f5b544; --water-ink: #6fe0d3;
@@ -360,7 +360,7 @@ nav.tabs button[data-v="fast"].on svg { color: var(--fast); }
 .badges-row { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; }
 .badge { width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-weight: 700; font-size: 17px; position: relative; flex: none; }
 .badge.sm { width: 34px; height: 34px; font-size: 12px; border-width: 2px; }
-.badge.run { background: radial-gradient(circle at 30% 30%, #5fe0d6, #0f7f78); color: #032423; }
+.badge.run { background: radial-gradient(circle at 30% 30%, #8db6ff, #2c62d4); color: #0b1a3a; }
 .badge.fast { background: radial-gradient(circle at 30% 30%, #ffd77e, #c47f06); color: #2a1d02; }
 .badge.body { background: radial-gradient(circle at 30% 30%, #ff9fbb, #b83a62); color: #2d0713; }
 .badge.habit { background: radial-gradient(circle at 30% 30%, #9ccaff, #2a6fb8); color: #061a2e; }
@@ -447,7 +447,7 @@ details.manual[open] summary { margin-bottom: 12px; }
 .sheet .sh-body { max-width: 560px; margin: 0 auto; padding-inline: 16px; padding-block: 0 calc(32px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; }
 
 /* Paywall */
-.pw-hero { border-radius: 26px; padding: 26px 20px; background: radial-gradient(120% 120% at 100% 0%, rgba(243, 210, 122, .28), transparent 55%), linear-gradient(160deg, #10302f, #091315); color: #f3f1ea; display: flex; flex-direction: column; gap: 10px; border: 1px solid rgba(243, 210, 122, .25); }
+.pw-hero { border-radius: 26px; padding: 26px 20px; background: radial-gradient(120% 120% at 100% 0%, rgba(243, 210, 122, .28), transparent 55%), linear-gradient(160deg, #1d2b4d, #121826); color: #f3f1ea; display: flex; flex-direction: column; gap: 10px; border: 1px solid rgba(243, 210, 122, .25); }
 .pw-hero .crown { width: 46px; height: 46px; border-radius: 14px; background: linear-gradient(135deg, var(--gold-1), var(--gold-2)); color: var(--gold-ink); display: grid; place-items: center; }
 .pw-hero .crown svg { width: 24px; height: 24px; }
 .pw-hero h2 { font-family: var(--display); font-size: 34px; font-weight: 700; line-height: .95; }
@@ -467,7 +467,7 @@ details.manual[open] summary { margin-bottom: 12px; }
 .price .best { position: absolute; top: -10px; right: 12px; font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: linear-gradient(135deg, var(--gold-1), var(--gold-2)); color: var(--gold-ink); }
 
 /* Workout (always dark, like a watch face) */
-.wk { --wk-bg: #071416; --wk-ink: #eaf4f2; --wk-muted: #8aa3a5; --wk-line: #1b3236; --wk-run: #5b96f7; --wk-walk: #8fa3bb; --wk-hard: #f5be4a;
+.wk { --wk-bg: #0f1420; --wk-ink: #f2f4f8; --wk-muted: #9aa4b5; --wk-line: #273041; --wk-run: #5b96f7; --wk-walk: #8fa3bb; --wk-hard: #f5be4a;
   position: fixed; inset: 0; z-index: 60; background: var(--wk-bg); color: var(--wk-ink); display: flex; flex-direction: column; overflow-y: auto;
   padding: calc(10px + env(safe-area-inset-top, 0px)) 16px calc(18px + env(safe-area-inset-bottom, 0px)); --ph: var(--wk-walk); color-scheme: dark; }
 .wk.ph-r { --ph: var(--wk-run); } .wk.ph-h { --ph: var(--wk-hard); }
@@ -661,7 +661,7 @@ button.rc { cursor: pointer; border-color: color-mix(in srgb, var(--fast) 45%, v
 .preview div { display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: center; font-size: 15px; font-weight: 600; }
 .preview svg { width: 16px; height: 16px; color: var(--fast); }
 /* Stage pop-up */
-.stagepop { position: fixed; inset: 0; z-index: 75; background: rgba(4, 10, 12, .62); display: grid; place-items: end center; padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+.stagepop { position: fixed; inset: 0; z-index: 75; background: rgba(8, 11, 18, .62); display: grid; place-items: end center; padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
 .pop { width: min(520px, 100%); background: var(--surface); border: 1px solid color-mix(in srgb, var(--fast) 45%, var(--line)); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow); }
 .pop h2 { font-family: var(--display); font-size: 34px; font-weight: 700; line-height: 1; color: var(--fast-ink); }
 .pop .ev { margin-left: 0; align-self: flex-start; }

@@ -51,7 +51,7 @@ function render() {
   document.querySelectorAll("#tabs button").forEach(b => { const on = b.dataset.v === sub; b.classList.toggle("on", on); b.setAttribute("aria-current", on ? "page" : "false"); });
   const mb = document.querySelector('[data-act="go-more"]'); if (mb) mb.classList.toggle("on", sub === "more");
   const pro = document.querySelector("#brand .pro-tag");
-  if (S.pro && !pro) $("brand").insertAdjacentHTML("beforeend", '<span class="pro-tag">PRO</span>');
+  if (S.pro && !pro) $("brand").insertAdjacentHTML("beforeend", '<span class="pro-tag">Pro</span>');
   if (!S.pro && pro) pro.remove();
   checkBadges();
 }

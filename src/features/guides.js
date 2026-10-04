@@ -30,7 +30,7 @@ export function openGuide(id) {
   const body = g.body.map(p => typeof p === "string" ? `<p>${esc(p)}</p>`
     : p[0] === "h" ? `<h3>${esc(p[1])}</h3>`
     : `<ul>${p[1].map(li => `<li>${esc(li)}</li>`).join("")}</ul>`).join("");
-  openSheet({ title: g.cat, html: `<article class="article"><span class="eyebrow">${g.mins} min read</span><h2>${esc(g.title)}</h2>${body}
+  openSheet({ title: g.cat, html: `<article class="article"><h2>${esc(g.title)}</h2><p class="note">${g.mins} min read</p>${body}
     <p class="note" style="margin-top:8px">General guidance, not medical advice. If you have a medical condition or take medication, check with your doctor before fasting.</p></article>` });
 }
 act("open-guides", openGuides);

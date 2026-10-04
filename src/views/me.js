@@ -22,8 +22,8 @@ export function renderMe(root) {
   const p = state.profile, [ft, inch] = p.heightCm ? ftIn(p.heightCm) : ["", ""];
   root.innerHTML = `<section class="view"><button class="backlink" data-act="go-more">${ICON.back} More</button><h1 class="big-title">My profile</h1>
     ${isPro()
-      ? `<button class="card" data-act="paywall" style="text-align:left;cursor:pointer;border-color:var(--gold-2)"><div class="card-head"><h3>${esc(APP_NAME)} Premium</h3><span class="pro-tag">ACTIVE</span></div><p class="note">Every feature unlocked. Thank you for your support.</p></button>`
-      : `<div class="card" style="border-color:var(--gold-2)"><div class="card-head"><h3>Go Premium</h3><span class="pro-tag">PRO</span></div><p class="note">The Fast + Train coach, every fasting plan, deep trends, the full guide library and data export.</p><button class="btn gold" data-act="paywall">${ICON.star} See Premium</button></div>`}
+      ? `<button class="card" data-act="paywall" style="text-align:left;cursor:pointer;border-color:var(--gold-2)"><div class="card-head"><h3>${esc(APP_NAME)} Premium</h3><span class="pro-tag">Active</span></div><p class="note">Every feature unlocked. Thank you for your support.</p></button>`
+      : `<div class="card" style="border-color:var(--gold-2)"><div class="card-head"><h3>Go Premium</h3><span class="pro-tag">Pro</span></div><p class="note">The Fast + Train coach, every fasting plan, deep trends, the full guide library and data export.</p><button class="btn gold" data-act="paywall">${ICON.star} See Premium</button></div>`}
     ${badgesSummary()}
     <div class="card"><h3>Your numbers</h3>
       <label class="f">Your name (shown to your crew)<input type="text" id="s-name" maxlength="40" placeholder="First name" value="${esc(p.displayName || "")}"></label>

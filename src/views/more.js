@@ -35,7 +35,7 @@ export function renderMore(root) {
     <h1 class="big-title">More</h1>
     <div class="mhead">
       <div class="mstat"><span>Streak</span><b>${streak}</b><small>${streak === 1 ? "day" : "days"}</small></div>
-      <div class="mme"><span class="mavatar" aria-hidden="true">${esc(name.charAt(0).toUpperCase())}</span><b>${esc(name)}</b>${isPro() ? `<span class="pro-tag">PRO</span>` : ""}</div>
+      <div class="mme"><span class="mavatar" aria-hidden="true">${esc(name.charAt(0).toUpperCase())}</span><b>${esc(name)}</b>${isPro() ? `<span class="pro-tag">Pro</span>` : ""}</div>
       <div class="mstat"><span>Progress</span><b>${lost == null ? "-" : (lost > 0 ? lost : 0) + " " + u}</b><small>${lost == null ? "add a weigh-in" : lost >= 0 ? u + " lost" : "since start"}</small></div>
     </div>
     <div class="mlist">
