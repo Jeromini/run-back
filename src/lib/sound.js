@@ -15,7 +15,8 @@ export function beep(freq, dur, times = 1) {
     o.connect(g).connect(audio.destination); o.start(t0); o.stop(t0 + dur + 0.02);
   }
 }
-export function buzz(p) { try { navigator.vibrate && navigator.vibrate(p); } catch (e) { /* not supported */ } }
+// browsers refuse (and log an error) until the person has tapped the page once
+export function buzz(p) { try { if (navigator.vibrate && (!navigator.userActivation || navigator.userActivation.hasBeenActive)) navigator.vibrate(p); } catch (e) { /* not supported */ } }
 
 let voiceOn = true;
 export const setVoice = v => { voiceOn = v; };

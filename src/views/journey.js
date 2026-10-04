@@ -71,7 +71,7 @@ export function renderJourney(root) {
 function introHtml() {
   const past = state.profile.pastJourneys || [];
   return `<section class="view">
-    <div class="jintro"><div class="eyebrow">My Journey</div><h1 class="big-title">One plan for everything you do</h1>
+    <div class="jintro"><h1 class="big-title">One plan for everything you do</h1>
       <p>Choose a package and the app tracks it all in one place: training, fasting, water, food, weigh-ins and a short daily note. Every day gets a score, every week a report, and the whole journey lives in a diary you can look back on.</p></div>
     <div class="eyebrow">Choose a package</div>
     <div class="jtpls">${TEMPLATES.map(t => `<button class="jtpl" data-act="j-template" data-id="${t.id}">
@@ -261,7 +261,7 @@ function openDay(k) {
   const sec = (title, body) => body ? `<div class="card"><div class="eyebrow">${title}</div>${body}</div>` : "";
   const train = trainingList(d), ft = foodTotals(d);
   openSheet({ title: nice(k), onClose: render, html: `
-    <div class="jdayhead"><div><div class="eyebrow">${dn >= 1 && dn <= totalDays(j) ? `Day ${dn} of ${totalDays(j)}` : "Outside the journey"}</div><h1 class="big-title">${esc(nice(k))}</h1></div>
+    <div class="jdayhead"><div><h1 class="big-title">${esc(nice(k))}</h1><p class="note" style="margin-top:4px">${dn >= 1 && dn <= totalDays(j) ? `Day ${dn} of ${totalDays(j)}` : "Outside the journey"}</p></div>
       ${k <= today() ? ring(sc, { size: 72, stroke: 7, color: "var(--accent)", inner: `<span class="k" style="font-size:18px">${Math.round(sc * 100)}%</span>` }) : ""}</div>
     <div class="card tight">${checks.map(c => `<div class="frow static${c.applies ? "" : " na"}"><span><b>${esc(pillarById(c.id).label)}</b></span><span class="pill${c.done ? " good" : ""}">${!c.applies ? "Rest day" : c.done ? "Done" : k > today() ? "To do" : c.kind === "week" ? "Not today" : "Missed"}</span></div>`).join("")}</div>
     ${sec("Training", train.length ? `<ul class="jlist">${train.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "")}

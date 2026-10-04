@@ -50,6 +50,10 @@ button { font: inherit; color: inherit; }
 svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 svg.fill { fill: currentColor; stroke: none; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--accent) 32%, transparent); color: var(--ink); }
+input, textarea { caret-color: var(--accent); }
+html { scrollbar-color: color-mix(in srgb, var(--muted) 45%, transparent) transparent; }
+.jtotals b, .jhero .stats b, .stepper b, .jentry .when b, .jweight .top b, .jmeters .meter b, .jhero h2 { font-variant-numeric: tabular-nums; }
 
 .wrap { max-width: 560px; margin: 0 auto; padding-inline: 16px; padding-block: 0 calc(110px + env(safe-area-inset-bottom, 0px)); }
 header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-block: 10px 8px; }
@@ -197,14 +201,14 @@ nav.tabs button[data-v="fast"].on svg { color: var(--fast); }
 
 .water { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; }
 .water .glass { width: 44px; height: 56px; border: 2px solid var(--water); border-radius: 6px 6px 12px 12px; position: relative; overflow: hidden; }
-.water .glass i { position: absolute; left: 0; right: 0; bottom: 0; background: var(--water); opacity: .75; transition: height .4s; }
+.water .glass i { position: absolute; left: 0; right: 0; bottom: 0; background: var(--water); opacity: .75; }
 .water .amt { font-family: var(--display); font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
 .water .amt small { font-family: var(--body); font-size: 13px; color: var(--muted); font-weight: 600; }
 .water .btns { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
 .water .btns button { border: 1px solid var(--line); background: var(--water-soft); color: var(--water); font-weight: 800; border-radius: 12px; padding: 7px 12px; cursor: pointer; min-height: 38px; }
 .water .btns button.minus { background: transparent; color: var(--muted); }
 .bar { height: 10px; border-radius: 5px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; }
-.bar i { display: block; height: 100%; border-radius: 5px; background: var(--accent); transition: width .4s; }
+.bar i { display: block; height: 100%; border-radius: 5px; background: var(--accent); }
 
 /* Fast tab */
 .fasthead { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -533,7 +537,8 @@ details.manual[open] summary { margin-bottom: 12px; }
 
 @media (prefers-reduced-motion: no-preference) {
   .btn, .seg button, .chip, .daybar button, .qa, .plan, .price { transition: background .15s, color .15s, transform .1s, border-color .15s; }
-  .btn:active, .hero .go:active, .ctrl .main:active, .qa:active, .plan:active { transform: scale(.97); }
+  .btn:active, .hero .go:active, .ctrl .main:active, .qa:active, .plan:active, .mini:active, .jstrip:active, .jtpl:active, .stepper button:active { transform: scale(.97); }
+  .mini, .jstrip, .jtpl, .jentry, .jd, .stepper button { transition: transform .12s ease-out, background-color .15s ease-out, border-color .15s ease-out; }
   .view { animation: rise .22s ease-out; }
   @keyframes rise { from { opacity: .55; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   .wk .count span { animation: pop .9s ease-out; display: block; }
@@ -665,7 +670,13 @@ button.rc { cursor: pointer; border-color: color-mix(in srgb, var(--fast) 45%, v
 .jintro p { color: var(--muted); font-size: 15px; }
 .jtpls { display: flex; flex-direction: column; gap: 10px; }
 .jtpl { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; cursor: pointer; color: var(--ink); font: inherit; }
-.jtpl:hover { border-color: var(--accent); }
+@media (hover: hover) {
+  .jtpl:hover, .jstrip:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
+  .mini:hover, .stepper button:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+  .mini.primary:hover { background: var(--accent-2); border-color: var(--accent-2); }
+  .jentry:hover .when { background: var(--accent-soft); }
+  .jd:not(.fut):hover { filter: brightness(1.12); }
+}
 .jtpl .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .jtpl .top b { font-family: var(--display); font-size: 22px; font-weight: 800; text-transform: uppercase; letter-spacing: .01em; }
 .jtpl .dots { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
@@ -688,7 +699,8 @@ button.rc { cursor: pointer; border-color: color-mix(in srgb, var(--fast) 45%, v
 .jhero .stats div { background: rgba(255,255,255,.08); border-radius: 14px; padding: 10px 8px; text-align: center; }
 .jhero .stats b { display: block; font-family: var(--display); font-size: 26px; font-weight: 800; line-height: 1; }
 .jhero .stats span { font-size: 11.5px; color: rgba(255,255,255,.75); font-weight: 600; }
-.jhero blockquote { margin: 0; border-left: 3px solid #7fe3da; padding: 2px 0 2px 12px; font-size: 15px; font-style: italic; color: rgba(255,255,255,.92); }
+.jhero blockquote { margin: 0; position: relative; padding-left: 26px; font-size: 15px; font-style: italic; line-height: 1.4; color: rgba(255,255,255,.92); }
+.jhero blockquote::before { content: "\201C"; position: absolute; left: 0; top: -6px; font-family: var(--display); font-style: normal; font-size: 40px; line-height: 1; color: #7fe3da; }
 .jweight { background: rgba(255,255,255,.08); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 7px; }
 .jweight .top { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 13px; color: rgba(255,255,255,.8); }
 .jweight .top b { font-family: var(--display); font-size: 22px; color: #fff; }
@@ -709,7 +721,7 @@ button.rc { cursor: pointer; border-color: color-mix(in srgb, var(--fast) 45%, v
 .jrow .extra { grid-column: 2 / -1; display: flex; flex-direction: column; gap: 8px; }
 .jrow textarea { min-height: 0; }
 .jrow .seg button, .jsheet-note .seg button { font-size: 12.5px; min-height: 32px; padding: 6px 2px; }
-.mini { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); font-weight: 700; font-size: 13px; border-radius: 10px; padding: 7px 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-family: inherit; }
+.mini { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); font-weight: 700; font-size: 13px; border-radius: 11px; padding: 8px 12px; min-height: 38px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 5px; white-space: nowrap; font-family: inherit; }
 .mini svg { width: 13px; height: 13px; }
 .mini.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .minibar { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
@@ -758,7 +770,7 @@ button.rc { cursor: pointer; border-color: color-mix(in srgb, var(--fast) 45%, v
 .jpick .txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .jpick:not(.on) .ic { opacity: .5; }
 .stepper { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
-.stepper button { width: 32px; height: 32px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.stepper button { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); display: grid; place-items: center; cursor: pointer; padding: 0; }
 .stepper button svg { width: 16px; height: 16px; }
 .stepper b { font-family: var(--display); font-size: 22px; min-width: 18px; text-align: center; }
 .stepper span { font-size: 13px; color: var(--muted); }
