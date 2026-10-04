@@ -1,0 +1,545 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-04T14:37:48.547Z",
+  "title": "Design System: Run Back",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "First Light Teal",
+        "canonical": "oklch(75.5% 0.116 188)",
+        "tonalRamp": [
+          "#001311",
+          "#00302d",
+          "#00514c",
+          "#00736d",
+          "#009890",
+          "#46bab2",
+          "#7dddd5",
+          "#affff9"
+        ]
+      },
+      "fast": {
+        "role": "secondary",
+        "displayName": "Fasting Amber",
+        "canonical": "oklch(81.3% 0.145 77)",
+        "tonalRamp": [
+          "#1d0200",
+          "#3e1a00",
+          "#623700",
+          "#895500",
+          "#b17500",
+          "#d19a38",
+          "#f2c06f",
+          "#ffe7a2"
+        ]
+      },
+      "rose": {
+        "role": "tertiary",
+        "displayName": "Body Rose",
+        "canonical": "oklch(72.3% 0.148 3)",
+        "tonalRamp": [
+          "#240007",
+          "#49021f",
+          "#721e3b",
+          "#9c3a59",
+          "#c85778",
+          "#e9809c",
+          "#ffa9c1",
+          "#ffd2e7"
+        ]
+      },
+      "water": {
+        "role": "tertiary",
+        "displayName": "Water Sky",
+        "canonical": "oklch(71.5% 0.130 247)",
+        "tonalRamp": [
+          "#000929",
+          "#00264e",
+          "#004476",
+          "#1b65a0",
+          "#3887cb",
+          "#66abea",
+          "#93cfff",
+          "#bff5ff"
+        ]
+      },
+      "violet": {
+        "role": "tertiary",
+        "displayName": "Strength Violet",
+        "canonical": "oklch(70.9% 0.159 293)",
+        "tonalRamp": [
+          "#10002e",
+          "#2a1354",
+          "#472f7e",
+          "#674caa",
+          "#886cd7",
+          "#aa92f5",
+          "#cdb9ff",
+          "#f1e1ff"
+        ]
+      },
+      "gold-1": {
+        "role": "tertiary",
+        "displayName": "Premium Gold Light",
+        "canonical": "oklch(87.3% 0.114 89)",
+        "tonalRamp": [
+          "#160800",
+          "#342200",
+          "#553e00",
+          "#785d00",
+          "#9d7e20",
+          "#bea256",
+          "#e0c784",
+          "#ffedb3"
+        ]
+      },
+      "gold-2": {
+        "role": "tertiary",
+        "displayName": "Premium Gold Deep",
+        "canonical": "oklch(71.4% 0.123 82)",
+        "tonalRamp": [
+          "#190500",
+          "#391f00",
+          "#5b3b00",
+          "#7f5a00",
+          "#a67a0d",
+          "#c69e4e",
+          "#e8c47f",
+          "#ffeaae"
+        ]
+      },
+      "bg": {
+        "role": "neutral",
+        "displayName": "Night Field",
+        "canonical": "oklch(17.8% 0.015 211)",
+        "tonalRamp": [
+          "#070c0d",
+          "#1f2728",
+          "#3b4446",
+          "#596366",
+          "#788588",
+          "#9ca7aa",
+          "#c1cbce",
+          "#e7f0f2"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "oklch(24.6% 0.024 209)",
+        "tonalRamp": [
+          "#050d0e",
+          "#1b272a",
+          "#364548",
+          "#536568",
+          "#72878a",
+          "#96a9ac",
+          "#bccdd0",
+          "#e2f2f5"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Morning Ink",
+        "canonical": "oklch(95.3% 0.011 182)",
+        "tonalRamp": [
+          "#080c0b",
+          "#212625",
+          "#3d4442",
+          "#5b6362",
+          "#7c8583",
+          "#9fa7a5",
+          "#c3cbc9",
+          "#e9f0ef"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "canonical": "oklch(71.2% 0.025 199)",
+        "tonalRamp": [
+          "#050d0e",
+          "#1b2828",
+          "#364546",
+          "#536566",
+          "#728788",
+          "#96a9aa",
+          "#bbcdce",
+          "#e2f2f3"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(32.7% 0.030 209)",
+        "tonalRamp": [
+          "#030d0f",
+          "#19282b",
+          "#334649",
+          "#50666a",
+          "#6e888c",
+          "#93aaae",
+          "#b9ced1",
+          "#e0f3f6"
+        ]
+      },
+      "good": {
+        "role": "status",
+        "displayName": "Good",
+        "canonical": "oklch(73.0% 0.137 156)",
+        "tonalRamp": [
+          "#001400",
+          "#003110",
+          "#005228",
+          "#007543",
+          "#1d9a60",
+          "#5bbc86",
+          "#8bdfad",
+          "#baffd5"
+        ]
+      },
+      "warn": {
+        "role": "status",
+        "displayName": "Warn",
+        "canonical": "oklch(76.2% 0.131 66)",
+        "tonalRamp": [
+          "#1f0100",
+          "#411800",
+          "#663300",
+          "#8d5100",
+          "#b5700f",
+          "#d6964f",
+          "#f7bc7f",
+          "#ffe3ae"
+        ]
+      },
+      "bad": {
+        "role": "status",
+        "displayName": "Bad",
+        "canonical": "oklch(70.1% 0.154 26)",
+        "tonalRamp": [
+          "#270000",
+          "#4d0003",
+          "#761d1a",
+          "#a13a33",
+          "#ce574e",
+          "#ef8176",
+          "#ffaa9e",
+          "#ffd4c8"
+        ]
+      },
+      "accent-soft": {
+        "role": "primary",
+        "displayName": "Lagoon Tint"
+      },
+      "fast-soft": {
+        "role": "secondary",
+        "displayName": "Amber Tint"
+      },
+      "fast-ink": {
+        "role": "secondary",
+        "displayName": "Amber Ink",
+        "purpose": "Text on amber tints and amber numerals; equals fast in dark, deepens to light-fast-ink in light."
+      },
+      "rose-soft": {
+        "role": "tertiary",
+        "displayName": "Rose Tint"
+      },
+      "water-soft": {
+        "role": "tertiary",
+        "displayName": "Sky Tint"
+      },
+      "water-ink": {
+        "role": "tertiary",
+        "displayName": "Sky Ink",
+        "purpose": "Text on the sky tint (water add buttons); light-water-ink in light."
+      },
+      "violet-soft": {
+        "role": "tertiary",
+        "displayName": "Violet Tint"
+      }
+    },
+    "themes": {
+      "default": "dark",
+      "light": {
+        "activation": "prefers-color-scheme: light unless :root[data-theme=\"dark\"]; or :root[data-theme=\"light\"].",
+        "mapping": "Frontmatter keys prefixed light- replace their dark counterparts; raised and accent-ink become #ffffff; gold tokens are unchanged.",
+        "fixed": [
+          "hero-run, hero-cross, hero-rest gradients",
+          "workout palette (workout-bg and its run, walk, hard phases)",
+          "paywall hero",
+          "Journey hero"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display-xl": {
+        "displayName": "Display XL",
+        "purpose": "Session hero, Journey hero, onboarding, paywall and pop-up titles. Uppercase."
+      },
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page titles. Uppercase."
+      },
+      "numeral": {
+        "displayName": "Numeral",
+        "purpose": "Stat values, totals, legends, list values. Tabular."
+      },
+      "clock": {
+        "displayName": "Clock",
+        "purpose": "Fast dial and workout timers. Tabular."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card and coach headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default copy."
+      },
+      "note": {
+        "displayName": "Note",
+        "purpose": "Muted secondary lines."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Captions, tab labels, chips and pills."
+      },
+      "article": {
+        "displayName": "Article",
+        "purpose": "Guides, 65ch measure."
+      }
+    },
+    "shadows": [
+      {
+        "name": "float",
+        "value": "0 10px 30px rgba(0, 0, 0, .35)",
+        "light": "0 10px 30px rgba(14, 42, 47, .10)",
+        "purpose": "Tab bar, toast, stage and celebration pop-ups only."
+      },
+      {
+        "name": "contact",
+        "value": "0 1px 3px rgba(0,0,0,.2)",
+        "purpose": "Selected segment and switch thumb."
+      },
+      {
+        "name": "halo",
+        "value": "0 0 0 4px var(--fast-soft)",
+        "purpose": "Current stage dot on the fasting timeline."
+      }
+    ],
+    "motion": [
+      {
+        "name": "colour",
+        "value": "background .15s, color .15s, border-color .15s",
+        "purpose": "Control state changes."
+      },
+      {
+        "name": "press",
+        "value": "transform .1s to scale(.97)",
+        "purpose": "Active state on buttons, tiles, plans, the hero Go button and the workout main control."
+      },
+      {
+        "name": "rise",
+        "value": ".22s ease-out from translateY(6px), opacity .55",
+        "purpose": "View entry."
+      },
+      {
+        "name": "popup",
+        "value": ".28s ease-out from translateY(30px), opacity .4",
+        "purpose": "Stage and celebration pop-up entry."
+      },
+      {
+        "name": "onb-in",
+        "value": ".32s cubic-bezier(.2, .7, .2, 1), 40ms stagger",
+        "purpose": "Onboarding children; also the celebration title and line."
+      },
+      {
+        "name": "win-arc",
+        "value": ".9s cubic-bezier(.2, .8, .2, 1)",
+        "purpose": "Celebration ring draws closed. The one authored moment."
+      },
+      {
+        "name": "win-tick",
+        "value": ".5s cubic-bezier(.3, 1.4, .5, 1), delay .55s",
+        "purpose": "Celebration tick springs in."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "@media (prefers-reduced-motion: no-preference)",
+        "purpose": "Every animation and transition is gated behind it; the .still class also disables view entry."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "narrow",
+        "value": "max-width: 380px",
+        "purpose": "Smaller Journey title, tighter timeline indent."
+      },
+      {
+        "name": "rail",
+        "value": "min-width: 1000px",
+        "purpose": "Tab bar becomes a left rail; column 680px, sheets 640px."
+      }
+    ],
+    "voice": {
+      "stance": "Calm expert coach: plain, direct, honest about evidence; never hype, guilt or fear.",
+      "punctuation": "No em or en dashes anywhere; use hyphens, colons or full stops.",
+      "evidence": "Fasting claims carry an evidence chip: well established, human studies, early research."
+    },
+    "knownExceptions": [
+      "Small all-caps labels on older cards (eyebrow field and section labels, the coach tone label, hero and Journey hero meta, pop-up kicker, live label, date button, sheet title) are incumbent style, recorded here but not a pattern for new surfaces."
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Teal fill for the main action on a screen; the big variant spans full width at 54px.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Start fast</button>",
+      "css": ".ds-btn{appearance:none;border:1px solid var(--line,#22393d);background:var(--surface-2,#172d31);color:var(--ink,#e8f2f0);font-family:var(--body,Figtree,system-ui,sans-serif);font-size:15px;font-weight:700;border-radius:14px;padding:12px 16px;min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:background .15s,color .15s,transform .1s,border-color .15s;} .ds-btn-primary{background:var(--accent,#3cc7be);border-color:var(--accent,#3cc7be);color:var(--accent-ink,#052022);} .ds-btn-primary:hover{background:var(--accent-2,#2aa79f);border-color:var(--accent-2,#2aa79f);} .ds-btn:active{transform:scale(.97);} .ds-btn:focus-visible{outline:2px solid var(--accent,#3cc7be);outline-offset:2px;}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Default button: surface-2 with a hairline border.",
+      "html": "<button class=\"ds-btn2\">Log manually</button>",
+      "css": ".ds-btn2{appearance:none;border:1px solid var(--line,#22393d);background:var(--surface-2,#172d31);color:var(--ink,#e8f2f0);font-family:var(--body,Figtree,system-ui,sans-serif);font-size:15px;font-weight:700;border-radius:14px;padding:12px 16px;min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:background .15s,color .15s,transform .1s,border-color .15s;} .ds-btn2:hover{border-color:color-mix(in srgb,var(--accent,#3cc7be) 50%,var(--line,#22393d));} .ds-btn2:active{transform:scale(.97);} .ds-btn2:focus-visible{outline:2px solid var(--accent,#3cc7be);outline-offset:2px;}"
+    },
+    {
+      "name": "Premium Button",
+      "kind": "button",
+      "refersTo": "button-gold",
+      "description": "Gold gradient, Premium upsell only.",
+      "html": "<button class=\"ds-btn-gold\">Unlock Premium</button>",
+      "css": ".ds-btn-gold{appearance:none;border:1px solid var(--line,#22393d);background:var(--surface-2,#172d31);color:var(--ink,#e8f2f0);font-family:var(--body,Figtree,system-ui,sans-serif);font-size:15px;font-weight:700;border-radius:14px;padding:12px 16px;min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:background .15s,color .15s,transform .1s,border-color .15s;border:0;background:linear-gradient(135deg,var(--gold-1,#f3d27a),var(--gold-2,#c89b3c));color:var(--gold-ink,#2a1d02);} .ds-btn-gold:active{transform:scale(.97);} .ds-btn-gold:focus-visible{outline:2px solid var(--accent,#3cc7be);outline-offset:2px;}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Stacked muted label over a surface-2 field; the border turns teal on focus.",
+      "html": "<label class=\"ds-field\">Weight (kg)<input class=\"ds-input\" value=\"82.4\"></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:5px;font-family:var(--body,Figtree,system-ui,sans-serif);font-size:13px;font-weight:600;color:var(--muted,#91a7a8);max-width:280px;} .ds-input{font:inherit;font-size:15px;font-weight:400;color:var(--ink,#e8f2f0);background:var(--surface-2,#172d31);border:1px solid var(--line,#22393d);border-radius:12px;padding:10px 12px;min-height:46px;caret-color:var(--accent,#3cc7be);} .ds-input:hover{border-color:color-mix(in srgb,var(--accent,#3cc7be) 40%,var(--line,#22393d));} .ds-input:focus{border-color:var(--accent,#3cc7be);outline:none;}"
+    },
+    {
+      "name": "Chips and Pills",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Pill choices; selected inverts to ink; domain pills use the soft tint with the domain colour.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip ds-on\">All</button><button class=\"ds-chip\">Breakfast</button><span class=\"ds-pill-fast\">16:8</span><span class=\"ds-pill-run\">Week 3</span></div>",
+      "css": ".ds-chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--body,Figtree,system-ui,sans-serif);} .ds-chip{border:1px solid var(--line,#22393d);background:var(--surface,#122427);color:var(--ink,#e8f2f0);border-radius:999px;padding:8px 12px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer;transition:background .15s,color .15s,border-color .15s;} .ds-chip:hover{border-color:var(--accent,#3cc7be);} .ds-chip:focus-visible{outline:2px solid var(--accent,#3cc7be);outline-offset:2px;} .ds-chip.ds-on{background:var(--ink,#e8f2f0);color:var(--bg,#091315);border-color:var(--ink,#e8f2f0);} .ds-pill-fast,.ds-pill-run{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;} .ds-pill-fast{background:var(--fast-soft,#3a2f16);color:var(--fast-ink,#f5b544);} .ds-pill-run{background:var(--accent-soft,#143c3c);color:var(--accent,#3cc7be);}"
+    },
+    {
+      "name": "Tab Bar",
+      "kind": "nav",
+      "refersTo": "nav-tabs",
+      "description": "Floating glass pill of tabs; the active tab icon takes its domain colour. Becomes a 92px left rail at 1000px.",
+      "html": "<nav class=\"ds-tabs\"><button class=\"ds-on\"><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"13\" r=\"8\"/><path d=\"M12 9v4l2.5 2.5M9.5 2h5M12 2v3\"/></svg>Today</button><button><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"13\" r=\"8\"/><path d=\"M12 9v4l2.5 2.5M9.5 2h5M12 2v3\"/></svg>Journey</button><button><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"13\" r=\"8\"/><path d=\"M12 9v4l2.5 2.5M9.5 2h5M12 2v3\"/></svg>Fast</button><button><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M7 3v8a2 2 0 0 0 2 2v8M11 3v8a2 2 0 0 1-2 2M9 3v6M17 21V3c-2 1-3 4-3 8h3\"/></svg>Food</button></nav>",
+      "css": ".ds-tabs{display:grid;grid-template-columns:repeat(4,1fr);padding:5px;border-radius:26px;border:1px solid var(--line,#22393d);background:color-mix(in srgb,var(--surface,#122427) 88%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 10px 30px rgba(0,0,0,.35);max-width:380px;font-family:var(--body,Figtree,system-ui,sans-serif);} .ds-tabs button{background:none;border:0;color:var(--muted,#91a7a8);font:inherit;font-size:11px;font-weight:700;padding:7px 0 6px;display:flex;flex-direction:column;align-items:center;gap:3px;border-radius:20px;cursor:pointer;} .ds-tabs button:hover{color:var(--ink,#e8f2f0);} .ds-tabs button:focus-visible{outline:2px solid var(--accent,#3cc7be);outline-offset:2px;} .ds-tabs button.ds-on{color:var(--ink,#e8f2f0);background:var(--surface-2,#172d31);} .ds-tabs button.ds-on svg{color:var(--accent,#3cc7be);}"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat surface card with a hairline, 20px radius and 16px padding; stat numerals in the display face.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-h\">This week</div><div class=\"ds-stats\"><div><b>18.4</b><span>km run</span></div><div><b>3</b><span>fasts done</span></div><div><b>81.6</b><span>kg</span></div></div></div>",
+      "css": ".ds-card{background:var(--surface,#122427);border:1px solid var(--line,#22393d);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;color:var(--ink,#e8f2f0);font-family:var(--body,Figtree,system-ui,sans-serif);max-width:360px;} .ds-card-h{font-size:16px;font-weight:800;} .ds-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;} .ds-stats b{display:block;font-family:var(--display,\"Barlow Condensed\",\"Arial Narrow\",sans-serif);font-size:27px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums;} .ds-stats span{font-size:12px;color:var(--muted,#91a7a8);font-weight:600;}"
+    },
+    {
+      "name": "Quick Tiles",
+      "kind": "custom",
+      "refersTo": "quick-tile",
+      "description": "One-tap logs on Today; each icon well sits in its domain tint.",
+      "html": "<div class=\"ds-qa-row\"><button class=\"ds-qa\"><i style=\"background:var(--rose-soft,#3b1d28);color:var(--rose,#f07a9b)\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M7 3v8a2 2 0 0 0 2 2v8M11 3v8a2 2 0 0 1-2 2M9 3v6M17 21V3c-2 1-3 4-3 8h3\"/></svg></i><b>Meal</b><small>Log food</small></button><button class=\"ds-qa\"><i style=\"background:var(--water-soft,#14304a);color:var(--water,#5aa9f0)\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z\"/></svg></i><b>+250 ml</b><small>1.2 / 2.5 L</small></button></div>",
+      "css": ".ds-qa-row{display:grid;grid-template-columns:repeat(2,96px);gap:8px;font-family:var(--body,Figtree,system-ui,sans-serif);} .ds-qa{background:var(--surface,#122427);border:1px solid var(--line,#22393d);border-radius:16px;padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;color:var(--ink,#e8f2f0);font:inherit;transition:background .15s,transform .1s,border-color .15s;} .ds-qa:hover{border-color:color-mix(in srgb,var(--accent,#3cc7be) 50%,var(--line,#22393d));} .ds-qa:active{transform:scale(.97);} .ds-qa:focus-visible{outline:2px solid var(--accent,#3cc7be);outline-offset:2px;} .ds-qa i{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;} .ds-qa b{font-size:13px;font-weight:800;} .ds-qa small{font-size:11.5px;color:var(--muted,#91a7a8);font-weight:600;white-space:nowrap;}"
+    },
+    {
+      "name": "Session Hero",
+      "kind": "custom",
+      "refersTo": "hero-run",
+      "description": "The day's session as a fixed teal gradient block with the white Go button.",
+      "html": "<div class=\"ds-hero\"><h2>Easy 30</h2><p>Walk 5 min, run easy, walk 5 min.</p><button class=\"ds-go\">Start</button></div>",
+      "css": ".ds-hero{border-radius:24px;padding:18px;color:#fff;display:flex;flex-direction:column;gap:14px;background:linear-gradient(150deg,#0e746e 0%,#0a4649 100%);font-family:var(--body,Figtree,system-ui,sans-serif);max-width:360px;} .ds-hero h2{margin:0;font-family:var(--display,\"Barlow Condensed\",\"Arial Narrow\",sans-serif);font-size:40px;font-weight:800;line-height:.95;text-transform:uppercase;} .ds-hero p{margin:0;font-size:14.5px;} .ds-go{background:#fff;color:#0b2b2e;border:0;border-radius:16px;min-height:56px;font:inherit;font-size:18px;font-weight:800;cursor:pointer;transition:transform .1s;} .ds-go:active{transform:scale(.97);} .ds-go:focus-visible{outline:2px solid #fff;outline-offset:2px;}"
+    },
+    {
+      "name": "Celebration",
+      "kind": "custom",
+      "refersTo": "pop",
+      "description": "The one authored moment: the ring draws closed, the tick springs in. Without motion preference it shows the final state.",
+      "html": "<div class=\"ds-win\" role=\"dialog\" aria-label=\"Goal reached\"><div class=\"ds-mark\"><svg viewBox=\"0 0 120 120\"><circle class=\"ds-trk\" cx=\"60\" cy=\"60\" r=\"52\"/><circle class=\"ds-arc\" cx=\"60\" cy=\"60\" r=\"52\"/></svg><span><svg viewBox=\"0 0 24 24\" width=\"30\" height=\"30\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12.5l4.5 4.5L19 7.5\"/></svg></span></div><h2>16.2 hours</h2><p>Goal reached. Break it with protein first, then a normal meal.</p><button>Done</button></div>",
+      "css": ".ds-win{width:min(360px,100%);background:var(--surface,#122427);border:1px solid color-mix(in srgb,var(--fast,#f5b544) 50%,var(--line,#22393d));border-radius:24px;padding:26px 20px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.35);color:var(--ink,#e8f2f0);font-family:var(--body,Figtree,system-ui,sans-serif);--c:var(--fast,#f5b544);} .ds-mark{position:relative;width:104px;height:104px;display:grid;place-items:center;} .ds-mark svg{position:absolute;inset:0;transform:rotate(-90deg);} .ds-mark circle{fill:none;stroke-width:8;} .ds-trk{stroke:color-mix(in srgb,var(--c) 18%,transparent);} .ds-arc{stroke:var(--c);stroke-linecap:round;stroke-dasharray:327;stroke-dashoffset:0;} .ds-mark span{width:58px;height:58px;border-radius:50%;background:var(--c);color:var(--bg,#091315);display:grid;place-items:center;} .ds-win h2{margin:0;font-family:var(--display,\"Barlow Condensed\",\"Arial Narrow\",sans-serif);font-size:40px;font-weight:800;line-height:1;text-transform:uppercase;} .ds-win p{margin:0;color:var(--muted,#91a7a8);font-size:15px;max-width:34ch;} .ds-win button{align-self:stretch;margin-top:6px;min-height:54px;border-radius:14px;border:1px solid var(--accent,#3cc7be);background:var(--accent,#3cc7be);color:var(--accent-ink,#052022);font:inherit;font-size:17px;font-weight:700;cursor:pointer;} .ds-win button:hover{background:var(--accent-2,#2aa79f);} .ds-win button:focus-visible{outline:2px solid var(--accent,#3cc7be);outline-offset:2px;} @media (prefers-reduced-motion:no-preference){.ds-arc{animation:dsArc .9s cubic-bezier(.2,.8,.2,1) both;} .ds-mark span{animation:dsTick .5s cubic-bezier(.3,1.4,.5,1) .55s both;} @keyframes dsArc{from{stroke-dashoffset:327}to{stroke-dashoffset:0}} @keyframes dsTick{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Coach at First Light",
+    "overview": "Run Back is built for the minute before a 5 am run: a phone in one hand, low light, a quick question of what to do now. The world is a deep teal-black night (#091315 and its surfaces) lit by a small set of domain colours, each one meaning one thing. Teal is running and the brand; amber is the fast; rose is the body; sky is water; violet is strength and cross-training; gold is Premium and nothing else. A reader who learns the colours once can read every screen by them.\n\nThe surface is calm and dense in the way a good training log is dense: one column, rounded tonal cards on a dark field, condensed uppercase display numerals for the things that matter (the clock, the score, the kilograms) and quiet Figtree for everything else. Depth comes from tonal layering, not shadow. The only saturated full-bleed surfaces are the day's session hero and the Journey hero, so the next action is always the loudest thing on screen. A full light theme exists for bright outdoor use, but the system is designed dark and translated to light, never the reverse.\n\nMotion is restrained and always behind `prefers-reduced-motion: no-preference`. Views rise in a few pixels, presses compress to 97 percent, sheets and pop-ups slide up. The one authored moment is the celebration ring: an arc that draws itself closed around a tick when a fasting goal or a Journey milestone lands. Nothing else is allowed to perform.",
+    "keyCharacteristics": [
+      "Dark-first teal-black field; light theme is a full token remap, not an afterthought.",
+      "One colour per domain, used for icons, rings, bars, tints and the matching action.",
+      "Barlow Condensed uppercase for headlines and every important number, with tabular figures.",
+      "Figtree at 15px for body; weights 600 to 800 carry hierarchy, not size jumps.",
+      "Tonal cards with a 1px hairline; shadow only on things that float.",
+      "One phone column (560px), a floating glass tab bar that becomes a left rail at 1000px.",
+      "A single authored celebration; everything else moves briefly or not at all."
+    ],
+    "rules": [
+      {
+        "name": "The One Colour Per Domain Rule",
+        "body": "Each domain owns exactly one hue, and that hue appears wherever the domain appears: its icon, ring, bar, pill, tint and its primary action. Never borrow another domain's colour for emphasis, and never introduce a seventh hue for a new feature; map it to an existing domain or to neutral.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ink On Tint Rule",
+        "body": "Text set on a soft tint uses that domain's ink token where one exists (fast-ink on fast-soft, water-ink on water-soft) so it holds contrast in the light theme. Solid hues are for marks and fills; inks are for words.",
+        "section": "colors"
+      },
+      {
+        "name": "The Gold Is Paid Rule",
+        "body": "Gold appears only on Premium surfaces: the PRO tag, upsell buttons, locks, the paywall and earned-badge toasts.",
+        "section": "colors"
+      },
+      {
+        "name": "The Numbers Stand Tall Rule",
+        "body": "Any figure the user came to see (time, distance, weight, score, kcal, streak) is set in Barlow Condensed with tabular figures; its unit is set small in Figtree beside it.",
+        "section": "typography"
+      },
+      {
+        "name": "The Weight Not Size Rule",
+        "body": "Body hierarchy is carried by Figtree weight (600 note, 700 control, 800 title) within a 12 to 17px band. Size jumps belong to the display face.",
+        "section": "typography"
+      },
+      {
+        "name": "The Only Floaters Cast Shadows Rule",
+        "body": "A surface casts a shadow only if it sits above scrolling content. Cards in the flow stay flat with a hairline.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Glass Bar Rule",
+        "body": "The tab bar is the one translucent surface: surface at 88 percent with a 16px backdrop blur.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** give every new feature an existing domain colour and use its solid, soft and ink tokens together (icon and fill in the solid, tint behind, words in the ink).",
+      "**Do** set every figure the user came for in Barlow Condensed with tabular numerals, and its unit in small muted Figtree.",
+      "**Do** design in dark first and verify the light theme through the token remap; keep the session heroes, workout and paywall hero on their fixed dark gradients.",
+      "**Do** keep primary targets at 46 to 56px and compact controls at no less than 38px, one-handed, inside safe-area insets.",
+      "**Do** put every animation behind `prefers-reduced-motion: no-preference`, and keep transitions to 150ms colour and a 0.97 press scale.",
+      "**Do** reserve the celebration ring for real wins (a fasting goal reached, a Journey milestone).",
+      "**Do** write copy as a calm expert coach: plain, direct, honest about evidence, with an evidence chip beside fasting claims and safety guidance stated in the open.",
+      "**Do** use hyphens, colons or full stops where a dash might go; the product uses no em or en dashes anywhere."
+    ],
+    "donts": [
+      "**Don't** use gold outside Premium, or a domain hue outside its domain.",
+      "**Don't** add shadows to cards in the flow; only floating layers (tab bar, toast, pop-ups) cast one.",
+      "**Don't** add a second authored animation or make a celebration of routine logs.",
+      "**Don't** add new small all-caps kicker labels above headings on new surfaces; the existing ones on older cards are incumbent, not a pattern to extend.",
+      "**Don't** use hype, guilt or fear in copy, or claims beyond the evidence tag.",
+      "**Don't** set body copy in the display face, or headlines in mixed case Barlow; display is uppercase."
+    ]
+  }
+}
