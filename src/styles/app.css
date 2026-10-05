@@ -1360,3 +1360,47 @@ details.fold > summary h3 { white-space: nowrap; }
 .gstep { display: flex; align-items: baseline; gap: 12px; margin: 8px 0; }
 .gstep b { font-size: 64px; font-weight: 800; line-height: 1; color: var(--accent); }
 .gstep span { font-size: 22px; font-weight: 700; }
+
+/* ---- Mind, round two: unload flow, focus, journal ---- */
+.mstart .msteps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; counter-reset: s; }
+.msteps li { counter-increment: s; display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--muted); }
+.msteps li::before { content: counter(s); width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--accent); color: var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 12px; margin-bottom: 4px; }
+.msteps b { color: var(--ink); font-size: 14px; }
+.uflow { display: flex; flex-direction: column; gap: 14px; padding-top: 4px; }
+.uflow .eyebrow { margin-bottom: -6px; }
+.ulist { display: flex; flex-direction: column; gap: 6px; }
+.uitem { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font-size: 15px; }
+.uitem .x { border: 0; background: none; color: var(--faint); font-size: 20px; width: 32px; height: 32px; cursor: pointer; }
+.uitemcard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 16px; font-size: 20px; font-weight: 700; letter-spacing: -.01em; line-height: 1.3; }
+.ubin { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ubtn { display: flex; flex-direction: column; gap: 3px; text-align: left; background: var(--surface); border: 1.5px solid var(--line); border-radius: 14px; padding: 12px; cursor: pointer; color: var(--ink); font: inherit; min-height: 72px; }
+.ubtn b { font-size: 16px; } .ubtn small { font-size: 13px; color: var(--muted); }
+.ubtn.on { border-color: var(--accent); background: var(--accent-soft); }
+.tag.big { min-height: 40px; padding: 8px 16px; font-size: 15px; }
+.tcheck.dim { border-style: dashed; cursor: default; }
+.udone { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; padding-top: 12px; }
+.ftask { font-size: 28px; }
+.fstep { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.fstep b { font-size: 17px; }
+.ftimer { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 8px 0; }
+.ftimer > b { font-size: 56px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.ftimer .seg { width: 100%; }
+.breath .bsq.big { transform: scale(1); } .breath .bsq.small { transform: scale(.66); }
+.tcheckback { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+.tcheckback p { font-size: 16px; }
+.wrow .ttags { flex-wrap: wrap; }
+.jlabel b { font-size: 17px; color: var(--ink); font-weight: 700; }
+.jlabel > span { font-size: 13px; color: var(--muted); font-weight: 500; margin-top: -2px; }
+.jlabel textarea { font-size: 16px; line-height: 1.5; }
+.jentries { display: flex; flex-direction: column; }
+.jentryrow { display: flex; flex-direction: column; gap: 3px; text-align: left; background: none; border: 0; border-top: 1px solid var(--line); padding: 12px 0; color: var(--ink); font: inherit; cursor: pointer; }
+.jentryrow:first-child { border-top: 0; }
+.jdate { font-size: 13px; font-weight: 700; color: var(--muted); }
+.jtext { font-size: 15px; line-height: 1.45; }
+.jprog { font-size: 13px; color: var(--accent); font-weight: 600; }
+@media (hover: hover) { .jentryrow:hover .jtext { color: var(--accent); } }
+
+.linkbtn svg { width: 16px; height: 16px; vertical-align: -3px; margin-right: 2px; }
+.jlabel { display: flex; flex-direction: column; gap: 6px; }
+.trow.wrow { grid-template-columns: 1fr; }
+.trow.wrow .ttags { grid-column: 1; }
