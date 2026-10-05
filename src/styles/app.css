@@ -465,7 +465,7 @@ details.manual[open] summary { margin-bottom: 12px; }
 .price .best { position: absolute; top: -10px; right: 12px; font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: linear-gradient(135deg, var(--gold-1), var(--gold-2)); color: var(--gold-ink); }
 
 /* Workout (always dark, like a watch face) */
-.wk { --wk-bg: #0f1420; --wk-ink: #f2f4f8; --wk-muted: #9aa4b5; --wk-line: #273041; --wk-run: #5b96f7; --wk-walk: #8fa3bb; --wk-hard: #f5be4a;
+.wk { --wk-bg: #0e1311; --wk-ink: #f3f4f0; --wk-muted: #9aa39e; --wk-line: #262d2a; --wk-run: #7c9ef4; --wk-walk: #a9b1ad; --wk-hard: #f5be4a;
   position: fixed; inset: 0; z-index: 60; background: var(--wk-bg); color: var(--wk-ink); display: flex; flex-direction: column; overflow-y: auto;
   padding: calc(10px + env(safe-area-inset-top, 0px)) 16px calc(18px + env(safe-area-inset-bottom, 0px)); --ph: var(--wk-walk); color-scheme: dark; }
 .wk.ph-r { --ph: var(--wk-run); } .wk.ph-h { --ph: var(--wk-hard); }

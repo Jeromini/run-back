@@ -1,7 +1,7 @@
 // Offline support. The page itself loads network-first so updates arrive straight away;
 // hashed build files (/assets/*) and fonts are cache-first because their names change on
 // every release. The sync service and map tiles are never cached.
-const CACHE = "runback-v14";
+const CACHE = "runback-v15";
 const SHELL = ["/", "/manifest.webmanifest", "/icon-192.png", "/icon-512.png", "/apple-touch-icon.png"];
 
 self.addEventListener("install", e => {

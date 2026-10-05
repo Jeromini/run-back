@@ -16,17 +16,17 @@ function draw() {
   const list = weights(state.days), now = avg7(list, today()), before = avg7(list, iso(addDays(new Date(), -7)));
   const chg = now != null && before != null ? now - before : null;
 
-  const bg = g.createLinearGradient(0, 0, W, Hh); bg.addColorStop(0, "#1b2a4a"); bg.addColorStop(1, "#0e1320");
+  const bg = g.createLinearGradient(0, 0, W, Hh); bg.addColorStop(0, "#1a2420"); bg.addColorStop(1, "#0e1311");
   g.fillStyle = bg; g.fillRect(0, 0, W, Hh);
   const glow = g.createRadialGradient(W, 0, 0, W, 0, 900); glow.addColorStop(0, "rgba(60,199,190,.35)"); glow.addColorStop(1, "rgba(60,199,190,0)");
   g.fillStyle = glow; g.fillRect(0, 0, W, Hh);
   const body = `-apple-system, "SF Pro Text", Inter, system-ui, sans-serif`;
-  g.fillStyle = "#5b96f7"; g.font = `700 56px -apple-system, "SF Pro Display", Inter, sans-serif`; g.fillText(APP_NAME, 90, 150);
+  g.fillStyle = "#7c9ef4"; g.font = `700 56px -apple-system, "SF Pro Display", Inter, sans-serif`; g.fillText(APP_NAME, 90, 150);
   g.fillStyle = "rgba(234,244,242,.7)"; g.font = `600 36px ${body}`; g.fillText(`Week of ${shortDate(ws)} - ${shortDate(we)}`, 90, 210);
   g.fillStyle = "#f2f4f8"; g.font = `700 132px -apple-system, "SF Pro Display", Inter, sans-serif`; g.fillText("My week", 84, 380);
 
   const tiles = [
-    [cnt.runs + "/3", "runs", "#5b96f7"], [Math.round(mins) + "", "minutes running", "#5b96f7"],
+    [cnt.runs + "/3", "runs", "#7c9ef4"], [Math.round(mins) + "", "minutes running", "#7c9ef4"],
     [round1(fastH) + " h", "fasted", "#f5b544"], [cnt.cross + "", "strength + cardio", "#a78bfa"],
     [chg == null ? "-" : (chg > 0 ? "+" : "") + round1(chg) + " " + state.profile.unit, "weight this week", "#f07a9b"], [streakWeeks(state.days, today()) + "", "week streak", "#f5b544"]
   ];

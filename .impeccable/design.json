@@ -1,1169 +1,1192 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-04T14:58:35.442Z",
+  "generatedAt": "2026-10-05T01:39:06.830Z",
   "title": "Design System: Run Back",
   "extensions": {
     "colorMeta": {
-      "bg": {
+      "paper": {
         "role": "neutral",
-        "displayName": "Night Navy",
-        "canonical": "oklch(21.8% 0.021 264)",
+        "displayName": "Warm Paper",
+        "canonical": "#f7f7f2",
+        "oklch": "oklch(97.5% 0.007 107)",
+        "mode": "light",
         "tonalRamp": [
-          "#070b14",
-          "#1f242f",
-          "#3a404b",
-          "#585e6a",
-          "#777d8a",
-          "#989fac",
-          "#bdc4d2",
-          "#e7effd"
+          "#0b0b08",
+          "#252522",
+          "#42423e",
+          "#61615d",
+          "#83837e",
+          "#a5a5a1",
+          "#c9c9c5",
+          "#efefea"
         ]
       },
-      "bg-2": {
+      "paper-2": {
         "role": "neutral",
-        "displayName": "Lifted Navy",
-        "canonical": "oklch(24.3% 0.025 264)",
+        "displayName": "Paper Shade",
+        "canonical": "#efefe8",
+        "oklch": "oklch(95.0% 0.009 107)",
+        "mode": "light",
         "tonalRamp": [
-          "#060b16",
-          "#1e2430",
-          "#39404d",
-          "#575e6c",
-          "#767d8c",
-          "#979fae",
-          "#bcc4d5",
-          "#e6efff"
+          "#0c0b07",
+          "#252520",
+          "#42423d",
+          "#62625c",
+          "#83837c",
+          "#a5a59f",
+          "#cacac3",
+          "#efefe8"
         ]
       },
       "surface": {
         "role": "neutral",
-        "displayName": "Slate Surface",
-        "canonical": "oklch(28.0% 0.026 263)",
+        "displayName": "White Page",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 90)",
+        "mode": "light",
         "tonalRamp": [
-          "#060b16",
-          "#1d2431",
-          "#38404e",
-          "#565e6d",
-          "#757e8d",
-          "#969faf",
-          "#bbc5d6",
-          "#e5efff"
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
         ]
       },
       "surface-2": {
         "role": "neutral",
-        "displayName": "Slate Inset",
-        "canonical": "oklch(31.6% 0.028 262)",
+        "displayName": "Page Shade",
+        "canonical": "#f3f3ee",
+        "oklch": "oklch(96.3% 0.007 107)",
+        "mode": "light",
         "tonalRamp": [
-          "#050b17",
-          "#1d2432",
-          "#38404f",
-          "#555e6e",
-          "#747e8e",
-          "#959fb0",
-          "#bac5d7",
-          "#e4efff"
-        ]
-      },
-      "raised": {
-        "role": "neutral",
-        "displayName": "Raised Slate",
-        "canonical": "oklch(34.7% 0.031 262)",
-        "tonalRamp": [
-          "#050b18",
-          "#1c2433",
-          "#374050",
-          "#545e6f",
-          "#737e90",
-          "#949fb2",
-          "#b9c5d9",
-          "#e3efff"
+          "#0b0b08",
+          "#252522",
+          "#42423e",
+          "#61615d",
+          "#83837e",
+          "#a5a5a1",
+          "#c9c9c5",
+          "#efefea"
         ]
       },
       "ink": {
         "role": "neutral",
-        "displayName": "Mist Ink",
-        "canonical": "oklch(96.7% 0.006 265)",
+        "displayName": "Journal Ink",
+        "canonical": "#17201d",
+        "oklch": "oklch(23.4% 0.014 173)",
+        "mode": "light",
         "tonalRamp": [
-          "#0a0b0e",
-          "#232427",
-          "#3e4043",
-          "#5c5e61",
-          "#7b7d81",
-          "#9d9ea2",
-          "#c2c4c8",
-          "#eceef2"
+          "#060d0a",
+          "#1e2724",
+          "#3b4541",
+          "#596460",
+          "#7a8581",
+          "#9da8a4",
+          "#c0ccc8",
+          "#e6f2ed"
         ]
       },
       "muted": {
         "role": "neutral",
-        "displayName": "Fog",
-        "canonical": "oklch(73.2% 0.024 261)",
+        "displayName": "Pencil",
+        "canonical": "#5b6460",
+        "oklch": "oklch(49.4% 0.013 167)",
+        "mode": "light",
         "tonalRamp": [
-          "#060b15",
-          "#1d2430",
-          "#39404d",
-          "#565e6c",
-          "#757e8c",
-          "#969fae",
-          "#bbc5d4",
-          "#e5efff"
+          "#060d0a",
+          "#1f2724",
+          "#3c4441",
+          "#5b6460",
+          "#7b8581",
+          "#9ea8a3",
+          "#c2ccc7",
+          "#e7f1ed"
         ]
       },
       "faint": {
         "role": "neutral",
-        "displayName": "Dusk",
-        "canonical": "oklch(56.5% 0.033 264)",
+        "displayName": "Faint Pencil",
+        "canonical": "#9aa19d",
+        "oklch": "oklch(70.2% 0.010 161)",
+        "mode": "light",
         "tonalRamp": [
-          "#050b19",
-          "#1c2434",
-          "#374052",
-          "#545e71",
-          "#737d92",
-          "#949fb4",
-          "#b9c4da",
-          "#e3efff"
+          "#080c0a",
+          "#212723",
+          "#3e4440",
+          "#5d635f",
+          "#7d8480",
+          "#a0a7a3",
+          "#c4cbc7",
+          "#e9f1ec"
         ]
       },
       "line": {
         "role": "neutral",
         "displayName": "Hairline",
-        "canonical": "oklch(35.1% 0.031 262)",
+        "canonical": "#e5e5dd",
+        "oklch": "oklch(92.0% 0.011 107)",
+        "mode": "light",
         "tonalRamp": [
-          "#050b18",
-          "#1c2433",
-          "#374050",
-          "#545e6f",
-          "#737e90",
-          "#949fb2",
-          "#b9c5d9",
-          "#e3efff"
+          "#0c0b07",
+          "#262520",
+          "#42423c",
+          "#62625b",
+          "#83837c",
+          "#a6a69e",
+          "#cacac2",
+          "#efefe7"
         ]
       },
-      "accent": {
+      "cobalt": {
         "role": "primary",
-        "displayName": "Action Blue",
-        "canonical": "oklch(67.8% 0.157 260)",
+        "displayName": "Journal Cobalt",
+        "canonical": "#2858d8",
+        "oklch": "oklch(51.0% 0.203 264)",
+        "mode": "light",
         "tonalRamp": [
-          "#00003b",
-          "#001a63",
-          "#00388d",
-          "#2059b4",
-          "#417ad9",
-          "#629dff",
-          "#88c4ff",
-          "#baf0ff"
+          "#000035",
+          "#01017b",
+          "#072bab",
+          "#2352d2",
+          "#4377fa",
+          "#78a2ff",
+          "#b0c9fe",
+          "#e7efff"
         ]
       },
-      "accent-2": {
+      "cobalt-deep": {
         "role": "primary",
-        "displayName": "Deep Action Blue",
-        "canonical": "oklch(62.3% 0.171 260)",
+        "displayName": "Pressed Cobalt",
+        "canonical": "#1f49bc",
+        "oklch": "oklch(45.4% 0.187 265)",
+        "mode": "light",
         "tonalRamp": [
-          "#00003e",
-          "#001767",
-          "#003693",
-          "#1b57bc",
-          "#3c79e1",
-          "#5d9cff",
-          "#85c3ff",
-          "#b7efff"
+          "#000035",
+          "#01017a",
+          "#0c30a3",
+          "#2955c9",
+          "#487af1",
+          "#78a2fe",
+          "#afc9ff",
+          "#e7efff"
         ]
       },
-      "accent-ink": {
+      "cobalt-soft": {
         "role": "primary",
-        "displayName": "White on Blue",
-        "canonical": "oklch(100.0% 0.000 90)",
+        "displayName": "Cobalt Wash",
+        "canonical": "#e7edfb",
+        "oklch": "oklch(94.6% 0.020 267)",
+        "mode": "light",
+        "tonalRamp": [
+          "#080b14",
+          "#21252f",
+          "#3d424d",
+          "#5c616d",
+          "#7d828f",
+          "#9fa5b2",
+          "#c3c9d7",
+          "#e8eefc"
+        ]
+      },
+      "on-cobalt": {
+        "role": "primary",
+        "displayName": "On Cobalt",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 90)",
+        "mode": "light",
         "tonalRamp": [
           "#0b0b0b",
-          "#242424",
-          "#404040",
-          "#5d5d5d",
-          "#7d7d7d",
-          "#9e9e9e",
-          "#c4c4c4",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
           "#eeeeee"
-        ]
-      },
-      "accent-soft": {
-        "role": "primary",
-        "displayName": "Blue Wash",
-        "canonical": "oklch(33.3% 0.070 263)",
-        "tonalRamp": [
-          "#000727",
-          "#112246",
-          "#2b3f65",
-          "#485d86",
-          "#677da8",
-          "#879fcb",
-          "#acc5f3",
-          "#d6efff"
         ]
       },
       "fast": {
         "role": "secondary",
-        "displayName": "Fast Amber",
-        "canonical": "oklch(81.3% 0.145 78)",
+        "displayName": "Fasting Amber",
+        "canonical": "#b4730a",
+        "oklch": "oklch(61.0% 0.130 70)",
+        "mode": "light",
         "tonalRamp": [
-          "#210000",
-          "#431400",
-          "#663000",
-          "#894f00",
-          "#ab6f00",
-          "#cf9105",
-          "#f7b749",
-          "#ffe48b"
+          "#140800",
+          "#361f01",
+          "#5d3900",
+          "#875503",
+          "#b37207",
+          "#d9953d",
+          "#feba66",
+          "#ffebd5"
         ]
       },
       "fast-soft": {
         "role": "secondary",
         "displayName": "Amber Wash",
-        "canonical": "oklch(31.5% 0.030 79)",
+        "canonical": "#f8eedb",
+        "oklch": "oklch(95.2% 0.027 84)",
+        "mode": "light",
         "tonalRamp": [
-          "#120900",
-          "#2c2213",
-          "#483e2e",
-          "#675c4b",
-          "#877c69",
-          "#a99d8a",
-          "#cfc2af",
-          "#faedd8"
+          "#110a01",
+          "#2b2415",
+          "#494131",
+          "#696050",
+          "#8a8170",
+          "#ada492",
+          "#d2c8b6",
+          "#f7edda"
         ]
       },
       "fast-ink": {
         "role": "secondary",
-        "displayName": "Amber Text",
-        "canonical": "oklch(81.3% 0.145 78)",
+        "displayName": "Amber Ink",
+        "canonical": "#7a4d05",
+        "oklch": "oklch(46.1% 0.097 70)",
+        "mode": "light",
         "tonalRamp": [
-          "#210000",
-          "#431400",
-          "#663000",
-          "#894f00",
-          "#ab6f00",
-          "#cf9105",
-          "#f7b749",
-          "#ffe48b"
-        ]
-      },
-      "rose": {
-        "role": "tertiary",
-        "displayName": "Body Rose",
-        "canonical": "oklch(72.3% 0.148 4)",
-        "tonalRamp": [
-          "#290006",
-          "#4f001d",
-          "#770637",
-          "#9d2e54",
-          "#c25173",
-          "#e87394",
-          "#ff9aba",
-          "#ffcae5"
-        ]
-      },
-      "rose-soft": {
-        "role": "tertiary",
-        "displayName": "Rose Wash",
-        "canonical": "oklch(29.0% 0.044 346)",
-        "tonalRamp": [
-          "#17040f",
-          "#331b29",
-          "#513645",
-          "#705463",
-          "#917383",
-          "#b494a4",
-          "#dab9ca",
-          "#ffe3f5"
+          "#140800",
+          "#361f00",
+          "#5d3901",
+          "#845615",
+          "#a7773b",
+          "#cc9a5e",
+          "#f2be82",
+          "#feebd6"
         ]
       },
       "water": {
-        "role": "tertiary",
+        "role": "secondary",
         "displayName": "Water Teal",
-        "canonical": "oklch(77.8% 0.122 184)",
+        "canonical": "#0e8a80",
+        "oklch": "oklch(57.1% 0.098 186)",
+        "mode": "light",
         "tonalRamp": [
-          "#001510",
-          "#00332a",
-          "#005247",
-          "#007266",
-          "#009486",
-          "#0cb7a7",
-          "#51decd",
-          "#92fff7"
+          "#000f0d",
+          "#012c28",
+          "#024d47",
+          "#037168",
+          "#24958b",
+          "#51b9ae",
+          "#78ded2",
+          "#b7fff5"
         ]
       },
       "water-soft": {
-        "role": "tertiary",
+        "role": "secondary",
         "displayName": "Teal Wash",
-        "canonical": "oklch(32.4% 0.040 200)",
+        "canonical": "#dcf0ed",
+        "oklch": "oklch(94.0% 0.021 186)",
+        "mode": "light",
         "tonalRamp": [
-          "#001012",
-          "#052a2c",
-          "#244648",
-          "#426567",
-          "#618587",
-          "#81a6a8",
-          "#a6cdcf",
-          "#d0f7f9"
+          "#020e0c",
+          "#192927",
+          "#354644",
+          "#546563",
+          "#758784",
+          "#97aaa7",
+          "#bacecb",
+          "#dff3f0"
         ]
       },
       "water-ink": {
-        "role": "tertiary",
-        "displayName": "Teal Text",
-        "canonical": "oklch(83.7% 0.105 185)",
+        "role": "secondary",
+        "displayName": "Teal Ink",
+        "canonical": "#0a665e",
+        "oklch": "oklch(46.0% 0.078 185)",
+        "mode": "light",
         "tonalRamp": [
-          "#001410",
-          "#00312b",
-          "#005048",
-          "#007066",
-          "#009186",
-          "#3db4a7",
-          "#69dace",
-          "#9dfff8"
+          "#000f0d",
+          "#002c28",
+          "#014d47",
+          "#1b6f67",
+          "#449289",
+          "#68b5ac",
+          "#8cdad0",
+          "#b9fff5"
+        ]
+      },
+      "rose": {
+        "role": "secondary",
+        "displayName": "Weight Rose",
+        "canonical": "#b8476a",
+        "oklch": "oklch(55.9% 0.149 4)",
+        "mode": "light",
+        "tonalRamp": [
+          "#1e0008",
+          "#4a011f",
+          "#7b0439",
+          "#a23257",
+          "#c85678",
+          "#f0799a",
+          "#ffafc2",
+          "#fee8ec"
+        ]
+      },
+      "rose-soft": {
+        "role": "secondary",
+        "displayName": "Rose Wash",
+        "canonical": "#f8e5eb",
+        "oklch": "oklch(93.9% 0.022 356)",
+        "mode": "light",
+        "tonalRamp": [
+          "#13070b",
+          "#2e2125",
+          "#4c3d42",
+          "#6c5c61",
+          "#8e7d83",
+          "#b1a0a5",
+          "#d6c4c9",
+          "#fce9ef"
         ]
       },
       "violet": {
         "role": "tertiary",
         "displayName": "Strength Violet",
-        "canonical": "oklch(70.9% 0.159 294)",
+        "canonical": "#6650c8",
+        "oklch": "oklch(52.0% 0.179 287)",
+        "mode": "light",
         "tonalRamp": [
-          "#120036",
-          "#2b065d",
-          "#472586",
-          "#6545ad",
-          "#8466d1",
-          "#a488f7",
-          "#c9afff",
-          "#f2ddff"
+          "#0c002c",
+          "#270069",
+          "#422299",
+          "#5f48bf",
+          "#7e6be6",
+          "#a094ff",
+          "#c5c1fe",
+          "#edecff"
         ]
       },
       "violet-soft": {
         "role": "tertiary",
         "displayName": "Violet Wash",
-        "canonical": "oklch(30.1% 0.072 287)",
+        "canonical": "#ece8fa",
+        "oklch": "oklch(93.9% 0.024 296)",
+        "mode": "light",
         "tonalRamp": [
-          "#0b0326",
-          "#221d45",
-          "#3d3964",
-          "#5b5785",
-          "#7a77a7",
-          "#9b98ca",
-          "#c0bef1",
-          "#eae8ff"
+          "#0c0914",
+          "#262330",
+          "#43404e",
+          "#625f6e",
+          "#838090",
+          "#a6a2b3",
+          "#cac6d8",
+          "#f0ecfe"
         ]
       },
-      "gold-1": {
-        "role": "tertiary",
-        "displayName": "Premium Gold Light",
-        "canonical": "oklch(88.7% 0.113 91)",
+      "good": {
+        "role": "neutral",
+        "displayName": "Good",
+        "canonical": "#1e7a4a",
+        "oklch": "oklch(51.5% 0.114 155)",
+        "mode": "light",
         "tonalRamp": [
-          "#190500",
-          "#371e00",
-          "#563b00",
-          "#765900",
-          "#977a18",
-          "#b99b42",
-          "#e0c169",
-          "#ffec9c"
+          "#001005",
+          "#012e17",
+          "#02502c",
+          "#147444",
+          "#409664",
+          "#65ba86",
+          "#89dfa9",
+          "#c5ffd8"
         ]
       },
-      "gold-2": {
-        "role": "tertiary",
-        "displayName": "Premium Gold",
-        "canonical": "oklch(78.4% 0.131 82)",
+      "warn": {
+        "role": "neutral",
+        "displayName": "Caution",
+        "canonical": "#a85c14",
+        "oklch": "oklch(55.3% 0.126 57)",
+        "mode": "light",
         "tonalRamp": [
-          "#1e0100",
-          "#3e1900",
-          "#613400",
-          "#815300",
-          "#a37400",
-          "#c69529",
-          "#eebb56",
-          "#ffe892"
+          "#160700",
+          "#3b1b00",
+          "#653302",
+          "#924c03",
+          "#ba6c2a",
+          "#e08f50",
+          "#ffb782",
+          "#ffeadc"
+        ]
+      },
+      "bad": {
+        "role": "neutral",
+        "displayName": "Stop",
+        "canonical": "#b23a30",
+        "oklch": "oklch(52.1% 0.158 28)",
+        "mode": "light",
+        "tonalRamp": [
+          "#1f0000",
+          "#4d0001",
+          "#800204",
+          "#a83128",
+          "#d05649",
+          "#f87a6b",
+          "#feb3a8",
+          "#fee9e6"
+        ]
+      },
+      "gold": {
+        "role": "tertiary",
+        "displayName": "Pro Gold",
+        "canonical": "#d9b25a",
+        "oklch": "oklch(78.1% 0.116 86)",
+        "mode": "light",
+        "tonalRamp": [
+          "#110a00",
+          "#312300",
+          "#543e03",
+          "#7b5c03",
+          "#a17c1b",
+          "#c69f46",
+          "#ebc46c",
+          "#ffedc6"
+        ]
+      },
+      "gold-light": {
+        "role": "tertiary",
+        "displayName": "Pro Gold Light",
+        "canonical": "#f0d58a",
+        "oklch": "oklch(87.9% 0.099 90)",
+        "mode": "light",
+        "tonalRamp": [
+          "#100a00",
+          "#2f2401",
+          "#524001",
+          "#775e06",
+          "#998034",
+          "#bda359",
+          "#e2c77c",
+          "#ffeebf"
         ]
       },
       "gold-ink": {
         "role": "tertiary",
-        "displayName": "Gold Ink",
-        "canonical": "oklch(24.1% 0.046 83)",
+        "displayName": "Pro Gold Ink",
+        "canonical": "#2a1d02",
+        "oklch": "oklch(24.1% 0.046 83)",
+        "mode": "light",
         "tonalRamp": [
-          "#140800",
-          "#2f2206",
-          "#4c3e22",
-          "#6a5b3f",
-          "#8b7b5e",
-          "#ad9c7e",
-          "#d3c2a3",
+          "#110a00",
+          "#302307",
+          "#4e4024",
+          "#6e5f43",
+          "#908063",
+          "#b3a384",
+          "#d8c7a7",
           "#feeccc"
         ]
       },
-      "good": {
-        "role": "status",
-        "displayName": "Good",
-        "canonical": "oklch(76.0% 0.132 157)",
-        "tonalRamp": [
-          "#001500",
-          "#003208",
-          "#005220",
-          "#00723e",
-          "#1d945d",
-          "#4ab77d",
-          "#73dea2",
-          "#abffcf"
-        ]
-      },
-      "warn": {
-        "role": "status",
-        "displayName": "Caution",
-        "canonical": "oklch(77.6% 0.130 68)",
-        "tonalRamp": [
-          "#230000",
-          "#461000",
-          "#6a2b00",
-          "#8c4b00",
-          "#af6b00",
-          "#d38d38",
-          "#fcb361",
-          "#ffe099"
-        ]
-      },
-      "bad": {
-        "role": "status",
-        "displayName": "Stop",
-        "canonical": "oklch(71.2% 0.147 27)",
-        "tonalRamp": [
-          "#2b0000",
-          "#510000",
-          "#7a0a0e",
-          "#a0312c",
-          "#c6544b",
-          "#ec766b",
-          "#ff9d91",
-          "#ffcec1"
-        ]
-      },
-      "light-bg": {
+      "hero": {
         "role": "neutral",
-        "displayName": "Night Navy (light theme)",
-        "canonical": "oklch(96.5% 0.005 275)",
+        "displayName": "Session Ink",
+        "canonical": "#17201d",
+        "oklch": "oklch(23.4% 0.014 173)",
+        "mode": "light",
         "tonalRamp": [
-          "#0a0b0d",
-          "#232427",
-          "#3f4043",
-          "#5d5d61",
-          "#7c7d81",
-          "#9d9ea2",
-          "#c3c4c8",
-          "#edeef2"
+          "#060d0a",
+          "#1e2724",
+          "#3b4541",
+          "#596460",
+          "#7a8581",
+          "#9da8a4",
+          "#c0ccc8",
+          "#e6f2ed"
         ]
       },
-      "light-bg-2": {
+      "hero-ink": {
         "role": "neutral",
-        "displayName": "Lifted Navy (light theme)",
-        "canonical": "oklch(94.0% 0.008 271)",
+        "displayName": "Session Text",
+        "canonical": "#f7f7f2",
+        "oklch": "oklch(97.5% 0.007 107)",
+        "mode": "light",
         "tonalRamp": [
-          "#0a0b0f",
-          "#222428",
-          "#3e4044",
-          "#5c5d62",
-          "#7b7d82",
-          "#9c9ea4",
-          "#c2c4ca",
-          "#eceef4"
+          "#0b0b08",
+          "#252522",
+          "#42423e",
+          "#61615d",
+          "#83837e",
+          "#a5a5a1",
+          "#c9c9c5",
+          "#efefea"
         ]
       },
-      "light-surface": {
+      "hero-muted": {
         "role": "neutral",
-        "displayName": "Slate Surface (light theme)",
-        "canonical": "oklch(100.0% 0.000 90)",
+        "displayName": "Session Pencil",
+        "canonical": "#a9b1ad",
+        "oklch": "oklch(75.3% 0.011 165)",
+        "mode": "light",
         "tonalRamp": [
-          "#0b0b0b",
-          "#242424",
-          "#404040",
-          "#5d5d5d",
-          "#7d7d7d",
-          "#9e9e9e",
-          "#c4c4c4",
-          "#eeeeee"
+          "#070d0a",
+          "#202724",
+          "#3d4440",
+          "#5c6360",
+          "#7d8481",
+          "#9fa7a3",
+          "#c3cbc7",
+          "#e8f1ed"
         ]
       },
-      "light-surface-2": {
+      "hero-line": {
         "role": "neutral",
-        "displayName": "Slate Inset (light theme)",
-        "canonical": "oklch(97.3% 0.004 271)",
+        "displayName": "Session Hairline",
+        "canonical": "#2c3532",
+        "oklch": "oklch(31.9% 0.013 173)",
+        "mode": "light",
         "tonalRamp": [
-          "#0a0b0d",
-          "#232426",
-          "#3f4042",
-          "#5d5d60",
-          "#7c7d80",
-          "#9d9ea1",
-          "#c3c4c7",
-          "#edeef1"
+          "#060d0b",
+          "#1f2724",
+          "#3b4441",
+          "#5a6460",
+          "#7b8581",
+          "#9da8a4",
+          "#c1ccc8",
+          "#e6f2ee"
         ]
       },
-      "light-ink": {
+      "walk": {
         "role": "neutral",
-        "displayName": "Mist Ink (light theme)",
-        "canonical": "oklch(21.0% 0.032 265)",
+        "displayName": "Walk Grey",
+        "canonical": "#c9ccc6",
+        "oklch": "oklch(84.1% 0.009 129)",
+        "mode": "light",
         "tonalRamp": [
-          "#050b18",
-          "#1c2434",
-          "#374051",
-          "#555e70",
-          "#747d91",
-          "#959fb3",
-          "#bac4d9",
-          "#e4efff"
+          "#0a0c08",
+          "#242621",
+          "#40433e",
+          "#60625d",
+          "#81837e",
+          "#a3a6a0",
+          "#c7cac4",
+          "#edf0e9"
         ]
       },
-      "light-muted": {
+      "night": {
         "role": "neutral",
-        "displayName": "Fog (light theme)",
-        "canonical": "oklch(51.5% 0.028 262)",
+        "displayName": "Night Warm Paper",
+        "canonical": "#121614",
+        "oklch": "oklch(19.5% 0.007 164)",
+        "mode": "dark",
         "tonalRamp": [
-          "#050b17",
-          "#1d2432",
-          "#38404f",
-          "#555e6e",
-          "#747e8e",
-          "#959fb0",
-          "#bac5d7",
-          "#e5efff"
+          "#080c0a",
+          "#222624",
+          "#3f4341",
+          "#5e6360",
+          "#7e8481",
+          "#a1a6a4",
+          "#c5cbc8",
+          "#eaf0ed"
         ]
       },
-      "light-faint": {
+      "night-2": {
         "role": "neutral",
-        "displayName": "Dusk (light theme)",
-        "canonical": "oklch(71.1% 0.024 263)",
+        "displayName": "Night Paper Shade",
+        "canonical": "#171c1a",
+        "oklch": "oklch(22.0% 0.008 169)",
+        "mode": "dark",
         "tonalRamp": [
-          "#060b15",
-          "#1e2430",
-          "#39404d",
-          "#575e6b",
-          "#767e8c",
-          "#979fae",
-          "#bcc4d4",
-          "#e6efff"
+          "#080c0b",
+          "#212624",
+          "#3e4341",
+          "#5d6360",
+          "#7e8481",
+          "#a0a7a4",
+          "#c4cbc8",
+          "#e9f0ed"
         ]
       },
-      "light-line": {
+      "night-surface": {
         "role": "neutral",
-        "displayName": "Hairline (light theme)",
-        "canonical": "oklch(92.4% 0.009 265)",
+        "displayName": "Night White Page",
+        "canonical": "#1b201e",
+        "oklch": "oklch(23.8% 0.008 170)",
+        "mode": "dark",
         "tonalRamp": [
-          "#090b0f",
-          "#222428",
-          "#3d4044",
-          "#5b5e63",
-          "#7b7d83",
-          "#9c9ea4",
-          "#c1c4ca",
-          "#ebeef5"
+          "#080c0b",
+          "#212624",
+          "#3e4341",
+          "#5d6360",
+          "#7e8481",
+          "#a0a7a4",
+          "#c4cbc8",
+          "#e9f0ed"
         ]
       },
-      "light-accent": {
+      "night-surface-2": {
+        "role": "neutral",
+        "displayName": "Night Page Shade",
+        "canonical": "#232927",
+        "oklch": "oklch(27.4% 0.009 174)",
+        "mode": "dark",
+        "tonalRamp": [
+          "#070c0b",
+          "#212725",
+          "#3d4441",
+          "#5c6361",
+          "#7d8482",
+          "#9fa7a4",
+          "#c3cbc8",
+          "#e9f1ee"
+        ]
+      },
+      "night-raised": {
+        "role": "neutral",
+        "displayName": "Night Raised Page",
+        "canonical": "#2a302e",
+        "oklch": "oklch(30.3% 0.009 174)",
+        "mode": "dark",
+        "tonalRamp": [
+          "#070c0b",
+          "#212725",
+          "#3d4441",
+          "#5c6361",
+          "#7d8482",
+          "#a0a7a4",
+          "#c3cbc8",
+          "#e9f1ee"
+        ]
+      },
+      "night-ink": {
+        "role": "neutral",
+        "displayName": "Night Journal Ink",
+        "canonical": "#eef0ec",
+        "oklch": "oklch(95.2% 0.006 129)",
+        "mode": "dark",
+        "tonalRamp": [
+          "#0a0c09",
+          "#242623",
+          "#41433f",
+          "#60625e",
+          "#81837f",
+          "#a4a6a2",
+          "#c8cac6",
+          "#edefeb"
+        ]
+      },
+      "night-muted": {
+        "role": "neutral",
+        "displayName": "Night Pencil",
+        "canonical": "#a3aba6",
+        "oklch": "oklch(73.3% 0.011 159)",
+        "mode": "dark",
+        "tonalRamp": [
+          "#070d09",
+          "#212723",
+          "#3d4440",
+          "#5c635f",
+          "#7d8480",
+          "#9fa7a2",
+          "#c3cbc6",
+          "#e8f1ec"
+        ]
+      },
+      "night-faint": {
+        "role": "neutral",
+        "displayName": "Night Faint Pencil",
+        "canonical": "#6e7671",
+        "oklch": "oklch(55.7% 0.012 159)",
+        "mode": "dark",
+        "tonalRamp": [
+          "#070d09",
+          "#202723",
+          "#3d4440",
+          "#5c635f",
+          "#7c8580",
+          "#9fa7a2",
+          "#c3ccc6",
+          "#e8f1eb"
+        ]
+      },
+      "night-line": {
+        "role": "neutral",
+        "displayName": "Night Hairline",
+        "canonical": "#2e3532",
+        "oklch": "oklch(32.1% 0.011 168)",
+        "mode": "dark",
+        "tonalRamp": [
+          "#070d0a",
+          "#202724",
+          "#3d4441",
+          "#5c6360",
+          "#7c8481",
+          "#9fa7a4",
+          "#c3cbc8",
+          "#e8f1ed"
+        ]
+      },
+      "night-cobalt": {
         "role": "primary",
-        "displayName": "Action Blue (light theme)",
-        "canonical": "oklch(56.7% 0.190 261)",
+        "displayName": "Night Journal Cobalt",
+        "canonical": "#7c9ef4",
+        "oklch": "oklch(71.0% 0.132 267)",
+        "mode": "dark",
         "tonalRamp": [
-          "#000042",
-          "#00136d",
-          "#00339a",
-          "#1353c6",
-          "#3676ec",
-          "#579aff",
-          "#81c2ff",
-          "#b4eeff"
+          "#010035",
+          "#091864",
+          "#223a87",
+          "#3f5cab",
+          "#5e7ed1",
+          "#7fa1f8",
+          "#b1c8fe",
+          "#e8eefe"
         ]
       },
-      "light-accent-2": {
+      "night-cobalt-deep": {
         "role": "primary",
-        "displayName": "Deep Action Blue (light theme)",
-        "canonical": "oklch(51.3% 0.180 262)",
+        "displayName": "Night Pressed Cobalt",
+        "canonical": "#6a8eee",
+        "oklch": "oklch(66.4% 0.149 267)",
+        "mode": "dark",
         "tonalRamp": [
-          "#000040",
-          "#00156a",
-          "#003496",
-          "#1b55c1",
-          "#3c77e6",
-          "#5c9aff",
-          "#85c2ff",
-          "#b7eeff"
+          "#020034",
+          "#08136b",
+          "#1f378f",
+          "#3b5ab4",
+          "#5a7cdb",
+          "#7da1fe",
+          "#b1c8ff",
+          "#e8eefe"
         ]
       },
-      "light-accent-soft": {
+      "night-on-cobalt": {
         "role": "primary",
-        "displayName": "Blue Wash (light theme)",
-        "canonical": "oklch(93.8% 0.025 263)",
+        "displayName": "Night On Cobalt",
+        "canonical": "#0c1838",
+        "oklch": "oklch(21.9% 0.065 266)",
+        "mode": "dark",
         "tonalRamp": [
-          "#060b16",
-          "#1e2430",
-          "#39404d",
-          "#565e6c",
-          "#767e8d",
-          "#969fae",
-          "#bcc4d5",
-          "#e6efff"
+          "#020726",
+          "#162344",
+          "#324164",
+          "#506086",
+          "#7082aa",
+          "#92a5ce",
+          "#b5c9f4",
+          "#e7effe"
         ]
       },
-      "light-fast": {
+      "night-cobalt-soft": {
+        "role": "primary",
+        "displayName": "Night Cobalt Wash",
+        "canonical": "#1e2a47",
+        "oklch": "oklch(29.0% 0.056 266)",
+        "mode": "dark",
+        "tonalRamp": [
+          "#030822",
+          "#182440",
+          "#344160",
+          "#526182",
+          "#7382a5",
+          "#95a5c9",
+          "#b8c9ef",
+          "#e8effe"
+        ]
+      },
+      "night-fast": {
         "role": "secondary",
-        "displayName": "Fast Amber (light theme)",
-        "canonical": "oklch(65.3% 0.139 71)",
+        "displayName": "Night Fasting Amber",
+        "canonical": "#e2a94e",
+        "oklch": "oklch(77.1% 0.126 77)",
+        "mode": "dark",
         "tonalRamp": [
-          "#230000",
-          "#451000",
-          "#6a2c00",
-          "#8c4b00",
-          "#b06c00",
-          "#d48e25",
-          "#fcb454",
-          "#ffe192"
+          "#130900",
+          "#342101",
+          "#593b02",
+          "#825803",
+          "#ac7604",
+          "#d2993d",
+          "#f8be64",
+          "#feecd1"
         ]
       },
-      "light-fast-soft": {
+      "night-fast-soft": {
         "role": "secondary",
-        "displayName": "Amber Wash (light theme)",
-        "canonical": "oklch(95.6% 0.036 84)",
+        "displayName": "Night Amber Wash",
+        "canonical": "#33291a",
+        "oklch": "oklch(28.8% 0.029 77)",
+        "mode": "dark",
         "tonalRamp": [
-          "#120900",
-          "#2c220f",
-          "#493e2a",
-          "#675c47",
-          "#877c65",
-          "#a99d86",
-          "#cfc3ab",
-          "#faedd4"
+          "#120901",
+          "#2d2314",
+          "#4b4030",
+          "#6b5f4f",
+          "#8c806f",
+          "#b0a391",
+          "#d4c7b4",
+          "#faecd9"
         ]
       },
-      "light-fast-ink": {
+      "night-fast-ink": {
         "role": "secondary",
-        "displayName": "Amber Text (light theme)",
-        "canonical": "oklch(50.0% 0.109 70)",
+        "displayName": "Night Amber Ink",
+        "canonical": "#e8b462",
+        "oklch": "oklch(80.1% 0.117 77)",
+        "mode": "dark",
         "tonalRamp": [
-          "#200000",
-          "#411500",
-          "#633200",
-          "#845000",
-          "#a6702a",
-          "#ca924e",
-          "#f2b874",
-          "#ffe3a4"
+          "#130900",
+          "#342100",
+          "#593b01",
+          "#815801",
+          "#a9781e",
+          "#ce9b48",
+          "#f4bf6d",
+          "#feecd1"
         ]
       },
-      "light-rose": {
-        "role": "tertiary",
-        "displayName": "Body Rose (light theme)",
-        "canonical": "oklch(57.8% 0.175 5)",
-        "tonalRamp": [
-          "#2d0005",
-          "#54001a",
-          "#7e0033",
-          "#a71b4f",
-          "#cd446e",
-          "#f4688f",
-          "#ff92b5",
-          "#ffc5e1"
-        ]
-      },
-      "light-rose-soft": {
-        "role": "tertiary",
-        "displayName": "Rose Wash (light theme)",
-        "canonical": "oklch(93.7% 0.028 358)",
-        "tonalRamp": [
-          "#14060b",
-          "#2f1e24",
-          "#4c3a40",
-          "#6b575d",
-          "#8c777d",
-          "#ae989e",
-          "#d4bdc4",
-          "#ffe7ee"
-        ]
-      },
-      "light-water": {
-        "role": "tertiary",
-        "displayName": "Water Teal (light theme)",
-        "canonical": "oklch(60.0% 0.104 185)",
-        "tonalRamp": [
-          "#001410",
-          "#00312a",
-          "#005047",
-          "#007065",
-          "#029185",
-          "#40b3a6",
-          "#6cdacc",
-          "#9ffff7"
-        ]
-      },
-      "light-water-soft": {
-        "role": "tertiary",
-        "displayName": "Teal Wash (light theme)",
-        "canonical": "oklch(94.0% 0.030 186)",
+      "night-water": {
+        "role": "secondary",
+        "displayName": "Night Water Teal",
+        "canonical": "#4cc2b5",
+        "oklch": "oklch(74.4% 0.107 185)",
+        "mode": "dark",
         "tonalRamp": [
           "#000f0d",
-          "#122926",
-          "#2d4542",
-          "#4b6360",
-          "#6a8380",
-          "#8aa5a1",
-          "#b0cbc7",
-          "#d9f5f1"
+          "#022c28",
+          "#044d47",
+          "#087168",
+          "#00978b",
+          "#43bbae",
+          "#6de0d2",
+          "#b8fff5"
         ]
       },
-      "light-water-ink": {
+      "night-water-soft": {
+        "role": "secondary",
+        "displayName": "Night Teal Wash",
+        "canonical": "#173431",
+        "oklch": "oklch(30.1% 0.036 187)",
+        "mode": "dark",
+        "tonalRamp": [
+          "#000f0d",
+          "#0d2b28",
+          "#2b4845",
+          "#4a6864",
+          "#6b8a86",
+          "#8dada9",
+          "#b0d1cd",
+          "#d5f7f2"
+        ]
+      },
+      "night-water-ink": {
+        "role": "secondary",
+        "displayName": "Night Teal Ink",
+        "canonical": "#6fd3c7",
+        "oklch": "oklch(80.3% 0.096 185)",
+        "mode": "dark",
+        "tonalRamp": [
+          "#000f0d",
+          "#012c28",
+          "#014d47",
+          "#037168",
+          "#28958a",
+          "#53b9ad",
+          "#7aded2",
+          "#b7fff5"
+        ]
+      },
+      "night-rose": {
+        "role": "secondary",
+        "displayName": "Night Weight Rose",
+        "canonical": "#e48aa5",
+        "oklch": "oklch(73.5% 0.114 1)",
+        "mode": "dark",
+        "tonalRamp": [
+          "#1e000a",
+          "#4a0122",
+          "#6f213e",
+          "#94425d",
+          "#b9637e",
+          "#df86a1",
+          "#ffafc5",
+          "#fee8ed"
+        ]
+      },
+      "night-rose-soft": {
+        "role": "secondary",
+        "displayName": "Night Rose Wash",
+        "canonical": "#362329",
+        "oklch": "oklch(28.2% 0.031 359)",
+        "mode": "dark",
+        "tonalRamp": [
+          "#15060b",
+          "#311f25",
+          "#503b42",
+          "#705a61",
+          "#937b82",
+          "#b69da5",
+          "#dbc1c9",
+          "#ffe8ee"
+        ]
+      },
+      "night-violet": {
         "role": "tertiary",
-        "displayName": "Teal Text (light theme)",
-        "canonical": "oklch(47.6% 0.081 185)",
+        "displayName": "Night Strength Violet",
+        "canonical": "#a594f0",
+        "oklch": "oklch(71.8% 0.132 291)",
+        "mode": "dark",
         "tonalRamp": [
-          "#00130f",
-          "#002f29",
-          "#004d45",
-          "#0d6c63",
-          "#3a8d83",
-          "#5eafa5",
-          "#85d6ca",
-          "#affff5"
+          "#0e002b",
+          "#2a0a5e",
+          "#452f81",
+          "#6350a5",
+          "#8472cb",
+          "#a695f1",
+          "#c9c0ff",
+          "#eeecfe"
         ]
       },
-      "light-violet": {
+      "night-violet-soft": {
         "role": "tertiary",
-        "displayName": "Strength Violet (light theme)",
-        "canonical": "oklch(53.6% 0.200 288)",
+        "displayName": "Night Violet Wash",
+        "canonical": "#29263f",
+        "oklch": "oklch(28.4% 0.045 289)",
+        "mode": "dark",
         "tonalRamp": [
-          "#120041",
-          "#28006b",
-          "#421b98",
-          "#5e3cc5",
-          "#7c60eb",
-          "#9b84ff",
-          "#c0adff",
-          "#e9ddff"
+          "#0b071d",
+          "#24213a",
+          "#413e59",
+          "#605d7a",
+          "#817e9c",
+          "#a3a1c0",
+          "#c7c5e6",
+          "#edecfe"
         ]
       },
-      "light-violet-soft": {
-        "role": "tertiary",
-        "displayName": "Violet Wash (light theme)",
-        "canonical": "oklch(93.4% 0.033 297)",
-        "tonalRamp": [
-          "#0d0817",
-          "#262132",
-          "#413c4f",
-          "#5f5a6e",
-          "#7f798f",
-          "#a09bb1",
-          "#c6c0d7",
-          "#f0eaff"
-        ]
-      },
-      "light-good": {
-        "role": "status",
-        "displayName": "Good (light theme)",
-        "canonical": "oklch(53.9% 0.118 155)",
-        "tonalRamp": [
-          "#001400",
-          "#003108",
-          "#005121",
-          "#01703f",
-          "#36925d",
-          "#5bb47e",
-          "#82dba2",
-          "#b4ffcf"
-        ]
-      },
-      "light-warn": {
-        "role": "status",
-        "displayName": "Caution (light theme)",
-        "canonical": "oklch(57.9% 0.131 56)",
-        "tonalRamp": [
-          "#260000",
-          "#4a0700",
-          "#702400",
-          "#934500",
-          "#b76520",
-          "#db8746",
-          "#ffad6d",
-          "#ffdba2"
-        ]
-      },
-      "light-bad": {
-        "role": "status",
-        "displayName": "Stop (light theme)",
-        "canonical": "oklch(52.9% 0.166 28)",
-        "tonalRamp": [
-          "#2e0000",
-          "#550000",
-          "#7f0000",
-          "#a72720",
-          "#cd4c41",
-          "#f46f61",
-          "#ff9889",
-          "#ffcaba"
-        ]
-      },
-      "hero-run-from": {
-        "role": "primary",
-        "displayName": "Hero Run From",
-        "canonical": "oklch(52.8% 0.185 263)",
-        "tonalRamp": [
-          "#010041",
-          "#00136c",
-          "#043299",
-          "#1e53c4",
-          "#3e76e9",
-          "#5e99ff",
-          "#86c1ff",
-          "#b8eeff"
-        ]
-      },
-      "hero-run-to": {
-        "role": "primary",
-        "displayName": "Hero Run To",
-        "canonical": "oklch(37.1% 0.127 263)",
-        "tonalRamp": [
-          "#000134",
-          "#041d5a",
-          "#1a3a82",
-          "#365aa5",
-          "#557bc9",
-          "#759dee",
-          "#99c3ff",
-          "#c7efff"
-        ]
-      },
-      "hero-cross-from": {
-        "role": "tertiary",
-        "displayName": "Hero Cross From",
-        "canonical": "oklch(53.5% 0.173 289)",
-        "tonalRamp": [
-          "#11003b",
-          "#270363",
-          "#42248e",
-          "#5e44b7",
-          "#7c66dc",
-          "#9c89ff",
-          "#c1b0ff",
-          "#ebdfff"
-        ]
-      },
-      "hero-cross-to": {
-        "role": "tertiary",
-        "displayName": "Hero Cross To",
-        "canonical": "oklch(36.0% 0.125 287)",
-        "tonalRamp": [
-          "#0d0031",
-          "#231356",
-          "#3e307d",
-          "#5a50a0",
-          "#7970c4",
-          "#9992e8",
-          "#beb7ff",
-          "#e8e4ff"
-        ]
-      },
-      "hero-rest-from": {
+      "night-good": {
         "role": "neutral",
-        "displayName": "Hero Rest From",
-        "canonical": "oklch(47.8% 0.048 253)",
+        "displayName": "Night Good",
+        "canonical": "#63c693",
+        "oklch": "oklch(75.3% 0.120 159)",
+        "mode": "dark",
         "tonalRamp": [
-          "#000b1f",
-          "#12253b",
-          "#2d4159",
-          "#4a5f78",
-          "#697f9a",
-          "#8aa1bc",
-          "#afc7e3",
-          "#d9f1ff"
+          "#000f06",
+          "#002e1a",
+          "#014f31",
+          "#037449",
+          "#309868",
+          "#59bc89",
+          "#7ee1ad",
+          "#c3ffdc"
         ]
       },
-      "hero-rest-to": {
+      "night-warn": {
         "role": "neutral",
-        "displayName": "Hero Rest To",
-        "canonical": "oklch(34.4% 0.037 255)",
+        "displayName": "Night Caution",
+        "canonical": "#e5a35a",
+        "oklch": "oklch(76.5% 0.119 67)",
+        "mode": "dark",
         "tonalRamp": [
-          "#020b1a",
-          "#182536",
-          "#334153",
-          "#505f72",
-          "#6f7f93",
-          "#8fa0b6",
-          "#b5c6dc",
-          "#def0ff"
+          "#140800",
+          "#371f01",
+          "#5f3801",
+          "#895304",
+          "#b17325",
+          "#d7954c",
+          "#fdba71",
+          "#feebd8"
         ]
       },
-      "journey-from": {
-        "role": "primary",
-        "displayName": "Journey From",
-        "canonical": "oklch(31.8% 0.091 265)",
+      "night-bad": {
+        "role": "neutral",
+        "displayName": "Night Stop",
+        "canonical": "#ec8075",
+        "oklch": "oklch(71.7% 0.135 27)",
+        "mode": "dark",
         "tonalRamp": [
-          "#01052c",
-          "#0e204f",
-          "#283d6f",
-          "#445c91",
-          "#637cb4",
-          "#839ed8",
-          "#a7c4ff",
-          "#d1eeff"
+          "#1f0001",
+          "#4d0103",
+          "#7a1615",
+          "#a03b35",
+          "#c65e55",
+          "#ee8176",
+          "#ffb3a9",
+          "#ffe9e6"
         ]
       },
-      "journey-to": {
-        "role": "primary",
-        "displayName": "Journey To",
-        "canonical": "oklch(22.6% 0.043 267)",
+      "night-hero": {
+        "role": "neutral",
+        "displayName": "Night Session Ink",
+        "canonical": "#0b0f0d",
+        "oklch": "oklch(16.3% 0.008 164)",
+        "mode": "dark",
         "tonalRamp": [
-          "#040a1d",
-          "#1b2339",
-          "#363f57",
-          "#535d76",
-          "#727d97",
-          "#929eba",
-          "#b8c4e1",
-          "#e2eeff"
+          "#080c0a",
+          "#222624",
+          "#3e4341",
+          "#5d6360",
+          "#7e8481",
+          "#a1a7a4",
+          "#c5cbc8",
+          "#eaf0ed"
         ]
       },
-      "journey-glow": {
-        "role": "primary",
-        "displayName": "Journey Glow",
-        "canonical": "oklch(49.9% 0.166 264)",
+      "night-hero-ink": {
+        "role": "neutral",
+        "displayName": "Night Session Text",
+        "canonical": "#f3f4f0",
+        "oklch": "oklch(96.5% 0.005 118)",
+        "mode": "dark",
         "tonalRamp": [
-          "#01003d",
-          "#001666",
-          "#103591",
-          "#2a55ba",
-          "#4877df",
-          "#689aff",
-          "#8ec1ff",
-          "#bfeeff"
+          "#0b0b09",
+          "#252522",
+          "#42423f",
+          "#61625e",
+          "#82837f",
+          "#a4a5a2",
+          "#c9cac6",
+          "#eeefeb"
         ]
       },
-      "hero-tint": {
-        "role": "primary",
-        "displayName": "Hero Tint",
-        "canonical": "oklch(83.0% 0.085 262)",
+      "night-hero-muted": {
+        "role": "neutral",
+        "displayName": "Night Session Pencil",
+        "canonical": "#9aa39e",
+        "oklch": "oklch(70.7% 0.012 162)",
+        "mode": "dark",
         "tonalRamp": [
-          "#00062a",
-          "#0b214c",
-          "#263e6c",
-          "#435d8d",
-          "#617db0",
-          "#819fd4",
-          "#a6c5fc",
-          "#cff0ff"
+          "#070d0a",
+          "#202723",
+          "#3c4440",
+          "#5b645f",
+          "#7c8580",
+          "#9fa8a3",
+          "#c2ccc7",
+          "#e8f1ec"
         ]
       },
-      "hero-go-ink": {
-        "role": "primary",
-        "displayName": "Hero Go Ink",
-        "canonical": "oklch(32.6% 0.109 262)",
+      "night-hero-line": {
+        "role": "neutral",
+        "displayName": "Night Session Hairline",
+        "canonical": "#262d2a",
+        "oklch": "oklch(28.9% 0.011 168)",
+        "mode": "dark",
         "tonalRamp": [
-          "#000430",
-          "#061f54",
-          "#1e3c78",
-          "#3b5c9b",
-          "#597cbe",
-          "#799ee2",
-          "#9ec4ff",
-          "#caefff"
+          "#070d0a",
+          "#202724",
+          "#3d4441",
+          "#5b6360",
+          "#7c8581",
+          "#9fa7a4",
+          "#c3ccc8",
+          "#e8f1ed"
         ]
       },
-      "art-blue": {
-        "role": "tertiary",
-        "displayName": "Art Blue",
-        "canonical": "oklch(92.9% 0.034 264)",
+      "night-walk": {
+        "role": "neutral",
+        "displayName": "Night Walk Grey",
+        "canonical": "#59615d",
+        "oklch": "oklch(48.4% 0.012 164)",
+        "mode": "dark",
         "tonalRamp": [
-          "#050b19",
-          "#1b2435",
-          "#364052",
-          "#545e71",
-          "#737e92",
-          "#949fb4",
-          "#b9c5db",
-          "#e3efff"
-        ]
-      },
-      "art-blue-ink": {
-        "role": "tertiary",
-        "displayName": "Art Blue Ink",
-        "canonical": "oklch(51.0% 0.167 263)",
-        "tonalRamp": [
-          "#00003d",
-          "#001766",
-          "#0b3591",
-          "#2756ba",
-          "#4578df",
-          "#659aff",
-          "#8cc2ff",
-          "#bdeeff"
-        ]
-      },
-      "art-sun": {
-        "role": "tertiary",
-        "displayName": "Art Sun",
-        "canonical": "oklch(95.9% 0.054 91)",
-        "tonalRamp": [
-          "#140900",
-          "#2e2300",
-          "#4a3f1c",
-          "#695d39",
-          "#897c58",
-          "#ab9e78",
-          "#d1c39d",
-          "#fceec6"
-        ]
-      },
-      "art-sun-ink": {
-        "role": "tertiary",
-        "displayName": "Art Sun Ink",
-        "canonical": "oklch(59.2% 0.137 59)",
-        "tonalRamp": [
-          "#260000",
-          "#4a0700",
-          "#702400",
-          "#934500",
-          "#b76508",
-          "#dc873b",
-          "#ffad63",
-          "#ffdb9c"
-        ]
-      },
-      "art-rose": {
-        "role": "tertiary",
-        "displayName": "Art Rose",
-        "canonical": "oklch(93.2% 0.033 1)",
-        "tonalRamp": [
-          "#16050a",
-          "#321d23",
-          "#4f393e",
-          "#6e565c",
-          "#8f757c",
-          "#b1969d",
-          "#d8bcc2",
-          "#ffe6ed"
-        ]
-      },
-      "art-rose-ink": {
-        "role": "tertiary",
-        "displayName": "Art Rose Ink",
-        "canonical": "oklch(56.2% 0.171 6)",
-        "tonalRamp": [
-          "#2c0004",
-          "#53001a",
-          "#7d0033",
-          "#a51f4f",
-          "#cc466e",
-          "#f36a8e",
-          "#ff93b4",
-          "#ffc5e0"
+          "#070d0a",
+          "#202724",
+          "#3c4440",
+          "#5b635f",
+          "#7c8580",
+          "#9fa7a3",
+          "#c3ccc7",
+          "#e8f1ec"
         ]
       }
     },
     "typographyMeta": {
-      "large-title": {
-        "displayName": "Large Title",
-        "purpose": "One per screen, top left; hero and pop-up titles."
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page titles and the session title on the ink card."
       },
-      "section": {
-        "displayName": "Section",
-        "purpose": "Headings between groups, such as guide categories."
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "The one hero number per summary card (current weight; calories at 40px)."
       },
-      "title": {
-        "displayName": "Title",
-        "purpose": "Stage names, hero action label, article subheads."
+      "dial": {
+        "displayName": "Dial",
+        "purpose": "The fasting clock inside the dial; steps up for plan names, down past 24 hours."
       },
       "headline": {
         "displayName": "Headline",
-        "purpose": "Card, tile and list row titles; back links; underline tabs."
+        "purpose": "Section headings between groups."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card titles; row titles step down to 15px at 700."
+      },
+      "stat": {
+        "displayName": "Stat",
+        "purpose": "Figures in a divided stats row; 20px on the ink card."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Coach copy and descriptions; articles step up to 17px at 1.6, 65ch."
+        "purpose": "Running text and coach notes."
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Muted group labels above fields; row sub-lines."
+        "purpose": "Captions, details and field labels in sentence case."
       },
-      "caption": {
-        "displayName": "Caption",
-        "purpose": "Tab labels, chart ticks, small chips, weekday letters."
+      "data-label": {
+        "displayName": "Data Label",
+        "purpose": "Uppercase name directly above a figure or instrument, never above a headline."
       },
-      "stat-numeral": {
-        "displayName": "Stat Numeral",
-        "purpose": "Stat tiles and totals; tabular."
-      },
-      "timer-numeral": {
-        "displayName": "Timer Numeral",
-        "purpose": "The fasting dial clock."
-      },
-      "live-numeral": {
-        "displayName": "Live Numeral",
-        "purpose": "The live workout clock."
+      "dock-label": {
+        "displayName": "Dock Label",
+        "purpose": "Tab names under dock icons."
       }
     },
     "shadows": [
       {
-        "name": "float",
-        "value": "0 12px 32px rgba(0, 0, 0, .38)",
-        "purpose": "Dark theme: tab bar, toasts, pop-ups."
+        "name": "transient-light",
+        "value": "0 6px 20px rgba(23, 32, 29, .08)",
+        "purpose": "Toasts and the stage pop-up in light mode (--shadow)."
       },
       {
-        "name": "float-light",
-        "value": "0 10px 30px rgba(17, 24, 39, .10)",
-        "purpose": "Light theme: tab bar, toasts, pop-ups."
+        "name": "transient-night",
+        "value": "0 8px 24px rgba(0, 0, 0, .32)",
+        "purpose": "Toasts and the stage pop-up at night (--shadow)."
       },
       {
-        "name": "blue-glow",
-        "value": "0 10px 26px color-mix(in srgb, var(--accent) 45%, transparent)",
-        "purpose": "The plus button only."
+        "name": "pen-lift",
+        "value": "0 4px 12px rgba(40, 88, 216, .28)",
+        "purpose": "The + button set into the dock."
       },
       {
-        "name": "lift",
-        "value": "0 1px 3px rgba(0,0,0,.2)",
-        "purpose": "Selected segment and switch thumb."
+        "name": "selected-ring",
+        "value": "inset 0 0 0 1.5px var(--accent)",
+        "purpose": "Selected option of the outlined meal selector."
+      },
+      {
+        "name": "now-halo",
+        "value": "0 0 0 3px var(--fast-soft)",
+        "purpose": "The current stage marker on the fasting timeline."
       }
     ],
     "motion": [
       {
-        "name": "state",
-        "value": ".15s",
-        "purpose": "Background, colour and border transitions on controls."
-      },
-      {
         "name": "press",
-        "value": "transform .1s, scale(.97)",
-        "purpose": "Press feedback on buttons, tiles and plans; the plus button uses scale(.94)."
+        "value": "transform .12s ease-out",
+        "purpose": "Session button presses to scale(.98), the + button to scale(.94); only under prefers-reduced-motion: no-preference."
       },
       {
-        "name": "rise",
-        "value": ".22s ease-out, translateY(6px), opacity .55 to 1",
-        "purpose": "View entrance."
+        "name": "state",
+        "value": "background-color .15s ease-out",
+        "purpose": "Hover fills and button colour changes."
       },
       {
-        "name": "ease-enter",
-        "value": "cubic-bezier(.2, .7, .2, 1)",
-        "purpose": "Onboarding stagger and celebration text, .32s to .4s."
-      },
-      {
-        "name": "popup",
-        "value": ".28s ease-out, translateY(30px)",
-        "purpose": "Stage and celebration pop-ups."
-      },
-      {
-        "name": "win-arc",
-        "value": ".9s cubic-bezier(.2, .8, .2, 1)",
-        "purpose": "Celebration ring sweep, then a .5s overshoot tick."
-      },
-      {
-        "name": "reduced-motion",
-        "value": "prefers-reduced-motion: no-preference",
-        "purpose": "All motion is gated behind this query."
+        "name": "live-blink",
+        "value": "blink 1.6s ease-in-out infinite",
+        "purpose": "The live dot on the fasting card; reduced motion disables it."
       }
     ],
     "breakpoints": [
       {
         "name": "narrow",
-        "value": "max-width: 380px"
+        "value": "380px"
       },
       {
         "name": "rail",
-        "value": "min-width: 1000px"
+        "value": "1000px"
       }
     ]
   },
@@ -1172,157 +1195,154 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "The one main action in a block.",
-      "html": "<button class=\"ds-btn ds-btn-primary\">Start fast</button>",
-      "css": ".ds-btn { appearance: none; font: 700 15px var(--body); border-radius: 14px; padding: 12px 16px; min-height: 48px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: background .15s, color .15s, transform .1s, border-color .15s; } .ds-btn-primary { background: var(--accent); border: 1px solid var(--accent); color: var(--accent-ink); } .ds-btn-primary:hover { background: var(--accent-2); border-color: var(--accent-2); } .ds-btn:active { transform: scale(.97); } .ds-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
+      "description": "The one cobalt action per decision, including Start fast.",
+      "html": "<button class=\"ds-btn-primary\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"currentColor\" stroke=\"none\"><path d=\"M8 5v14l11-7z\"/></svg> Start 16:8 fast now</button>",
+      "css": ".ds-btn-primary { font-family: var(--body, 'Manrope Variable', Manrope, system-ui, sans-serif); display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 12px 16px; border: 1px solid var(--accent); border-radius: 12px; background: var(--accent); color: var(--accent-ink); font-size: 17px; font-weight: 700; cursor: pointer; transition: background-color .15s ease-out, transform .12s ease-out; } .ds-btn-primary:hover { background: var(--accent-2); border-color: var(--accent-2); } .ds-btn-primary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; } .ds-btn-primary:active { transform: scale(.98); }"
     },
     {
       "name": "Secondary Button",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Neutral companion action.",
-      "html": "<button class=\"ds-btn2\">Edit plan</button>",
-      "css": ".ds-btn2 { appearance: none; font: 700 15px var(--body); border-radius: 14px; padding: 12px 16px; min-height: 48px; cursor: pointer; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink); transition: background .15s, transform .1s, border-color .15s; } .ds-btn2:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); } .ds-btn2:active { transform: scale(.97); } .ds-btn2:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
+      "description": "White button on a hairline for every non-primary choice.",
+      "html": "<button class=\"ds-btn-secondary\">+4 h goal</button>",
+      "css": ".ds-btn-secondary { font-family: var(--body, 'Manrope Variable', Manrope, system-ui, sans-serif); min-height: 48px; padding: 12px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font-size: 15px; font-weight: 700; cursor: pointer; transition: background-color .15s ease-out; } .ds-btn-secondary:hover { background: var(--surface-2); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
     },
     {
-      "name": "Plus Button",
-      "kind": "button",
-      "refersTo": "fab",
-      "description": "Fixed round log button beside the tab bar; opens quick add.",
-      "html": "<button class=\"ds-fab\" aria-label=\"Log something\"><svg viewBox=\"0 0 24 24\" width=\"30\" height=\"30\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg></button>",
-      "css": ".ds-fab { width: 66px; height: 66px; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; cursor: pointer; box-shadow: 0 10px 26px color-mix(in srgb, var(--accent) 45%, transparent); transition: transform .12s ease-out; } .ds-fab:hover { background: var(--accent-2); } .ds-fab:active { transform: scale(.94); } .ds-fab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
-    },
-    {
-      "name": "Floating Tab Bar",
-      "kind": "nav",
-      "refersTo": "tab-bar",
-      "description": "Five-tab blurred pill at the bottom; active tab raised with a blue icon.",
-      "html": "<nav class=\"ds-tabs\"><button class=\"on\"><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z\"/></svg>Today</button><button><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z\"/></svg>Journey</button><button><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z\"/></svg>Fast</button><button><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z\"/></svg>Food</button><button><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z\"/></svg>Progress</button></nav>",
-      "css": ".ds-tabs { width: 380px; max-width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); padding: 5px; border-radius: 30px; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 88%, transparent); backdrop-filter: blur(16px); box-shadow: var(--shadow); } .ds-tabs button { background: none; border: 0; color: var(--ink); opacity: .78; font: 600 12px var(--body); padding: 8px 0 7px; display: flex; flex-direction: column; align-items: center; gap: 3px; border-radius: 20px; cursor: pointer; } .ds-tabs button.on { opacity: 1; background: var(--raised); } .ds-tabs button.on svg { color: var(--accent); } .ds-tabs button:hover { opacity: 1; } .ds-tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
-    },
-    {
-      "name": "Grouped List",
-      "kind": "custom",
-      "refersTo": "grouped-list",
-      "description": "More screen rows: domain glyph, title, sub-line, chevron.",
-      "html": "<div class=\"ds-mlist\"><button class=\"ds-mrow\"><i style=\"color:var(--fast-ink)\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"13\" r=\"8\"/><path d=\"M12 9v4l2 2M9 2h6\"/></svg></i><span><b>Fasting plan</b><small>16:8 daily</small></span><em><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m9 6 6 6-6 6\"/></svg></em></button><button class=\"ds-mrow\"><i><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z\"/><path d=\"M4 19V5\"/></svg></i><span><b>Guides</b><small>Short reads on fasting, training and food</small></span><em><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m9 6 6 6-6 6\"/></svg></em></button></div>",
-      "css": ".ds-mlist { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; max-width: 420px; } .ds-mrow { display: grid; grid-template-columns: 30px 1fr auto; gap: 14px; align-items: center; width: 100%; text-align: left; background: none; border: 0; border-top: 1px solid var(--line); padding: 14px 16px; min-height: 60px; color: var(--ink); font-family: var(--body); cursor: pointer; } .ds-mrow:first-child { border-top: 0; } .ds-mrow i { color: var(--muted); display: grid; place-items: center; } .ds-mrow span { display: flex; flex-direction: column; gap: 1px; min-width: 0; } .ds-mrow b { font-size: 17px; font-weight: 500; } .ds-mrow small { font-size: 13px; color: var(--muted); } .ds-mrow em { color: var(--faint); display: grid; } .ds-mrow:hover { background: var(--surface-2); } .ds-mrow:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }"
-    },
-    {
-      "name": "Quick Add Tile",
-      "kind": "card",
-      "refersTo": "quick-tile",
-      "description": "Two-column log grid tile with a tinted icon square.",
-      "html": "<button class=\"ds-qtile\"><i style=\"background:var(--water-soft);color:var(--water)\"><svg viewBox=\"0 0 24 24\" width=\"21\" height=\"21\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z\"/></svg></i><b>Water</b><small>+250 ml, 1,250 of 2,500</small></button>",
-      "css": ".ds-qtile { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; width: 180px; min-height: 116px; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 14px; color: var(--ink); font-family: var(--body); cursor: pointer; transition: border-color .15s, transform .1s; } .ds-qtile i { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 6px; } .ds-qtile b { font-size: 17px; font-weight: 600; } .ds-qtile small { font-size: 13px; color: var(--muted); } .ds-qtile:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); } .ds-qtile:active { transform: scale(.97); } .ds-qtile:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
-    },
-    {
-      "name": "Stat Tiles",
-      "kind": "card",
-      "refersTo": "stat-tile",
-      "description": "Fasting-app stat grid: big tabular figure, small muted label.",
-      "html": "<div class=\"ds-stats\"><div class=\"ds-stat\"><b>16.4</b><span>Avg hours</span></div><div class=\"ds-stat\"><b>12</b><span>Fasts</span></div><div class=\"ds-stat\"><b>3.2</b><span>kg lost</span></div></div>",
-      "css": ".ds-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 420px; font-family: var(--body); } .ds-stat { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px; } .ds-stat b { display: block; font: 700 28px/1.1 var(--display); font-variant-numeric: tabular-nums; color: var(--ink); } .ds-stat span { font-size: 13px; font-weight: 600; color: var(--muted); }"
-    },
-    {
-      "name": "Guide Tile",
-      "kind": "card",
-      "refersTo": "guide-art-blue",
-      "description": "Illustrated insight card: pastel 4:3 art panel, title and read time.",
-      "html": "<button class=\"ds-gtile\"><span class=\"ds-gart\"><svg viewBox=\"0 0 24 24\" width=\"44%\" height=\"44%\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"position:relative\"><path d=\"m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z\"/></svg></span><b>Fasting and training, timed</b><small>4 min read</small></button>",
-      "css": ".ds-gtile { display: flex; flex-direction: column; gap: 8px; width: 180px; text-align: left; background: none; border: 0; padding: 0; color: var(--ink); font-family: var(--body); cursor: pointer; } .ds-gart { position: relative; aspect-ratio: 4 / 3; border-radius: 18px; display: grid; place-items: center; overflow: hidden; background: #dce8ff; color: #2f5fc4; } .ds-gart::before { content: \"\"; position: absolute; width: 70%; aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,.45); right: -12%; bottom: -22%; } .ds-gart::after { content: \"\"; position: absolute; width: 34%; aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,.35); left: 8%; top: 10%; } .ds-gtile b { font-size: 17px; font-weight: 500; line-height: 1.3; } .ds-gtile small { font-size: 13px; color: var(--muted); margin-top: -4px; } .ds-gtile:hover .ds-gart { filter: brightness(1.04); } .ds-gtile:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 18px; }"
-    },
-    {
-      "name": "Session Hero",
-      "kind": "card",
-      "refersTo": "hero-run",
-      "description": "The one saturated card per screen: fixed gradient, white ink, white action pill.",
-      "html": "<div class=\"ds-hero\"><div class=\"ds-meta\"><span>Week 3, run 2</span><span>32 min</span></div><h2>Easy run</h2><p>Late in your fast suits an easy pace.</p><button class=\"ds-go\">Start workout</button></div>",
-      "css": ".ds-hero { border-radius: 24px; padding: 18px; color: #fff; display: flex; flex-direction: column; gap: 14px; max-width: 420px; font-family: var(--body); background: linear-gradient(150deg, #2c62d4 0%, #1a3a82 100%); } .ds-meta { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; opacity: .85; } .ds-hero h2 { margin: 0; font: 700 34px/.95 var(--display); } .ds-hero p { margin: 0; font-size: 15px; } .ds-go { background: #fff; color: #13306b; border: 0; border-radius: 16px; min-height: 56px; font: 700 20px var(--body); cursor: pointer; transition: transform .1s; } .ds-go:active { transform: scale(.97); } .ds-go:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }"
-    },
-    {
-      "name": "Text Field",
+      "name": "Input",
       "kind": "input",
       "refersTo": "input",
-      "description": "Inset field with a muted label above; blue border on focus.",
-      "html": "<label class=\"ds-f\">Weight (kg)<input class=\"ds-input\" value=\"82.4\"></label>",
-      "css": ".ds-f { display: flex; flex-direction: column; gap: 5px; font: 600 13px var(--body); color: var(--muted); max-width: 280px; } .ds-input { font: 400 15px var(--body); color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-height: 46px; caret-color: var(--accent); } .ds-input:hover { border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); } .ds-input:focus { border-color: var(--accent); outline: none; }"
+      "description": "Shaded field on a hairline; focus turns the border cobalt.",
+      "html": "<label class=\"ds-field\">Notes<input class=\"ds-input\" placeholder=\"How it felt, heat, who you ran with\"></label>",
+      "css": ".ds-field { font-family: var(--body, 'Manrope Variable', Manrope, system-ui, sans-serif); display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--muted); } .ds-input { font: inherit; font-size: 15px; font-weight: 400; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-height: 46px; caret-color: var(--accent); } .ds-input::placeholder { color: var(--muted); } .ds-input:focus { outline: none; border-color: var(--accent); }"
     },
     {
-      "name": "Chips",
+      "name": "Dock",
+      "kind": "nav",
+      "refersTo": "dock",
+      "description": "Full-width bottom dock with a top hairline; the cobalt + button is set into its right end.",
+      "html": "<nav class=\"ds-dock\"><button class=\"on\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 11 12 4l9 7v9H3z\"/></svg><span>Today</span></button><button><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"13\" r=\"8\"/><path d=\"M12 9v4l2 2M9 2h6\"/></svg><span>Fast</span></button><button><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\"><path d=\"M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-3 4-3 7h3v11\"/></svg><span>Food</span></button><button class=\"ds-fab\" aria-label=\"Add\"><svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg></button></nav>",
+      "css": ".ds-dock { font-family: var(--body, 'Manrope Variable', Manrope, system-ui, sans-serif); display: grid; grid-template-columns: repeat(3, 1fr) 72px; align-items: center; padding: 6px 12px; background: var(--surface); border-top: 1px solid var(--line); } .ds-dock button { display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 50px; padding: 6px 0; border: 0; border-radius: 10px; background: none; color: var(--muted); font: inherit; font-size: 11px; font-weight: 600; cursor: pointer; } .ds-dock button:hover { color: var(--ink); } .ds-dock button.on { color: var(--accent); } .ds-dock button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; } .ds-dock .ds-fab { justify-self: end; width: 52px; height: 52px; min-height: 0; padding: 0; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; box-shadow: 0 4px 12px rgba(40, 88, 216, .28); transition: transform .12s ease-out; } .ds-dock .ds-fab:hover { color: var(--accent-ink); } .ds-dock .ds-fab:active { transform: scale(.94); }"
+    },
+    {
+      "name": "Utility Row",
+      "kind": "card",
+      "refersTo": "utility-row",
+      "description": "The Today row: domain icon, title over detail, tabular value, faint chevron.",
+      "html": "<button class=\"ds-urow\"><i class=\"ds-ui\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"13\" r=\"8\"/><path d=\"M12 9v4l2 2M9 2h6\"/></svg></i><span class=\"ds-ut\"><b>Fasting</b><small>3 h 12 min to your 16 h goal</small></span><span class=\"ds-uv\">12:48:05</span><em class=\"ds-chev\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m9 6 6 6-6 6\"/></svg></em></button>",
+      "css": ".ds-urow { font-family: var(--body, 'Manrope Variable', Manrope, system-ui, sans-serif); display: grid; grid-template-columns: 28px 1fr auto auto; gap: 12px; align-items: center; width: 100%; min-height: 64px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; color: var(--ink); text-align: left; cursor: pointer; transition: background-color .15s ease-out; } .ds-urow:hover { background: var(--surface-2); } .ds-urow:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; } .ds-ui { display: grid; place-items: center; color: var(--fast); } .ds-ut { display: flex; flex-direction: column; gap: 1px; min-width: 0; } .ds-ut b { font-size: 15px; font-weight: 700; } .ds-ut small { font-size: 13px; color: var(--muted); } .ds-uv { font-size: 17px; font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; } .ds-chev { color: var(--faint); display: grid; }"
+    },
+    {
+      "name": "Session Card",
+      "kind": "custom",
+      "refersTo": "session-card",
+      "description": "The one flat ink card: title, divided stats, to-scale jog and walk strip, coach line, cobalt button, split links.",
+      "html": "<section class=\"ds-hero\"><h2>Jog 1 min &times; 8</h2><p class=\"ds-lead\">Easy jogs with walks between</p><div class=\"ds-hstats\"><div><b>30 min</b><span>Total time</span></div><div><b>8 min</b><span>Running time</span></div><div><b>Easy</b><span>Effort</span></div></div><div class=\"ds-strip\"><i class=\"e\" style=\"flex:5\"></i><i class=\"j\" style=\"flex:1\"></i><i class=\"w\" style=\"flex:1.5\"></i><i class=\"j\" style=\"flex:1\"></i><i class=\"w\" style=\"flex:1.5\"></i><i class=\"j\" style=\"flex:1\"></i><i class=\"e\" style=\"flex:5\"></i></div><p class=\"ds-note\"><i></i><span><b>Good to go.</b> Late in a fast suits an easy run.</span></p><button class=\"ds-go\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"currentColor\" stroke=\"none\"><path d=\"M8 5v14l11-7z\"/></svg> Start run</button><div class=\"ds-links\"><button>Change session</button><button>Log activity</button></div></section>",
+      "css": ".ds-hero { font-family: var(--body, 'Manrope Variable', Manrope, system-ui, sans-serif); display: flex; flex-direction: column; gap: 12px; padding: 20px 18px 16px; background: var(--hero); color: var(--hero-ink); border: 1px solid var(--hero-line); border-radius: 16px; } .ds-hero h2 { margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -.03em; line-height: 1.05; } .ds-lead { margin: -6px 0 0; font-size: 16px; opacity: .92; } .ds-hstats { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border-top: 1px solid var(--hero-line); padding-top: 12px; } .ds-hstats div { display: flex; flex-direction: column; gap: 2px; padding: 0 10px; border-left: 1px solid var(--hero-line); } .ds-hstats div:first-child { padding-left: 0; border-left: 0; } .ds-hstats b { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-hstats span { font-size: 13px; color: var(--hero-muted); } .ds-strip { display: flex; gap: 3px; } .ds-strip i { height: 22px; border-radius: 4px; } .ds-strip .j { background: var(--accent); } .ds-strip .w { background: var(--walk); opacity: .55; } .ds-strip .e { background: var(--walk); opacity: .28; } .ds-note { display: grid; grid-template-columns: 8px 1fr; gap: 10px; align-items: baseline; margin: 0; font-size: 14px; line-height: 1.45; color: var(--hero-muted); } .ds-note i { width: 8px; height: 8px; border-radius: 50%; background: var(--good); } .ds-note b { color: var(--hero-ink); } .ds-go { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; border: 0; border-radius: 12px; background: var(--accent); color: var(--accent-ink); font: inherit; font-size: 17px; font-weight: 700; cursor: pointer; transition: background-color .15s ease-out, transform .12s ease-out; } .ds-go:hover { background: var(--accent-2); } .ds-go:focus-visible { outline: 2px solid var(--hero-ink); outline-offset: 2px; } .ds-go:active { transform: scale(.98); } .ds-links { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; } .ds-links button { min-height: 44px; border: 0; background: none; color: var(--hero-ink); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; } .ds-links button + button { border-left: 1px solid var(--hero-line); }"
+    },
+    {
+      "name": "Divided Stats Row",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Figures in one row split by hairlines, no tiles.",
+      "html": "<div class=\"ds-stats\"><div><b>42</b><span>fasts completed</span></div><div><b>16.4h</b><span>average fast</span></div><div><b>38.0h</b><span>longest fast</span></div></div>",
+      "css": ".ds-stats { font-family: var(--body, 'Manrope Variable', Manrope, system-ui, sans-serif); display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; } .ds-stats div { padding: 2px 12px; border-left: 1px solid var(--line); } .ds-stats div:first-child { padding-left: 0; border-left: 0; } .ds-stats b { display: block; font-size: 22px; font-weight: 700; letter-spacing: -.01em; line-height: 1.1; font-variant-numeric: tabular-nums; color: var(--ink); } .ds-stats span { display: block; font-size: 12px; font-weight: 500; line-height: 1.3; color: var(--muted); }"
+    },
+    {
+      "name": "Text Tabs",
       "kind": "chip",
-      "refersTo": "chip",
-      "description": "Pill filters; selected inverts to ink.",
-      "html": "<div class=\"ds-chips\"><button class=\"ds-chip on\">All</button><button class=\"ds-chip\">Coffee</button><button class=\"ds-chip\">Breakfast</button></div>",
-      "css": ".ds-chips { display: flex; gap: 8px; flex-wrap: wrap; } .ds-chip { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 8px 12px; font: 700 15px var(--body); cursor: pointer; transition: background .15s, color .15s; } .ds-chip.on { background: var(--ink); color: var(--bg); border-color: var(--ink); } .ds-chip:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); } .ds-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
+      "refersTo": "dock-active",
+      "description": "Category and Progress tabs: text with a cobalt underline when active.",
+      "html": "<div class=\"ds-tabs\"><button class=\"on\">Recent</button><button>Coffee</button><button>Breakfast</button><button>Snacks</button></div>",
+      "css": ".ds-tabs { font-family: var(--body, 'Manrope Variable', Manrope, system-ui, sans-serif); display: flex; gap: 20px; overflow-x: auto; border-bottom: 1px solid var(--line); } .ds-tabs button { flex: none; margin-bottom: -1px; padding: 8px 0 9px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; } .ds-tabs button:hover { color: var(--ink); } .ds-tabs button.on { color: var(--accent); border-bottom-color: var(--accent); } .ds-tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
+    },
+    {
+      "name": "Outlined Segmented Control",
+      "kind": "chip",
+      "refersTo": "segmented-outlined-on",
+      "description": "The meal selector: white track, selected option ringed in cobalt.",
+      "html": "<div class=\"ds-seg\"><button class=\"on\">Breakfast</button><button>Lunch</button><button>Dinner</button><button>Snack</button></div>",
+      "css": ".ds-seg { font-family: var(--body, 'Manrope Variable', Manrope, system-ui, sans-serif); display: flex; gap: 3px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; } .ds-seg button { flex: 1; min-height: 40px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; } .ds-seg button:hover { color: var(--ink); } .ds-seg button.on { color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); } .ds-seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
+    },
+    {
+      "name": "Evidence Mark",
+      "kind": "chip",
+      "refersTo": "card",
+      "description": "Evidence level as a dot plus a word, never a pill.",
+      "html": "<p class=\"ds-evrow\">Ketosis begins <span class=\"ds-ev h\">Human studies</span></p>",
+      "css": ".ds-evrow { font-family: var(--body, 'Manrope Variable', Manrope, system-ui, sans-serif); margin: 0; font-size: 17px; font-weight: 600; color: var(--ink); } .ds-ev { margin-left: 8px; font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap; } .ds-ev::before { content: \"\"; display: inline-block; width: 6px; height: 6px; margin-right: 5px; border-radius: 50%; vertical-align: 1px; background: var(--faint); } .ds-ev.s::before { background: var(--good); } .ds-ev.h::before { background: var(--water); } .ds-ev.e::before { background: var(--violet); }"
     }
   ],
   "narrative": {
-    "northStar": "The Quiet Coach in Your Pocket",
-    "overview": "Run Back looks and behaves like a native iOS health app that happens to know about fasting, training and food at once. The world is deep blue-grey navy in the dark theme and cool paper grey in the light one, with white or slate cards, grouped lists, a floating pill tab bar, and a separate round blue plus button that holds every log. The visual reference is the user's own: Lose It style grouped lists and floating tab bar, and a fasting app's stat grids and illustrated insight cards. Nothing is invented for spectacle; every surface is a familiar phone pattern done carefully.\n\nType is the system face (SF Pro on Apple devices, Inter loaded from Google Fonts elsewhere) in mixed case throughout. Hierarchy comes from size and weight on a short, Apple-like ramp, not from case, tracking or a second family. Large tabular numerals carry the data: timers, streaks, weights and totals are the loudest things on any screen, and the words around them stay small and muted.\n\nColour is functional. Blue means act now and running; amber is the fast; rose is the body (food, weight); teal is water; violet is strength and cross-training; gold is Premium. One saturated card per screen at most (the session hero or the Journey card) carries a fixed deep gradient with white ink; everything else sits on neutral surfaces with a soft tinted icon square to say which domain it belongs to. The voice is a calm expert coach, and the visuals match: no hype colour, no alarm red except for safety and destructive actions.",
+    "northStar": "The Training Journal",
+    "overview": "Run Back reads like a well-kept training journal: warm paper, white pages, dark ink, and one cobalt pen for the thing to do next. Every screen is a page of plain records (rows, divided figures, a to-scale strip) with a single ink card that holds today's session. Nothing glows, nothing is glossy, and colour only appears where it carries meaning.\n\nDensity is calm and one-handed. A screen opens with a large title, then the most urgent row (the fast), then the session card, then one grouped quick log, then the Journey line. Figures are set large in tabular numerals and separated by hairlines rather than boxed into tiles. At night the same journal turns over to a green-black page with soft ink, keeping every role and rule.\n\nThe system was cut back from an earlier gradient-heavy look, and the build says so in its own comments: decorative gradients, glossy medals, tinted coach cards and stat tiles were all removed on purpose. Future work extends that restraint.",
     "keyCharacteristics": [
-      "Deep navy dark theme first, a complete light theme second, both from one token set.",
-      "System font, mixed case, eight text sizes (12 / 13 / 15 / 17 / 20 / 22 / 28 / 34) plus timer numerals.",
-      "Floating five-tab pill bar with a separate 66px plus button; a left rail at 1000px and up.",
-      "Grouped lists with hairline dividers, 2-column tile grids, and pastel illustrated guide tiles.",
-      "Domain colour coding through soft tinted icon squares, not coloured cards.",
-      "One saturated gradient hero per screen, white ink, a white primary pill inside it."
+      "Warm off-white paper with white surfaces and a 1px warm hairline; green-black at night.",
+      "One family (Manrope Variable, self-hosted), heavy 800 for titles and big figures, tabular numerals for all data.",
+      "One cobalt accent for actions and the active state; amber, teal and rose only for fasting, water and weight.",
+      "One flat ink card per screen for the hero record (today's session, the Journey).",
+      "Figures in divided rows, status as a dot plus a word, no tiles and no pills for status.",
+      "Flat surfaces; depth comes from the ink card and hairlines, not shadows."
     ],
     "rules": [
       {
-        "name": "The Domain Hue Rule",
-        "body": "Each domain owns one hue and nothing else borrows it: blue for action and running, amber for the fast, rose for body, teal for water, violet for strength, gold for Premium. A new feature picks its domain's hue; it never introduces a new one.",
+        "name": "The One Pen Rule",
+        "body": "Cobalt is the only action colour. The Start fast button is cobalt too; amber marks fasting progress, never a control.",
         "section": "colors"
       },
       {
-        "name": "The Tinted Square Rule",
-        "body": "Domain colour arrives as a soft square behind a glyph (accent-soft with accent, fast-soft with fast-ink, and so on), not as a coloured card background. Cards stay neutral.",
+        "name": "The Meaning Hue Rule",
+        "body": "Amber means fasting, teal means water, rose means weight, violet means strength. A domain hue never decorates a surface that is not about its domain.",
         "section": "colors"
       },
       {
-        "name": "The One Hero Rule",
-        "body": "At most one saturated gradient card per screen. The rest of the screen is neutral surfaces.",
+        "name": "The Paper and Ink Rule",
+        "body": "Light mode is warm paper (`paper`) with white pages and ink text; never a cool grey or blue-tinted neutral. Night mode keeps the same roles on green-black.",
         "section": "colors"
       },
       {
-        "name": "The Mixed Case Rule",
-        "body": "Every label, tab, button and heading is sentence or title case. No uppercase, no tracked-out small caps.",
+        "name": "The Tabular Rule",
+        "body": "Body text runs proportional figures; every number that is data (times, stats, kcal, weights, clocks) is set in tabular numerals so columns and ticking clocks do not jitter.",
         "section": "typography"
       },
       {
-        "name": "The Numbers Lead Rule",
-        "body": "Figures are the largest element in their block and always use tabular numerals; the unit and the label beside them drop to 13px muted.",
+        "name": "The Heavy Number Rule",
+        "body": "Weight 800 belongs to titles and the one hero figure per card. Everything else stays at 700 or lighter.",
         "section": "typography"
       },
       {
-        "name": "The Thumb Zone Rule",
-        "body": "Primary navigation and the log action live at the bottom, floating, within one thumb's reach. Nothing important is only reachable from the top.",
+        "name": "The Divided Row Rule",
+        "body": "Groups of figures sit in one row divided by 1px hairlines, first cell flush left. No tiles, no boxes per figure.",
         "section": "layout"
       },
       {
-        "name": "The Float Only Rule",
-        "body": "Cards, tiles and lists never cast a shadow. Only floating chrome (tab bar, plus button, toast, pop-ups) does.",
+        "name": "The Flat Page Rule",
+        "body": "Resting surfaces never carry a drop shadow. If something needs to stand forward, it becomes the ink card or gets a hairline, not a shadow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The No Gloss Rule",
+        "body": "No decorative gradients on surfaces, buttons, badges, avatars or bars. Achievements are drawn as outlined circles in their domain colour. A hard-stop half fill for a half-done day is a data mark and is allowed.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "Do take colour from the domain: blue for action and running, amber for fast, rose for body, teal for water, violet for strength, gold for Premium only.",
-      "Do put domain colour in a soft tinted icon square or pill and keep cards on neutral surface with a 1px hairline.",
-      "Do use the system face in mixed case on the 12 / 13 / 15 / 17 / 20 / 22 / 28 / 34 ramp, with 34px large titles at -0.02em.",
-      "Do make figures the largest thing in their block, bold and tabular, with 13px muted units and labels.",
-      "Do route new logging actions through the plus button's quick add grid rather than adding buttons to tabs.",
-      "Do build secondary destinations as grouped list rows in More (24px glyph, 17px title, 13px sub-line, chevron).",
-      "Do keep touch targets at least 44px (buttons 48px, list rows 60px) and gate motion behind prefers-reduced-motion.",
-      "Do keep every new colour a token with both a dark and a light value."
+      "**Do** use cobalt for every primary action and active state, including Start fast and the food add button.",
+      "**Do** set every data number in tabular numerals, and the one hero figure per card at 800.",
+      "**Do** group figures in a single row divided by 1px hairlines, first cell flush left.",
+      "**Do** show evidence and status as a 6px dot plus a word.",
+      "**Do** keep cards at 16px radius and controls at 12px, on a 1px hairline with no shadow.",
+      "**Do** give each screen at most one flat ink card, and put the next action inside it.",
+      "**Do** draw durations to scale (interval strip, dial) and label their ends in plain words.",
+      "**Do** keep reduced motion respected: press scale and transitions only under `prefers-reduced-motion: no-preference`."
     ],
     "donts": [
-      "Don't use uppercase or letter-spaced labels; the system is mixed case everywhere.",
-      "Don't add a second typeface or a condensed display face.",
-      "Don't put shadows on cards, tiles or lists; only floating chrome casts one.",
-      "Don't place more than one saturated gradient hero on a screen.",
-      "Don't use gold outside Premium or red outside safety, stop and destructive states.",
-      "Don't put a small label above a heading as a kicker; let the large title stand alone.",
-      "Don't use em or en dashes in any copy."
+      "**Don't** use decorative gradients, glossy radial medals or tinted card washes; the build removed every one.",
+      "**Don't** box stats into separate tiles.",
+      "**Don't** use pills for status or evidence; keep pills for real tags and chip pickers.",
+      "**Don't** put amber, teal or rose on anything outside fasting, water or weight.",
+      "**Don't** add a drop shadow to a resting card, row or the dock.",
+      "**Don't** use cool grey or navy neutrals; the page is warm paper and green-black ink.",
+      "**Don't** put a small uppercase tracked line above a headline to introduce it; the data label names a figure or instrument, it does not announce a title."
     ]
   }
 }
