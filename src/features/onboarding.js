@@ -162,7 +162,5 @@ act("onb-later", () => { state.profile.setupDismissed = true; saveProfile(); ren
 export function setupCard() {
   if (!needsSetup() || S.workoutLive) return "";
   const p = state.profile, missing = [!p.startWeight && "weight", !p.heightCm && "height", !p.goalWeight && "goal weight"].filter(Boolean);
-  return `<div class="card setupcard"><div class="card-head"><h3>Finish your setup</h3><button class="iconbtn" data-act="onb-later" aria-label="Hide for now">${ICON.close}</button></div>
-    <p class="note">Add your ${missing.join(", ").replace(/, ([^,]*)$/, " and $1")} so your water, calories and weight trend are worked out for you.</p>
-    <button class="btn primary" data-act="onb-open">Finish setup</button></div>`;
+  return `<div class="urow-wrap"><button class="urow" data-act="onb-open"><i class="ui">${ICON.edit}</i><span class="ut"><b>Finish your setup</b><small>Add your ${missing.join(", ").replace(/, ([^,]*)$/, " and $1")}</small></span><em class="chev" aria-hidden="true">${ICON.next}</em></button><button class="urow-x" data-act="onb-later" aria-label="Hide for now">${ICON.close}</button></div>`;
 }

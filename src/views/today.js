@@ -40,32 +40,36 @@ export function coachCard(compact = false) {
   return `<div class="coach ${c.tone}">${head}${compact ? "" : `<p>${esc(c.body)}</p>`}</div>`;
 }
 
+// One utility row: icon, title and detail, a value on the right, a chevron.
+const urow = (attrs, icon, tone, title, sub, right = "") => `<button class="urow" ${attrs}><i class="ui ${tone}">${ICON[icon]}</i><span class="ut"><b>${title}</b><small>${sub}</small></span>${right}<em class="chev" aria-hidden="true">${ICON.next}</em></button>`;
+
 function fastMini() {
   const fa = state.profile.fastActive, plan = planFor(state.profile);
   if (fa) {
     const el = (Date.now() - fa.s) / 1000, p = el / (fa.h * 3600);
-    return `<button class="fastmini" data-act="tab" data-v="fast">
-      ${ring(p, { size: 56, stroke: 6, color: "var(--fast)", inner: `<span style="color:var(--fast)">${ICON.timer}</span>` })}
-      <div><div class="t">${p >= 1 ? "Fasting goal reached" : "Fasting"}</div><div class="s">${p >= 1 ? "Break your fast when you're ready" : hm(fa.h * 3600 - el) + " to your " + fa.h + " h goal"}</div></div>
-      <div class="big" data-tick="fast-el">${mmss(el)}</div></button>`;
+    return urow('data-act="tab" data-v="fast"', "timer", "fast", p >= 1 ? "Fasting goal reached" : "Fasting", p >= 1 ? "Break your fast when you're ready" : hm(fa.h * 3600 - el) + " to your " + fa.h + " h goal", `<span class="uv" data-tick="fast-el">${mmss(el)}</span>`);
   }
   const last = allFasts(state.days)[0];
   const next = last ? last.e + Math.max(1, 24 - plan.hours) * H : null;
   const r = state.profile.routine, nf = r && r.on ? nextFast(r) : null, due = r && r.on ? dueFast(r, null, last) : null;
-  if (due || nf) return `<button class="fastmini" data-act="tab" data-v="fast">
-    ${ring(0, { size: 56, stroke: 6, color: "var(--fast)", inner: `<span style="color:var(--fast)">${ICON.timer}</span>` })}
-    <div><div class="t">${due ? "Your fast is due now" : "Next fast " + (nf.start - Date.now() < 24 * H ? "in " + hm((nf.start - Date.now()) / 1000) : "")}</div><div class="s">${esc(spanText(r, (due || nf).day))}</div></div>
-    <span class="pill fast">${esc(routineLabel(r))}</span></button>`;
-  return `<button class="fastmini" data-act="tab" data-v="fast">
-    ${ring(0, { size: 56, stroke: 6, color: "var(--fast)", inner: `<span style="color:var(--fast)">${ICON.timer}</span>` })}
-    <div><div class="t">Eating window</div><div class="s">${next ? (Date.now() > next ? "Time to start your " + plan.label + " fast" : "Next fast at " + clock(next)) : "Start your first " + plan.label + " fast"}</div></div>
-    <span class="pill fast">${plan.label}</span></button>`;
+  if (due || nf) return urow('data-act="tab" data-v="fast"', "timer", "fast", due ? "Your fast is due now" : "Next fast" + (nf.start - Date.now() < 24 * H ? " in " + hm((nf.start - Date.now()) / 1000) : ""), esc(spanText(r, (due || nf).day)), `<span class="uv sm">${esc(routineLabel(r))}</span>`);
+  const sub = plan.hours >= 24 ? plan.label + " plan, start when you've finished eating" : next ? (Date.now() > next ? "Time to start your " + plan.label + " fast" : "Next fast at " + clock(next)) : "Start your first " + plan.label + " fast";
+  return urow('data-act="tab" data-v="fast"', "timer", "fast", plan.hours >= 24 ? "Ready to fast" : "Eating window", esc(sub), `<span class="uv sm">${esc(plan.label)}</span>`);
 }
 
-// The coach's advice, inside the session card and above the button it governs.
+// The coach's advice: one quiet line inside the session card, above the button it governs.
 function heroCoach(c) {
-  if (!isPro()) return `<button class="hcoach locked" data-act="paywall" data-f="fastTrain">${ICON.lock}<span><b>When should you train today?</b><small>Premium times every session around your fast</small></span></button>`;
-  return `<div class="hcoach ${c.tone}"><i aria-hidden="true">${tone[c.tone]}</i><span><b>${esc(c.title)}</b><small>${esc(c.body)}</small></span></div>`;
+  if (!isPro()) return `<button class="hnote locked" data-act="paywall" data-f="fastTrain">${ICON.lock}<span>When to train around your fast is a Premium feature</span></button>`;
+  return `<div class="hnote ${c.tone}"><i aria-hidden="true"></i><span><b>${esc(c.title)}.</b> ${esc(c.body)}</span></div>`;
+}
+
+// The interval strip: every block to scale; jog reps numbered underneath.
+function intervalStrip(blocks) {
+  const tot = blocksTotal(blocks);
+  let n = 0;
+  return `<div class="istrip" role="img" aria-label="${blocks.filter(b => b[0] !== "w").length} jog blocks between walking">
+    ${blocks.map((b, i) => { const jog = b[0] !== "w", warm = b[2] === "Warm-up" || b[2] === "Cool-down"; if (jog) n++;
+      return `<span class="seg ${jog ? (b[0] === "h" ? "hard" : "jog") : warm ? "ends" : "walk"}" style="flex:${b[1] / tot}">${jog && blocks.length <= 24 ? `<small>${n}</small>` : ""}</span>`; }).join("")}</div>`;
 }
 
 function hero() {
@@ -73,42 +77,46 @@ function hero() {
   const done = s.kind === "run" ? d.runDone : s.kind === "cross" ? d.crossDone : false;
   const training = s.kind === "run" || s.kind === "cross", c = coachNow(), pro = isPro();
   const noun = s.kind === "run" ? "run" : "cardio";
-  let h = `<div class="hero ${s.kind}"><div class="meta"><span>${wk ? "Run plan &middot; week " + wk : "Run plan starts " + esc(nice(p.startDate))}</span><span>${s.kind === "run" ? "Run" : s.kind === "cross" ? "Cardio + strength" : s.kind === "rest" ? "Recovery" : ""}</span></div>
-    <h2>${esc(s.title)}</h2><p>${esc(s.how)}</p>`;
-  if (s.blocks) {
-    h += `<div class="chips"><span>${Math.round(blocksTotal(s.blocks) / 60)} min</span>${s.kind === "run" ? `<span>${Math.round(runSeconds(s.blocks) / 60)} min running</span>` : ""}<span>${s.hard ? "Faster efforts" : "Easy effort"}</span></div>`;
-    if (s.kind === "run") { const tot = blocksTotal(s.blocks); h += `<div class="strip" aria-hidden="true">${s.blocks.map(b => `<i class="${b[0]}" style="flex:${b[1] / tot}"></i>`).join("")}</div>`; }
+  const [lead, ...rest] = (s.how || "").split(/(?<=\.)\s+/), note = rest.join(" ");
+  let h = `<section class="hero2 ${s.kind}" aria-label="Today's session">
+    <div class="hk">${wk ? "Run plan / Week " + wk : "Run plan starts " + esc(nice(p.startDate))}<span>${s.kind === "run" ? "Run" : s.kind === "cross" ? "Cardio + strength" : s.kind === "rest" ? "Recovery" : ""}</span></div>
+    <h2>${esc(s.title).replace(/(\d) x (\d)/, "$1 &times; $2")}</h2>
+    <p class="hlead">${esc(lead.replace(/\.$/, ""))}</p>`;
+  if (s.blocks && !done) {
+    h += `<div class="hstats"><div><b>${Math.round(blocksTotal(s.blocks) / 60)} min</b><span>Total time</span></div>${s.kind === "run" ? `<div><b>${Math.round(runSeconds(s.blocks) / 60)} min</b><span>Running time</span></div>` : ""}<div><b>${s.hard ? "Faster" : "Easy"}</b><span>Effort</span></div></div>`;
+    if (s.kind === "run") h += `<div class="hlbl">Jog / walk</div>${intervalStrip(s.blocks)}`;
   }
+  if (note && !done) h += `<p class="hsub">${esc(note)}</p>`;
   if (done) {
     const isRun = s.kind === "run", dist = isRun ? runDist(d, p.dunit) : d.crossDistM || 0, dur = isRun ? runSecs(d) : crossSecs(d);
-    h += `<div class="donebox"><div><b>${dist ? fmtDist(dist) : "-"}</b><span>${p.dunit}</span></div><div><b>${dur ? mmss(dur) : "-"}</b><span>time</span></div><div><b>${paceOf(dur, dist)}</b><span>avg /${p.dunit}</span></div></div>`;
+    h += `<div class="hstats"><div><b>${dist ? fmtDist(dist) : "-"}</b><span>${p.dunit}</span></div><div><b>${dur ? mmss(dur) : "-"}</b><span>Time</span></div><div><b>${paceOf(dur, dist)}</b><span>Avg /${p.dunit}</span></div></div>`;
     if (pro) h += heroCoach(c);
-    h += `<div class="sub"><button type="button" data-act="open-activity" data-date="${state.sel}" data-kind="${s.kind}">View activity</button>${s.blocks ? `<button type="button" data-act="start-session">Do it again</button>` : ""}</div>`;
+    h += `<div class="hlinks"><button type="button" data-act="open-activity" data-date="${state.sel}" data-kind="${s.kind}">View activity</button>${s.blocks ? `<button type="button" data-act="start-session">Do it again</button>` : ""}</div>`;
   } else if (training && s.blocks) {
     h += heroCoach(c);
-    if (pro && c.tone === "stop") h += `<button class="go" data-act="tab" data-v="fast">${ICON.timer} Break your fast first</button>
-      <div class="sub"><button type="button" data-act="start-session">Start ${noun} anyway</button><button type="button" data-act="add-activity">Log an activity</button></div>`;
-    else h += `<button class="go" data-act="start-session">${ICON.play} Start ${pro && c.tone === "caution" ? "easy " : ""}${noun}</button>
-      <div class="sub"><button type="button" data-act="free-workout">Do something different</button><button type="button" data-act="add-activity">Log an activity</button></div>`;
+    if (pro && c.tone === "stop") h += `<button class="hgo" data-act="tab" data-v="fast">${ICON.timer} Break your fast first</button>
+      <div class="hlinks"><button type="button" data-act="start-session">Start ${noun} anyway</button><button type="button" data-act="add-activity">Log activity</button></div>`;
+    else h += `<button class="hgo" data-act="start-session">${ICON.play} Start ${pro && c.tone === "caution" ? "easy " : ""}${noun}</button>
+      <div class="hlinks"><button type="button" data-act="free-workout">Change session</button><button type="button" data-act="add-activity">Log activity</button></div>`;
   } else {
-    h += `<p class="soft">Feel like moving? Rest days are for easy movement, but it's your call.</p>
-      <button class="go" data-act="free-workout">${ICON.play} Start a workout</button>
-      <div class="sub"><button type="button" data-act="add-activity">Log an activity</button><button type="button" data-act="lifts">Strength workout</button></div>`;
+    h += `<p class="hsub">Feel like moving? Rest days are for easy movement, but it's your call.</p>
+      <button class="hgo" data-act="free-workout">${ICON.play} Start a workout</button>
+      <div class="hlinks"><button type="button" data-act="add-activity">Log activity</button><button type="button" data-act="lifts">Strength workout</button></div>`;
   }
-  if (s.kind === "run" && wk && wk <= 9 && !done) h += `<p class="soft small">Easy means full sentences. Your 2021 half pace (6:43/mi) is the long-term goal, not today's.</p>`;
-  return h + `</div>`;
+  if (s.kind === "run" && wk && wk <= 9 && !done) h += `<p class="hfoot">Easy means full sentences. Your 2021 half pace (6:43/mi) is the long-term goal, not today's.</p>`;
+  return h + `</section>`;
 }
 
-// One row of quick logs: each tile shows where you are, so no separate cards are needed.
+// Quick log: four utilities in one group, each showing where you are.
 function quickRow() {
   const k = state.sel, d = state.days[k] || {}, p = state.profile, ft = foodTotals(d), ml = d.water || 0, tg = targetFor(k);
-  const tile = (attrs, icon, color, soft, label, sub) => `<button class="qa" ${attrs}><i style="background:${soft};color:${color}">${ICON[icon]}</i><b>${label}</b><small>${sub}</small></button>`;
-  return `<div class="quickacts">
-    ${tile(`data-act="today-food"`, "food", "var(--rose)", "var(--rose-soft)", "Meal", ft.n ? num(ft.k) + " kcal" : "Log food")}
-    ${tile(`data-act="add-activity"`, "bolt", "var(--violet)", "var(--violet-soft)", "Activity", actsOf(d).length ? actsOf(d).length + " logged" : "Any sport")}
-    ${tile(`data-act="water" data-ml="250" data-date="${k}" aria-label="Add 250 ml of water, ${num(ml)} of ${num(tg)} ml so far"`, "water", "var(--water)", "var(--water-soft)", "+250 ml", `${round1(ml / 1000)} / ${round1(tg / 1000)} L`)}
-    ${tile(`data-act="weigh-open"`, "scale", "var(--rose)", "var(--rose-soft)", "Weigh-in", d.weight ? d.weight + " " + p.unit : "Not yet")}
-  </div>`;
+  const cell = (attrs, icon, tone, label, value, right) => `<button class="qcell" ${attrs}><i class="ui ${tone}">${ICON[icon]}</i><span><small>${label}</small><b>${value}</b></span>${right || `<em class="chev" aria-hidden="true">${ICON.next}</em>`}</button>`;
+  return `<section class="qlog" aria-label="Quick log"><h3>Quick log</h3><div class="qgrid2">
+    ${cell('data-act="today-food"', "food", "", "Meal", ft.n ? num(ft.k) + " kcal" : "Log food")}
+    ${cell('data-act="add-activity"', "bolt", "", "Activity", actsOf(d).length ? actsOf(d).length + " logged" : "Any sport")}
+    ${cell(`data-act="water" data-ml="250" data-date="${k}" aria-label="Add 250 ml of water, ${num(ml)} of ${num(tg)} ml so far"`, "water", "water", "Water", `${round1(ml / 1000)} / ${round1(tg / 1000)} L`, `<em class="qadd">+250</em>`)}
+    ${cell('data-act="weigh-open"', "scale", "rose", "Weight", d.weight ? d.weight + " " + p.unit : "Not yet")}
+  </div></section>`;
 }
 
 // After a session: effort, pain and notes, with the matching guidance.
@@ -139,9 +147,8 @@ export function renderToday(root) {
   const lifts = showLifts || s.kind === "cross" || (Array.isArray(d.strength) && d.strength.length);
   const other = state.sel !== t;
   root.innerHTML = `<section class="view">
-    <div class="tdhead"><h1>${other ? esc(nice(state.sel)) : "Today"}</h1>
-      ${other ? `<button class="linkbtn" data-act="pick-day" data-d="${t}">Back to today</button>` : ""}
-      <button class="datebtn" data-act="open-cal" aria-label="Open calendar">${ICON.cal} ${other ? "Calendar" : DOWL[now.getDay()].slice(0, 3) + " " + now.getDate() + " " + MONL[now.getMonth()].slice(0, 3)}</button></div>
+    <div class="phead"><h1>${other ? esc(nice(state.sel)) : "Today"}</h1>
+      <div class="psub"><button class="datebtn" data-act="open-cal" aria-label="Open calendar">${other ? "Calendar" : DOWL[now.getDay()].slice(0, 3) + " " + now.getDate() + " " + MONL[now.getMonth()].slice(0, 3)}</button>${other ? `<button class="linkbtn" data-act="pick-day" data-d="${t}">Back to today</button>` : ""}</div></div>
     ${other ? "" : setupCard()}
     ${other ? "" : fastMini()}
     ${hero()}

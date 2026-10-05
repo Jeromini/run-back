@@ -386,6 +386,7 @@ export function journeyStrip() {
   // lead with the next step, not a deficit
   const next = checks.filter(c => !c.done).map(c => pillarById(c.id).label.toLowerCase()).slice(0, 3).join(", ");
   const status = done === checks.length ? "Every goal done today" : done ? `${done} of ${checks.length} done, next: ${next}` : `Next: ${next}`;
-  return `<button class="jstrip" data-act="tab" data-v="journey"><i>${ICON.flag}</i><div><b>${esc(j.name)}</b><span>${esc(label)} &middot; ${esc(status)}</span></div>
-    <span class="jdots" aria-hidden="true">${checks.map(c => `<i class="${c.done ? "on" : ""}" style="--c:${LOOK[c.id].color}" title="${esc(pillarById(c.id).label)}"></i>`).join("")}</span></button>`;
+  const prog = dn < 1 ? 0 : Math.min(1, dn / totalDays(j));
+  return `<button class="jline" data-act="tab" data-v="journey"><span class="jl-top"><b>${esc(j.name)}</b><span>${esc(dn < 1 ? label : dn > totalDays(j) ? "Complete" : "Day " + dn + " of " + totalDays(j))}</span></span>
+    <span class="jl-bar"><i style="width:${(prog * 100).toFixed(1)}%"></i></span><small>${esc(status)}</small></button>`;
 }

@@ -1,4 +1,5 @@
 // Entry point: navigation, rendering, the one-second ticker, and start-up.
+import "@fontsource-variable/manrope";
 import "./styles/app.css";
 import { APP_NAME } from "./config.js";
 import { $, act, ICON, closeSheet, sheetOpen, typing } from "./lib/dom.js";
