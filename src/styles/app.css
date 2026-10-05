@@ -1290,3 +1290,8 @@ nav.tabs button.on svg, nav.tabs button[data-v="fast"].on svg { color: var(--acc
 .chart .area { opacity: .08; }
 .badge { font-family: var(--body); }
 .toptabs button.on { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* Appearance on the More screen */
+.mrow.static { cursor: default; grid-template-columns: 30px 1fr; }
+.mtheme .mseg { padding: 0 16px 14px 60px; }
+@media (hover: hover) { .mrow.static:hover { background: none; } }

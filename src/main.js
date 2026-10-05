@@ -57,6 +57,8 @@ function render() {
   checkBadges();
 }
 setRenderer(render);
+// "System" appearance: follow the phone switching between light and dark while the app is open
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme); } catch (e) { /* older browsers */ }
 
 act("tab", el => {
   const v = el.dataset.v;

@@ -1,6 +1,6 @@
 // More: your header (streak, progress) and one grouped list to everything that isn't a tab:
 // profile and settings, fasting plan and routine, crew, guides, achievements, sharing.
-import { act, ICON } from "../lib/dom.js";
+import { act, segHtml, ICON } from "../lib/dom.js";
 import { esc, round1 } from "../lib/format.js";
 import { today } from "../lib/dates.js";
 import { state, S, render } from "../core/state.js";
@@ -42,6 +42,8 @@ export function renderMore(root) {
       ${row("star", isPro() ? APP_NAME + " Premium" : "Try Premium", 'data-act="paywall"', isPro() ? "Every feature unlocked" : "The coach, every plan, deep trends", "gold")}
       ${row("user", "My profile", 'data-act="go-settings"', "Your numbers, units, appearance, account")}
     </div>
+    <div class="mlist mtheme"><div class="mrow static"><i>${ICON.contrast}</i><span><b>Appearance</b><small>System follows your phone's light or dark setting</small></span></div>
+      <div class="mseg">${segHtml("m-theme", [["system", "System"], ["light", "Light"], ["dark", "Dark"]], p.theme || "system", 'data-act="set-theme" aria-label="Appearance"')}</div></div>
     <div class="mlist">
       ${row("timer", "Fasting plan", 'data-act="fast-plans"', esc(plan.label), "fast")}
       ${row("cal", "Fasting routine", 'data-act="routine-edit"', r && r.on ? esc(routineLabel(r)) + " on your chosen days" : "Fast on chosen days", "fast")}

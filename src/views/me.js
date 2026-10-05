@@ -16,6 +16,9 @@ const ftIn = cm => { const t = cm / 2.54; let f = Math.floor(t / 12), i = Math.r
 export function applyTheme() {
   const t = state.profile.theme || "system";
   if (t === "system") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t;
+  // the phone's status bar follows the page background
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) requestAnimationFrame(() => meta.setAttribute("content", getComputedStyle(document.body).backgroundColor));
 }
 
 export function renderMe(root) {
@@ -46,7 +49,7 @@ export function renderMe(root) {
       <label class="switch">Voice coaching<input type="checkbox" data-chg="pref" data-k="voice"${p.voice !== false ? " checked" : ""}></label>
       <label class="switch">GPS distance and pace<input type="checkbox" data-chg="pref" data-k="gps"${p.gps !== false ? " checked" : ""}></label>
       <label class="switch">Beeps<input type="checkbox" data-chg="pref" data-k="beeps"${p.beeps !== false ? " checked" : ""}></label></div>
-    <div class="card"><h3>Appearance</h3>${segHtml("s-theme", [["system", "Auto"], ["dark", "Dark"], ["light", "Light"]], p.theme || "system", 'data-act="set-theme"')}</div>
+    <div class="card"><h3>Appearance</h3>${segHtml("s-theme", [["system", "System"], ["light", "Light"], ["dark", "Dark"]], p.theme || "system", 'data-act="set-theme"')}</div>
     <div class="card"><h3>Account</h3>
       <p class="note">${S.localOnly ? "Using the app without an account. Entries stay on this phone. Sign in to sync them." : "Signed in as " + esc(S.email) + ". Your data syncs to any device you sign in on."}</p>
       ${S.localOnly ? "" : `<div class="quickw"><input type="password" id="s-newpw" autocomplete="new-password" placeholder="New password"><button class="btn" data-act="me-pw">Change</button></div>`}
