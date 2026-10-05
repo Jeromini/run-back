@@ -45,7 +45,7 @@ export function pickerHtml() {
         : `<button class="linkbtn" data-act="plate-save-open" style="text-align:center">Save this plate as a favourite meal</button>`}</div>` : ""}
     ${meals.length ? `<div class="eyebrow">Favourite meals</div><div class="favs">${meals.map(m => `<div class="fav"><button class="chip" data-act="meal-log" data-id="${m.id}">${esc(m.name)}<small>${num(m.items.reduce((a, x) => a + x.k, 0))}</small></button><button class="x" data-act="meal-del" data-id="${m.id}" aria-label="Delete ${esc(m.name)}">&times;</button></div>`).join("")}</div>` : ""}
     <div class="search"><span aria-hidden="true">${ICON.search}</span><input id="food-q" data-in="food-q" placeholder="Search foods: egg, rice, chicken wing..." autocomplete="off" value="${esc(query)}"></div>
-    <div class="catrow" role="tablist">${[["recent", "Recent"], ...CATS].map(([id, label]) => `<button class="chip${!query && cat === id ? " on" : ""}" data-act="food-cat" data-c="${id}">${esc(label)}</button>`).join("")}</div>
+    <div class="catrow cattabs" role="tablist">${[["recent", "Recent"], ...CATS].map(([id, label]) => `<button class="chip${!query && cat === id ? " on" : ""}" data-act="food-cat" data-c="${id}">${esc(label)}</button>`).join("")}</div>
     <div id="food-results" class="results">${resultsHtml()}</div>
     ${showCustom ? customHtml() : `<button class="linkbtn" data-act="custom-open" style="text-align:center">Can't find it? Add a custom food</button>`}
   </div>`;

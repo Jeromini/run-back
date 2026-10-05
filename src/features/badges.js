@@ -16,7 +16,7 @@ export function badgesSummary() {
     <div class="card-head"><h3>Achievements</h3><span class="note">${earned.length}/${list.length} &rsaquo;</span></div>
     ${nx ? `<div class="badges-row">${badgeEl({ ...nx, earned: true })}<div style="min-width:0">
         <b style="display:block">${esc(nx.title)}</b><span class="note">${esc(nx.desc)} &middot; ${fmtBadgeProgress(nx, state.profile.dunit)}</span>
-        <div class="bar" style="margin-top:8px"><i style="width:${(nx.pct * 100).toFixed(0)}%;background:var(--fast)"></i></div></div></div>` : `<p class="note">Every badge earned. Remarkable.</p>`}
+        <div class="bar" style="margin-top:8px"><i style="width:${(nx.pct * 100).toFixed(0)}%;background:var(--accent)"></i></div></div></div>` : `<p class="note">Every badge earned. Remarkable.</p>`}
     ${recent.length ? `<div class="card-head" style="background:var(--surface-2);border-radius:12px;padding:8px 12px"><span class="note">Recently earned</span><div class="badges-recent">${recent.map(b => badgeEl(b, true)).join("")}</div></div>` : ""}
   </div>`;
 }
@@ -25,7 +25,7 @@ export function openBadges() {
   openSheet({ title: "Achievements", html: `<h1 class="big-title">${list.filter(b => b.earned).length} of ${list.length} earned</h1>` + cats.map(([c, name]) => `
     <div class="card"><div class="eyebrow">${name}</div><div class="badgegrid">${list.filter(b => b.cat === c).map(b => `
       <div class="badgecell">${badgeEl(b)}<b>${esc(b.title)}</b><span>${esc(b.desc)}</span>
-      ${b.earned ? `<span class="pill good">Earned</span>` : `<div class="bar"><i style="width:${(b.pct * 100).toFixed(0)}%;background:var(--fast)"></i></div><span>${fmtBadgeProgress(b, state.profile.dunit)}</span>`}</div>`).join("")}</div></div>`).join("") });
+      ${b.earned ? `<span class="pill good">Earned</span>` : `<div class="bar"><i style="width:${(b.pct * 100).toFixed(0)}%;background:var(--accent)"></i></div><span>${fmtBadgeProgress(b, state.profile.dunit)}</span>`}</div>`).join("")}</div></div>`).join("") });
 }
 act("open-badges", openBadges);
 

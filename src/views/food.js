@@ -51,18 +51,19 @@ export function renderFood(root) {
       <div class="t">${fdate === t ? "Today" : esc(nice(fdate))}</div>
       <button class="iconbtn" data-act="food-day" data-n="1" aria-label="Next day"${fdate >= t ? " disabled style=\"opacity:.3\"" : ""}>${ICON.next}</button></div>
     <div class="card">
-      <div class="fsum">
-        <div class="side"><b>${num(tot.k)}</b><span>eaten</span></div>
-        ${ring(kT ? tot.k / kT : 0, { size: 150, stroke: 13, color: left != null && left < 0 ? "var(--warn)" : "var(--accent)", inner: `<span class="k">${kT ? num(Math.abs(left)) : num(tot.k)}</span><span class="u">${kT ? (left >= 0 ? "kcal left" : "kcal over") : "kcal"}</span>` })}
-        <div class="side"><b>${burn ? num(burn) : 0}</b><span>burned*</span></div>
+      <div class="ksum">
+        <div class="kmain"><b>${kT ? num(Math.abs(left)) : num(tot.k)}</b><span>${kT ? (left >= 0 ? "kcal left" : "kcal over") : "kcal eaten"}</span></div>
+        <div class="kside"><b>${num(tot.k)}</b><span>eaten</span></div>
+        <div class="kside"><b>${burn ? num(burn) : 0}</b><span>burned*</span></div>
       </div>
+      ${kT ? `<div class="kbar"><i style="width:${Math.min(100, 100 * tot.k / kT).toFixed(1)}%;${left < 0 ? "background:var(--warn)" : ""}"></i></div>` : ""}
       <div class="macro"><div class="top">Protein <span>${Math.round(tot.p)}${pT ? " / " + pT : ""} g</span></div>
         <div class="bar"><i style="width:${pT ? Math.min(100, 100 * tot.p / pT).toFixed(0) : 0}%;background:var(--rose)"></i></div></div>
-      <div class="card-head"><span class="note">*Training estimate${kT ? ", not added to your budget" : ""}</span><button class="linkbtn" data-act="food-targets">${kT ? "Edit targets" : "Set targets"}</button></div>
+      <div class="card-head"><span class="note">${kT ? "Target " + num(kT) + " kcal. " : ""}*Burned is an estimate</span><button class="linkbtn" data-act="food-targets">${kT ? "Edit" : "Set targets"}</button></div>
     </div>
     ${lowFuel ? `<div class="callout">You trained today on a ${num(kT)} kcal target. If your runs start to feel flat or sleep suffers, add 150-250 kcal, mostly protein and carbs, on training days.</div>` : ""}
     ${editTargets || !kT ? targetsCard() : ""}
-    ${segHtml("f-meal", MEALS.map(x => [x, x === "Snacks" ? "Snack" : x === "Breakfast" ? "Bkfst" : x]), m, 'data-act="food-meal"')}
+    ${segHtml("f-meal", MEALS.map(x => [x, x === "Snacks" ? "Snack" : x]), m, 'data-act="food-meal" aria-label="Meal"')}
     ${pickerHtml()}
     ${food.length ? MEALS.filter(x => food.some(f => f.m === x)).map(x => { const items = food.filter(f => f.m === x);
       return `<div class="meal"><div class="meal-h">${x}<span>${num(items.reduce((a, f) => a + (Number(f.k) || 0), 0))} kcal</span></div>${items.map((f, i) => `<div class="fi${i === 0 ? " first" : ""}"><span class="nm">${esc(f.n)}${f.u ? `<small class="note" style="display:block">${esc((f.q === 0.5 ? "½" : f.q === 1.5 ? "1½" : f.q) + " x " + f.u)}</small>` : ""}${(fl => fl ? `<small class="offplan">Off plan: ${esc(fl)}</small>` : "")(entryFlag(f))}</span><span class="k">${f.k || 0}</span><span class="p">${f.p ? f.p + " g" : ""}</span>

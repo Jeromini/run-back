@@ -23,10 +23,11 @@ function summaryCard() {
   const now = currentWeight(state.days, t), start = p.startWeight || (list[0] && list[0].w), goal = p.goalWeight;
   if (!now) return `<div class="card empty"><b>Start with a weigh-in</b>Log your weight on Today. Your start, current and goal weight will appear here.</div>`;
   const chg = start ? now - start : 0;
-  let h = `<div class="card"><div class="summary">
-    <div><b>${start ? round1(start) : "-"}</b><span>Start</span></div>
-    <div class="now"><b>${round1(now)}</b><span>Now</span>${start ? `<br><span class="chgchip${chg > 0 ? " up" : ""}">${chg > 0 ? "+" : ""}${round1(chg)} ${p.unit}</span>` : ""}</div>
-    <div><b>${goal ? round1(goal) : "-"}</b><span>Goal</span></div></div>`;
+  const lastDate = list.length ? list[list.length - 1].date : t;
+  let h = `<div class="card wcard">
+    <div class="whead"><div><span class="wlbl">Weight</span><div class="wnow"><b>${round1(now)}</b><span>${p.unit}</span></div><span class="note">Latest &middot; ${esc(nice(lastDate))}</span></div>
+      ${start ? `<div class="wchg ${chg > 0 ? "up" : "down"}"><b>${chg > 0 ? "+" : ""}${round1(chg)} ${p.unit}</b><span>since day 1</span></div>` : ""}</div>
+    <div class="stats wstats"><div class="stat"><b>${start ? round1(start) : "-"}</b><span>Start</span></div><div class="stat"><b>${round1(now)}</b><span>Current</span></div><div class="stat"><b>${goal ? round1(goal) : "-"}</b><span>Goal</span></div></div>`;
   if (start && goal && start > goal) {
     const pct = Math.max(0, Math.min(1, (start - now) / (start - goal)));
     h += `<div class="goalbar"><div class="bar"><i style="width:${(pct * 100).toFixed(1)}%"></i></div><div class="ends"><span>${Math.round(pct * 100)}% of the way</span><span>${round1(Math.max(0, now - goal))} ${p.unit} to go</span></div></div>`;
