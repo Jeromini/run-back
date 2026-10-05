@@ -1295,3 +1295,11 @@ nav.tabs button.on svg, nav.tabs button[data-v="fast"].on svg { color: var(--acc
 .mrow.static { cursor: default; grid-template-columns: 30px 1fr; }
 .mtheme .mseg { padding: 0 16px 14px 60px; }
 @media (hover: hover) { .mrow.static:hover { background: none; } }
+
+/* evidence key: one level per line */
+.evkey { list-style: none; margin: 0; padding: 12px 0 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+.evkey li { display: grid; grid-template-columns: 132px 1fr; gap: 10px; align-items: baseline; font-size: 13px; color: var(--muted); }
+.evkey .ev { margin-left: 0; color: var(--ink) !important; }
+@media (max-width: 360px) { .evkey li { grid-template-columns: 1fr; gap: 2px; } }
+
+details.fold > summary h3 { white-space: nowrap; }

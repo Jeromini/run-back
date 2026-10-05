@@ -33,7 +33,7 @@ export const TEMPLATES = [
   { id: "race", name: "Race build", weeks: 16, blurb: "Four runs a week with fuel first: lighter fasting, more food focus",
     pillars: { train: P(true, 6), run: P(true, 4), strength: P(true, 2), fast: P(false), water: P(true), food: P(true), weight: P(true, 3), note: P(true) } },
   { id: "custom", name: "Build my own", weeks: 12, blurb: "Pick exactly which goals go in your journey",
-    pillars: { train: P(true, 4), run: P(false, 3), strength: P(false, 2), fast: P(false), water: P(true), food: P(false), weight: P(true, 3), note: P(false) } }
+    pillars: { train: P(true, 4), run: P(false, 3), strength: P(false, 2), fast: P(false), water: P(true), food: P(false), weight: P(true, 3), note: P(true) } }
 ];
 export const JOURNEY_WEEKS = [4, 8, 12, 16, 26, 52];
 

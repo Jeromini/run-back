@@ -154,7 +154,10 @@ function timeline(fa, plan, elH) {
         <div class="tl-body"><p>${esc(s.text)}</p><ul class="changes">${s.changes.map(c => `<li>${esc(c)}</li>`).join("")}</ul></div></details>`;
     }).join("")}</div>
     <p class="note">Typical timings for a healthy adult; yours shift with what you ate before, activity and body composition. Tap a stage for details.</p>
-    <p class="note"><span class="ev ev-strong">${EVIDENCE.strong}</span> consistent findings in people. <span class="ev ev-human">${EVIDENCE.human}</span> shown in human studies, timing varies. <span class="ev ev-early">${EVIDENCE.early}</span> mostly animal studies; not established in people.</p></div>`;
+    <ul class="evkey" aria-label="What the evidence labels mean">
+      <li><span class="ev ev-strong">${EVIDENCE.strong}</span><span>Consistent findings in people.</span></li>
+      <li><span class="ev ev-human">${EVIDENCE.human}</span><span>Shown in human studies; timing varies.</span></li>
+      <li><span class="ev ev-early">${EVIDENCE.early}</span><span>Mostly animal studies; not established in people.</span></li></ul></div>`;
 }
 function checklist(plan, ackAct = "fast-ack", acked = extAck) {
   return `<div class="card" style="border-color:var(--warn)"><h3>Before an extended fast</h3>

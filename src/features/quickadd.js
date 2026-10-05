@@ -9,6 +9,7 @@ import { targetFor } from "./water.js";
 import { openLogActivity, startFreeWorkout } from "./activitylog.js";
 import { openWorkout } from "./workout.js";
 import { buzz } from "../lib/sound.js";
+import { openNote } from "./notes.js";
 
 const tile = (attrs, icon, color, soft, label, sub) => `<button class="qtile" ${attrs}><i style="background:${soft};color:${color}">${ICON[icon]}</i><b>${label}</b><small>${sub}</small></button>`;
 
@@ -22,7 +23,7 @@ function openQuickAdd() {
       ${tile('data-act="qa-activity"', "bolt", "var(--violet)", "var(--violet-soft)", "Log an activity", "Done already? Add it")}
       ${tile('data-act="qa-weigh"', "scale", "var(--rose)", "var(--rose-soft)", "Weigh-in", d.weight ? d.weight + " " + state.profile.unit + " today" : "Not yet today")}
       ${tile('data-act="qa-go" data-to="fast"', "timer", "var(--fast-ink)", "var(--fast-soft)", fa ? "End fast" : "Start fast", fa ? "Open your fast" : planFor(state.profile).label + " plan")}
-      ${tile('data-act="qa-note"', "edit", "var(--accent)", "var(--accent-soft)", "Daily note", "How today went")}
+      ${tile('data-act="qa-note"', "edit", "var(--accent)", "var(--accent-soft)", "Daily note", (state.days[t] || {}).journal && (state.days[t] || {}).journal.text ? "Written today" : "How today went")}
       ${tile('data-act="qa-go" data-to="today" data-lifts="1"', "dumbbell", "var(--violet)", "var(--violet-soft)", "Strength", "Sets and reps")}
     </div>` });
 }
@@ -39,9 +40,4 @@ act("qa-water", el => {
 act("qa-workout", () => { closeSheet(); startFreeWorkout(today(), openWorkout); });
 act("qa-activity", () => { closeSheet(); openLogActivity(today()); });
 act("qa-weigh", async () => { closeSheet(); state.sel = today(); const { openWeigh } = await import("../views/today.js"); openWeigh(); });
-act("qa-note", () => {
-  closeSheet();
-  const p = state.profile;
-  if (p.journey && p.journey.on) { state.view = "journey"; render(); setTimeout(() => { const n = document.querySelector('textarea[data-in="j-note"]'); if (n) { n.scrollIntoView({ block: "center" }); n.focus(); } }, 60); }
-  else { state.view = "today"; render(); toast("Notes live in your Journey. Start one from the Journey tab."); }
-});
+act("qa-note", () => { closeSheet(); openNote(today()); });
