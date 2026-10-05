@@ -25,6 +25,7 @@ function openQuickAdd() {
       ${tile('data-act="qa-go" data-to="fast"', "timer", "var(--fast-ink)", "var(--fast-soft)", fa ? "End fast" : "Start fast", fa ? "Open your fast" : planFor(state.profile).label + " plan")}
       ${tile('data-act="qa-note"', "edit", "var(--accent)", "var(--accent-soft)", "Daily note", (state.days[t] || {}).journal && (state.days[t] || {}).journal.text ? "Written today" : "How today went")}
       ${tile('data-act="qa-go" data-to="today" data-lifts="1"', "dumbbell", "var(--violet)", "var(--violet-soft)", "Strength", "Sets and reps")}
+      ${tile('data-act="qa-mind"', "mind", "var(--accent)", "var(--accent-soft)", "Stress check-in", "How you feel and today's three")}
     </div>` });
 }
 act("quick-add", openQuickAdd);
@@ -41,3 +42,4 @@ act("qa-workout", () => { closeSheet(); startFreeWorkout(today(), openWorkout); 
 act("qa-activity", () => { closeSheet(); openLogActivity(today()); });
 act("qa-weigh", async () => { closeSheet(); state.sel = today(); const { openWeigh } = await import("../views/today.js"); openWeigh(); });
 act("qa-note", () => { closeSheet(); openNote(today()); });
+act("qa-mind", () => { closeSheet(); state.view = "mind"; render(); window.scrollTo(0, 0); });

@@ -15,6 +15,7 @@ import { renderCrew, captureInvite, refreshCrew } from "./views/crew.js";
 import { renderMe, applyTheme } from "./views/me.js";
 import { renderJourney } from "./views/journey.js";
 import { renderMore } from "./views/more.js";
+import { renderMind } from "./views/mind.js";
 import "./features/quickadd.js";
 import { checkBadges } from "./features/badges.js";
 import "./features/paywall.js";
@@ -24,7 +25,7 @@ import { maybeOnboard } from "./features/onboarding.js";
 import { onPulled, sb } from "./core/store.js";
 import { initErrorReporting } from "./lib/errors.js";
 
-const VIEWS = { today: renderToday, journey: renderJourney, fast: renderFast, food: renderFood, trends: renderTrends, crew: renderCrew, me: renderMe, more: renderMore };
+const VIEWS = { today: renderToday, journey: renderJourney, fast: renderFast, food: renderFood, trends: renderTrends, crew: renderCrew, me: renderMe, more: renderMore, mind: renderMind };
 const TAB_ICONS = { today: "run", journey: "flag", fast: "timer", food: "food", trends: "chart" };
 
 // static chrome
@@ -48,7 +49,7 @@ function render() {
   fn(main);
   window.scrollTo(0, y);
   // screens reached from More keep the More (profile) button lit instead of a tab
-  const sub = { crew: "more", me: "more" }[state.view] || state.view;
+  const sub = { crew: "more", me: "more", mind: "today" }[state.view] || state.view;
   document.querySelectorAll("#tabs button").forEach(b => { const on = b.dataset.v === sub; b.classList.toggle("on", on); b.setAttribute("aria-current", on ? "page" : "false"); });
   const mb = document.querySelector('[data-act="go-more"]'); if (mb) mb.classList.toggle("on", sub === "more");
   const pro = document.querySelector("#brand .pro-tag");

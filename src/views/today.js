@@ -20,6 +20,7 @@ import { fmtDist, paceOf } from "../features/activity.js";
 import { unlockRow } from "../features/paywall.js";
 import { journeyStrip } from "./journey.js";
 import { setupCard } from "../features/onboarding.js";
+import { mindRow } from "./mind.js";
 
 const H = 3600000;
 const tone = { good: ICON.bolt, caution: ICON.timer, stop: ICON.close, info: ICON.star };
@@ -151,6 +152,7 @@ export function renderToday(root) {
       <div class="psub"><button class="datebtn" data-act="open-cal" aria-label="Open calendar">${other ? "Calendar" : DOWL[now.getDay()].slice(0, 3) + " " + now.getDate() + " " + MONL[now.getMonth()].slice(0, 3)}</button>${other ? `<button class="linkbtn" data-act="pick-day" data-d="${t}">Back to today</button>` : ""}</div></div>
     ${other ? "" : setupCard()}
     ${other ? "" : fastMini()}
+    ${other ? "" : mindRow()}
     ${hero()}
     ${quickRow()}
     ${journeyStrip()}

@@ -95,6 +95,7 @@ export const ICON = {
   plus: `<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>`,
   minus: `<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>`,
   contrast: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg>`,
+  mind: `<svg viewBox="0 0 24 24"><path d="M12 20.5c-4.2-2.2-7-5.6-7-9.3C5 8.3 7.2 6.5 9.6 6.5c1.1 0 1.9.4 2.4 1 .5-.6 1.3-1 2.4-1 2.4 0 4.6 1.8 4.6 4.7 0 3.7-2.8 7.1-7 9.3z"/><path d="M12 8.5v11"/></svg>`,
   flag: `<svg viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>`,
   search: `<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>`
 };

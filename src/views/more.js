@@ -47,6 +47,7 @@ export function renderMore(root) {
     <div class="mlist">
       ${row("timer", "Fasting plan", 'data-act="fast-plans"', esc(plan.label), "fast")}
       ${row("cal", "Fasting routine", 'data-act="routine-edit"', r && r.on ? esc(routineLabel(r)) + " on your chosen days" : "Fast on chosen days", "fast")}
+      ${row("mind", "Mind", 'data-act="mind-open"', "Stress check-in and today's priorities")}
       ${row("flag", "My journey", 'data-act="tab" data-v="journey"', p.journey && p.journey.on ? esc(p.journey.name) : "Choose a package")}
       ${row("food", "Food log", 'data-act="tab" data-v="food"', "Meals, drinks and calories", "rose")}
       ${row("scale", "Weight and measurements", 'data-act="tab" data-v="trends"', now ? now + " " + u + " latest" : "Log your first weigh-in", "rose")}
