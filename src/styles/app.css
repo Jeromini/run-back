@@ -1147,3 +1147,90 @@ nav.tabs button.on svg, nav.tabs button[data-v="fast"].on svg { color: var(--acc
   nav.tabs { left: 24px; right: auto; top: 50%; bottom: auto; transform: translateY(-50%); width: 92px; border: 1px solid var(--line); border-radius: 20px; padding: 8px; grid-template-columns: 1fr; }
   .fab { left: 44px; right: auto; bottom: 32px; }
 }
+
+/* ---- journal: shared components (buttons, stats, evidence, timeline, charts) ---- */
+.btn { border-radius: 12px; min-height: 48px; font-weight: 700; }
+.btn.big { min-height: 52px; font-size: 17px; }
+.btn.primary, .btn.fast { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn:disabled, .btn[disabled] { background: var(--surface-2) !important; border-color: var(--line) !important; color: var(--faint) !important; opacity: 1; cursor: not-allowed; }
+.btn:not(.primary):not(.fast):not(.gold):not(.danger) { background: var(--surface); border-color: var(--line); color: var(--ink); }
+@media (hover: hover) { .btn.primary:hover, .btn.fast:hover { background: var(--accent-2); border-color: var(--accent-2); } }
+
+/* stats: one divided row, no tiles */
+.stats, .stats.four { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); grid-auto-flow: column; gap: 0; }
+.stat { background: none; border: 0; border-left: 1px solid var(--line); border-radius: 0; padding: 2px 12px; }
+.stat:first-child { border-left: 0; padding-left: 0; }
+.stat b { font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
+.stat span { font-size: 12px; font-weight: 500; line-height: 1.3; display: block; }
+
+/* evidence: a dot and a word, not a pill */
+.ev { background: none !important; padding: 0; margin-left: 8px; font-size: 12px; font-weight: 600; color: var(--muted) !important; border-radius: 0; white-space: nowrap; }
+.ev::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; vertical-align: 1px; background: var(--faint); }
+.ev-strong::before { background: var(--good); } .ev-human::before { background: var(--water); } .ev-early::before { background: var(--violet); }
+
+/* timeline: aligned times in ink, small markers */
+.tl-row summary { grid-template-columns: 10px 52px 1fr; gap: 12px; padding: 12px 0; }
+.tl-dot { width: 9px; height: 9px; border-width: 1.5px; }
+.tl-row.now .tl-dot { box-shadow: 0 0 0 3px var(--fast-soft); }
+.tl-h { font-family: var(--body); font-size: 15px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tl-row.now .tl-h { color: var(--ink); }
+.tl-n b { font-weight: 600; }
+.tl-n small { font-weight: 500; }
+.tl-body { padding-left: 74px; color: var(--muted); }
+
+/* charts: flat bars, no outlines, quiet grid */
+.chart rect, .chart circle, .chart .area { stroke: none; }
+.chart .grid { stroke: var(--line); stroke-dasharray: 0; opacity: .8; }
+.chart .target { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 3 4; opacity: .5; }
+.chart .target-t { fill: var(--muted); font-weight: 600; }
+.chart .line { stroke-width: 2; }
+
+/* the live fasting card: a plain card */
+.live-card { background: var(--surface); border-color: var(--line); }
+.livek { color: var(--fast-ink); font-weight: 700; letter-spacing: .06em; font-size: 12px; text-transform: uppercase; }
+.stage .n { background: none; border: 1px solid var(--line); color: var(--ink); font-family: var(--body); font-size: 15px; width: 36px; height: 36px; border-radius: 10px; }
+
+/* the dial: a finer instrument */
+.dial .mid .clock { font-family: var(--body); font-weight: 700; letter-spacing: -.03em; }
+.dial .lbl { font-weight: 700; letter-spacing: .06em; text-transform: uppercase; font-size: 12px; }
+.dial .pct { font-family: var(--body); font-size: 15px; font-weight: 600; color: var(--muted); }
+.planbtn { background: var(--surface); border: 1px solid var(--line); color: var(--ink); font-weight: 600; }
+.planbtn svg { color: var(--fast); }
+
+/* ---- journal: remove the remaining decorative gradients ---- */
+.btn.gold, .pw-hero .crown, .price .best, .toast.badge-t { background: var(--gold-2); }
+.goalbar .bar i { background: var(--accent); }
+.coach { background: var(--surface); border-color: var(--line); }
+.coach .k { color: var(--muted); }
+.crew-head { background: var(--surface); }
+.auth { background: var(--bg); }
+.pw-hero { background: var(--hero); color: var(--hero-ink); border-radius: var(--r); }
+.mavatar { background: var(--accent); color: var(--accent-ink); }
+/* achievements: drawn badges, not glossy medals */
+.badge.run, .badge.fast, .badge.body, .badge.habit { background: var(--surface); border: 1.5px solid currentColor; box-shadow: none; }
+.badge.run { color: var(--accent); } .badge.fast { color: var(--fast); } .badge.body { color: var(--rose); } .badge.habit { color: var(--water); }
+/* journey hero: the same flat ink card as the session */
+.jhero { background: var(--hero); color: var(--hero-ink); border: 1px solid var(--hero-line); border-radius: var(--r); }
+.jhero .stats div, .jhero .jweight { background: none; border: 0; border-radius: 0; }
+.jhero .stats { gap: 0; border-top: 1px solid var(--hero-line); padding-top: 12px; }
+.jhero .stats div { border-left: 1px solid var(--hero-line); text-align: left; padding: 0 12px; }
+.jhero .stats div:first-child { border-left: 0; padding-left: 0; }
+.jhero .stats span, .jweight .note, .jhero p { color: var(--hero-muted); }
+.jhero .track i, .jweight .bar i { background: var(--accent); }
+.jhero .linkbtn, .jhero blockquote::before { color: var(--hero-ink); }
+.jweight { border-top: 1px solid var(--hero-line); padding: 12px 0 0; }
+.jhero h2 { font-family: var(--body); letter-spacing: -.03em; }
+.card-head .note { white-space: nowrap; }
+
+/* ---- the dial, redrawn ---- */
+.dial { width: min(76vw, 290px); margin: 0 auto -18px; }
+.dial .mid { padding: 0 19% 6%; gap: 4px; }
+.dial .lbl { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--fast-ink); }
+.dial .lbl.ready { color: var(--muted); }
+.dial .mid .clock { font-size: clamp(44px, 13vw, 56px); line-height: 1; letter-spacing: -.035em; }
+.dial .mid .clock.big { font-size: clamp(52px, 15vw, 64px); }
+.dial .mid .clock.long { font-size: clamp(32px, 9.5vw, 40px); }
+.dial .sub { font-size: 14px; font-weight: 500; line-height: 1.35; color: var(--muted); text-wrap: balance; max-width: 100%; }
+.dial .sub b { color: var(--ink); font-weight: 700; }
+.dial .pct { bottom: 9%; font-size: 15px; font-weight: 700; color: var(--ink); }
+.dial .dial-end { fill: var(--muted); font-family: var(--body); font-size: 12px; font-weight: 600; stroke: none; }

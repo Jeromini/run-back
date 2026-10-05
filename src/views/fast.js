@@ -17,28 +17,37 @@ import { buzz } from "../lib/sound.js";
 import { celebrate } from "../features/celebrate.js";
 
 const H = 3600000, R = 128, C = 2 * Math.PI * R, ARC = 0.75 * C;
-const ZONE_COLORS = ["color-mix(in srgb, var(--fast) 35%, transparent)", "color-mix(in srgb, var(--fast) 65%, transparent)", "var(--fast)", "var(--rose)"];
+const ZONE_COLORS = ["var(--walk)", "color-mix(in srgb, var(--fast) 55%, var(--surface))", "var(--fast)", "var(--fast-ink)"];
 let editStart = false, extAck = false, customOpen = false, lastHour = null, remindState = null, draft = null, pendingPlan = null, planAck = false;
 // "52:10:33" reads badly on a multi-day fast, so show days once past 24 hours
 const fastClock = sec => { sec = Math.max(0, Math.floor(sec)); if (sec < 86400) return mmss(sec); const d = Math.floor(sec / 86400), r = sec % 86400; return `${d}d ${pad(Math.floor(r / 3600))}:${pad(Math.floor(r % 3600 / 60))}:${pad(r % 60)}`; };
 const stageIdx = h => STAGES.indexOf(STAGES.find(s => s.name === stageAt(h).name));
 const hoursLabel = h => (h === 0 ? "Start" : h % 24 === 0 ? (h / 24) + (h === 24 ? " day" : " days") : h + " h");
 
+// The dial: a thin 270-degree instrument. Stage ticks sit inside the arc, the start and the goal are
+// labelled at its two ends, and the text in the middle is kept short enough to fit the ring.
+const shortWhen = ts => { const d = new Date(ts), same = new Date().toDateString() === d.toDateString(); return (same ? "today " : DOW[d.getDay()] + " ") + clock(ts); };
 function dial(fa) {
-  const el = fa ? (Date.now() - fa.s) / H : 0, goal = fa ? fa.h : planFor(state.profile).hours;
-  const p = Math.min(1, el / goal);
-  // stage markers along the arc, for the stages that fall inside the goal
-  const marks = STAGES.filter(s => s.from > 0 && s.from < goal).map(s => {
-    const a = (135 + 270 * (s.from / goal)) * Math.PI / 180, x = 150 + R * Math.cos(a), y = 150 + R * Math.sin(a);
-    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${el >= s.from ? "var(--bg)" : "var(--faint)"}" stroke="none"/>`;
+  const plan = planFor(state.profile), el = fa ? (Date.now() - fa.s) / H : 0, goal = fa ? fa.h : plan.hours;
+  const p = Math.min(1, el / goal), pt = f => { const a = (135 + 270 * f) * Math.PI / 180; return [150 + Math.cos(a), 150 + Math.sin(a)]; };
+  const at = (f, r) => { const [cx, cy] = pt(f); return [150 + (cx - 150) * r, 150 + (cy - 150) * r]; };
+  const ticks = STAGES.filter(s => s.from > 0 && s.from < goal).map(s => {
+    const f = s.from / goal, [x1, y1] = at(f, R - 14), [x2, y2] = at(f, R - 24);
+    return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${el >= s.from ? "var(--fast)" : "var(--faint)"}" stroke-width="2" stroke-linecap="round"/>`;
   }).join("");
+  const [sx, sy] = at(0, R + 2), [ex, ey] = at(1, R + 2);
+  const goalLbl = goal % 24 === 0 && goal >= 24 ? goal / 24 + (goal === 24 ? " day" : " days") : goal + " h";
+  let mid;
+  if (fa) mid = `<span class="lbl">${el >= goal ? "Goal reached" : "Fasting"}</span><span class="clock${el >= 24 ? " long" : ""}" data-tick="fast-clock">${fastClock(el * 3600)}</span><span class="sub" data-tick="fast-sub">${subText(fa)}</span>`;
+  else if (plan.hours >= 24) mid = `<span class="lbl ready">Ready when you are</span><span class="clock big">${esc(plan.label)}</span><span class="sub">Start now and you finish<br><b>${esc(shortWhen(Date.now() + plan.hours * H))}</b></span>`;
+  else mid = `<span class="lbl ready">Eating window</span><span class="clock big">${esc(plan.label)}</span><span class="sub">${esc(windowText())}</span>`;
   return `<div class="dial"><svg viewBox="0 0 300 300" aria-hidden="true">
-      <circle cx="150" cy="150" r="${R}" fill="none" stroke="var(--fast)" stroke-opacity=".14" stroke-width="20" stroke-dasharray="${ARC.toFixed(1)} ${C.toFixed(1)}" transform="rotate(135 150 150)"/>
-      <circle data-tick="fast-arc" cx="150" cy="150" r="${R}" fill="none" stroke="var(--fast)" stroke-width="20" stroke-dasharray="${(ARC * p).toFixed(1)} ${C.toFixed(1)}" transform="rotate(135 150 150)"${p ? "" : ' opacity="0"'}/>
-      ${marks}</svg>
-    <div class="mid">${fa
-      ? `<span class="lbl">${el >= goal ? "Goal reached" : "Fasting"}</span><span class="clock${el >= 24 ? " long" : ""}" data-tick="fast-clock">${fastClock(el * 3600)}</span><span class="sub" data-tick="fast-sub">${subText(fa)}</span>`
-      : `<span class="lbl" style="color:var(--accent)">${planFor(state.profile).hours >= 24 ? "Ready when you are" : "Eating window"}</span><span class="clock" style="font-size:44px">${esc(planFor(state.profile).label)}</span><span class="sub">${esc(windowText())}</span>`}</div>
+      <circle cx="150" cy="150" r="${R}" fill="none" stroke="var(--line)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${ARC.toFixed(1)} ${C.toFixed(1)}" transform="rotate(135 150 150)"/>
+      <circle data-tick="fast-arc" cx="150" cy="150" r="${R}" fill="none" stroke="var(--fast)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${(ARC * p).toFixed(1)} ${C.toFixed(1)}" transform="rotate(135 150 150)"${p ? "" : ' opacity="0"'}/>
+      ${ticks}
+      <text x="${(sx + 6).toFixed(1)}" y="${(sy + 22).toFixed(1)}" text-anchor="middle" class="dial-end">Start</text>
+      <text x="${(ex - 6).toFixed(1)}" y="${(ey + 22).toFixed(1)}" text-anchor="middle" class="dial-end">${esc(goalLbl)}</text></svg>
+    <div class="mid">${mid}</div>
     ${fa ? `<div class="pct" data-tick="fast-pct">${Math.floor(p * 100)}%</div>` : ""}</div>`;
 }
 function subText(fa) {
@@ -49,7 +58,7 @@ function subText(fa) {
 function windowText() {
   const plan = planFor(state.profile), last = allFasts(state.days)[0];
   // a fast of a day or more has no daily eating window: say when it would end instead
-  if (plan.hours >= 24) return "Ends " + dayClock(Date.now() + plan.hours * H) + " if you start now";
+  if (plan.hours >= 24) return "Finish " + shortWhen(Date.now() + plan.hours * H) + " if you start now";
   const w = windowFor(null, last, plan.hours);
   if (!w.closesAt) return "Start your first fast when you finish eating";
   return w.overdue ? "Your window has closed: time to fast" : "Window closes " + dayClock(w.closesAt);
@@ -141,7 +150,7 @@ function timeline(fa, plan, elH) {
       const next = STAGES[STAGES.indexOf(s) + 1], done = fa && next && elH >= next.from, now = fa && elH >= s.from && !done, beyond = s.from > goal;
       const when = fa ? (s.from === 0 ? "Started " + dayClock(fa.s) : dayClock(fa.s + s.from * H)) : (s.from === 0 ? "When you start" : "After " + hoursLabel(s.from));
       return `<details class="tl-row${now ? " now" : done ? " done" : ""}"${now ? " open" : ""}>
-        <summary><span class="tl-dot" aria-hidden="true"></span><span class="tl-h">${esc(hoursLabel(s.from))}</span><span class="tl-n"><b>${esc(s.name)} <span class="ev ev-${s.ev}">${EVIDENCE[s.ev]}</span></b><small>${esc(when)}${beyond ? " &middot; beyond your goal" : ""}</small></span></summary>
+        <summary><span class="tl-dot" aria-hidden="true"></span><span class="tl-h">${esc(hoursLabel(s.from))}</span><span class="tl-n"><b>${esc(s.name)}</b><small>${esc(when)}${beyond ? " &middot; beyond your goal" : ""}<span class="ev ev-${s.ev}">${EVIDENCE[s.ev]}</span></small></span></summary>
         <div class="tl-body"><p>${esc(s.text)}</p><ul class="changes">${s.changes.map(c => `<li>${esc(c)}</li>`).join("")}</ul></div></details>`;
     }).join("")}</div>
     <p class="note">Typical timings for a healthy adult; yours shift with what you ate before, activity and body composition. Tap a stage for details.</p>
@@ -293,7 +302,7 @@ function routineCard() {
   const p = state.profile, r = p.routine;
   if (!r || !r.on) return `<div class="card"><div class="card-head"><h3>Make fasting a routine</h3></div>
     <p class="note">Pick your fasting days, like Monday, Wednesday and Friday, and when each fast starts. The app shows them on a calendar, tracks how well you keep them, reminds you when to start and when you're done, and pops up each stage as you reach it.</p>
-    <button class="btn fast" data-act="routine-edit">${ICON.cal} Set up a routine</button></div>`;
+    <button class="btn" data-act="routine-edit">${ICON.cal} Set up a routine</button></div>`;
   const first = mondayOf(today()), grid = routineDays(r, state.days, p.fastActive, first, 14);
   // the evening a fast begins, so the whole span is visible: Sunday "from 8pm", Monday "to 8pm"
   const starts = {};
