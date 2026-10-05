@@ -38,7 +38,7 @@ function dial(fa) {
       ${marks}</svg>
     <div class="mid">${fa
       ? `<span class="lbl">${el >= goal ? "Goal reached" : "Fasting"}</span><span class="clock${el >= 24 ? " long" : ""}" data-tick="fast-clock">${fastClock(el * 3600)}</span><span class="sub" data-tick="fast-sub">${subText(fa)}</span>`
-      : `<span class="lbl" style="color:var(--accent)">Eating window</span><span class="clock" style="font-size:44px">${esc(planFor(state.profile).label)}</span><span class="sub">${esc(windowText())}</span>`}</div>
+      : `<span class="lbl" style="color:var(--accent)">${planFor(state.profile).hours >= 24 ? "Ready when you are" : "Eating window"}</span><span class="clock" style="font-size:44px">${esc(planFor(state.profile).label)}</span><span class="sub">${esc(windowText())}</span>`}</div>
     ${fa ? `<div class="pct" data-tick="fast-pct">${Math.floor(p * 100)}%</div>` : ""}</div>`;
 }
 function subText(fa) {
@@ -48,6 +48,8 @@ function subText(fa) {
 }
 function windowText() {
   const plan = planFor(state.profile), last = allFasts(state.days)[0];
+  // a fast of a day or more has no daily eating window: say when it would end instead
+  if (plan.hours >= 24) return "Ends " + dayClock(Date.now() + plan.hours * H) + " if you start now";
   const w = windowFor(null, last, plan.hours);
   if (!w.closesAt) return "Start your first fast when you finish eating";
   return w.overdue ? "Your window has closed: time to fast" : "Window closes " + dayClock(w.closesAt);
