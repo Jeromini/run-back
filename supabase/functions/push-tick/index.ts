@@ -41,17 +41,29 @@ function onPattern(r: any, y: number, m: number, d: number) {
 }
 const fmt12 = (hh: number, mm: number) => (hh % 12 || 12) + ":" + pad(mm) + (hh < 12 ? " am" : " pm");
 const DAYL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+// Profiles are user-written: only trust a real IANA time zone, and only send to known push services.
+const ZONES = new Set((Intl as any).supportedValuesOf ? (Intl as any).supportedValuesOf("timeZone") : []);
+const safeTz = (tz: unknown) => (typeof tz === "string" && (tz === "UTC" || ZONES.has(tz)) ? tz : "UTC");
+const PUSH_HOSTS = [/^fcm\.googleapis\.com$/, /^updates\.push\.services\.mozilla\.com$/, /\.notify\.windows\.com$/, /^web\.push\.apple\.com$/, /\.push\.apple\.com$/];
+function pushOk(endpoint: string) {
+  try { const u = new URL(endpoint); return u.protocol === "https:" && PUSH_HOSTS.some(r => r.test(u.hostname)); } catch { return false; }
+}
 
 Deno.serve(async (req) => {
   const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+  // authenticate first: nothing else (keys, people) is read until the caller proves the secret
+  const { data: ok, error: authErr } = await sb.rpc("push_check_secret", { p_secret: req.headers.get("x-cron-secret") || "" });
+  if (authErr) { console.error("push-tick: secret check failed", authErr.message); return new Response("Error", { status: 500 }); }
+  if (ok !== true) return new Response("Forbidden", { status: 403 });
   const { data: w, error } = await sb.rpc("push_worklist");
-  if (error || !w) return new Response(JSON.stringify({ error: "worklist failed" }), { status: 500 });
-  if (!w.cron_secret || req.headers.get("x-cron-secret") !== w.cron_secret) return new Response("Forbidden", { status: 403 });
+  if (error || !w) { console.error("push-tick: worklist failed", error && error.message); return new Response(JSON.stringify({ error: "worklist failed" }), { status: 500 }); }
   webpush.setVapidDetails("mailto:support@runback.app", w.vapid_public, w.vapid_private);
 
   const now = Date.now();
-  let sent = 0, dropped = 0;
+  let sent = 0, dropped = 0, failed = 0;
   for (const row of (w.people || []) as any[]) {
+   // one person's bad data or a failed send never stops everyone else's reminders
+   try {
     const events: { kind: string; ref: string; at: number; title: string; body: string }[] = [];
     const f = row.fast;
     if (f && f.s && f.h) {
@@ -61,11 +73,13 @@ Deno.serve(async (req) => {
       events.push({ kind: "goal", ref: f.s + ":goal", at: goal, title: "Fasting goal reached", body: `${f.h} hours done. Break your fast with protein first, or keep going if you feel good.` });
       if (f.h >= 36) for (let d = 1; d * 24 < f.h; d++) events.push({ kind: "day", ref: f.s + ":day" + d, at: f.s + d * 24 * H, title: `Day ${d + 1} of your fast`, body: "Drink water and add electrolytes. Keep activity easy, and stop if you feel dizzy or faint." });
     } else if (row.routine && row.routine.on) {
-      const r = row.routine, tz = row.tz || "UTC", skip: string[] = Array.isArray(r.skip) ? r.skip : [];
+      const r = row.routine, tz = safeTz(row.tz), skip: string[] = Array.isArray(r.skip) ? r.skip : [];
       for (const offset of [-1, 0, 1, 2]) { // fast days around today, in the person's time zone
         const p = parts(now + offset * 86400000, tz), key = keyOf(p.year, p.month, p.day);
         if (!onPattern(r, p.year, p.month, p.day) || skip.includes(key)) continue;
-        const [hh, mm] = String((r.times && r.times[key]) || r.start || "20:00").split(":").map(Number);
+        let [hh, mm] = String((r.times && r.times[key]) || r.start || "20:00").split(":").map(Number);
+        if (!Number.isFinite(hh) || hh < 0 || hh > 23) hh = 20;
+        if (!Number.isFinite(mm) || mm < 0 || mm > 59) mm = 0;
         const sd = new Date(Date.UTC(p.year, p.month - 1, p.day - (r.startMode === "before" ? 1 : 0)));
         const at = zoned(sd.getUTCFullYear(), sd.getUTCMonth() + 1, sd.getUTCDate(), hh, mm, tz);
         if (row.last_fast_start && Math.abs(row.last_fast_start - at) < 6 * H) continue; // already fasting or done for this day
@@ -76,14 +90,20 @@ Deno.serve(async (req) => {
     }
     for (const ev of events) {
       if (now < ev.at || now - ev.at > WINDOW) continue;
-      const { data: fresh } = await sb.rpc("push_mark", { p_user: row.user_id, p_kind: ev.kind, p_ref: ev.ref });
+      const { data: fresh, error: markErr } = await sb.rpc("push_mark", { p_user: row.user_id, p_kind: ev.kind, p_ref: ev.ref });
+      if (markErr) { console.error("push-tick: mark failed", markErr.message); continue; }
       if (!fresh) continue;
       const payload = JSON.stringify({ title: ev.title, body: ev.body, url: "/#fast", tag: "fast-" + ev.kind });
       for (const s of row.subs || []) {
+        if (!pushOk(s.endpoint)) { await sb.rpc("push_drop", { p_endpoint: s.endpoint }); dropped++; continue; }
         try { await webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, payload, { TTL: 3600 }); sent++; }
-        catch (e: any) { if (e && (e.statusCode === 404 || e.statusCode === 410)) { await sb.rpc("push_drop", { p_endpoint: s.endpoint }); dropped++; } }
+        catch (e: any) {
+          if (e && (e.statusCode === 404 || e.statusCode === 410)) { await sb.rpc("push_drop", { p_endpoint: s.endpoint }); dropped++; }
+          else { failed++; console.error("push-tick: send failed", e && e.statusCode, e && e.message); }
+        }
       }
     }
+   } catch (e: any) { failed++; console.error("push-tick: person skipped", e && e.message); }
   }
-  return new Response(JSON.stringify({ ok: true, people: (w.people || []).length, sent, dropped }), { headers: { "Content-Type": "application/json" } });
+  return new Response(JSON.stringify({ ok: true, people: (w.people || []).length, sent, dropped, failed }), { headers: { "Content-Type": "application/json" } });
 });

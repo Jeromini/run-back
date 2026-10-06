@@ -96,7 +96,7 @@ function renderPre() {
     <div class="bar-top"><button class="iconbtn" id="wk-close" aria-label="Close">${ICON.close}</button><span class="t">${esc(nice(W.date))}</span><span style="width:44px"></span></div>
     <div><div class="eyebrow">${s.kind === "run" ? "Run" : "Cardio"} &middot; ${Math.round(W.total / 60)} min</div><h2>${esc(W.act ? W.act.name : s.title)}</h2></div>
     <p class="desc">${esc(W.act ? "Easy, conversational effort for the whole session. Strength work follows on Today." : s.how)}</p>
-    ${s.kind === "run" ? `<div class="seg" id="wk-where" role="group"><button type="button" data-v="outdoor" class="${W.where === "outdoor" ? "on" : ""}">Outdoor</button><button type="button" data-v="treadmill" class="${W.where === "treadmill" ? "on" : ""}">Treadmill</button></div>` : ""}
+    ${s.kind === "run" ? `<div class="seg" id="wk-where" role="group" aria-label="Where"><button type="button" data-v="outdoor" class="${W.where === "outdoor" ? "on" : ""}">Outdoor</button><button type="button" data-v="treadmill" class="${W.where === "treadmill" ? "on" : ""}">Treadmill</button></div>` : ""}
     ${W.act ? `<button class="btn" id="wk-change">${ICON.edit} Change activity</button>` : ""}
     ${fa ? `<div class="card" style="border-color:${fastH >= 20 ? "#e9a04d" : "var(--wk-line)"}"><span class="eyebrow">Fasted session &middot; ${Math.floor(fastH)} h in</span><p class="desc">${fastH >= 24 ? "You're more than 24 hours into a fast. Eat first, then train." : fastH >= 20 ? "Keep it easy, sip water, and stop if you feel light-headed." : "Easy effort only. Break your fast with protein within an hour after."}</p></div>` : ""}
     <div class="blocks">${rows.map(r => `<div><i style="background:${kindColor(r[0])}"></i><span>${esc(r[1])}</span><b>${r[2]}</b></div>`).join("")}</div>
@@ -244,10 +244,10 @@ function renderSummary() {
     ${s.kind === "run" ? `<div class="card"><div class="eyebrow">Intervals</div>${intervalTable(W.ints, true) || `<p class="desc">No jog intervals recorded.</p>`}</div>` : ""}
     <div class="card">
       <div class="eyebrow">How hard did it feel?</div>
-      ${segHtml("sm-rpe", [[2, "2"], [3, "3"], [4, "4"], [5, "5"], [6, "6"], [7, "7"], [8, "8+"]], null)}
+      ${segHtml("sm-rpe", [[2, "2"], [3, "3"], [4, "4"], [5, "5"], [6, "6"], [7, "7"], [8, "8+"]], null, 'aria-label="Effort"')}
       <p class="desc" id="sm-rpel">2-4 is easy, where these weeks should be.</p>
       <div class="eyebrow" style="margin-top:6px">Any pain?</div>
-      ${segHtml("sm-pain", [["no", "No"], ["niggle", "Niggle"], ["yes", "Yes"]], null)}
+      ${segHtml("sm-pain", [["no", "No"], ["niggle", "Niggle"], ["yes", "Yes"]], null, 'aria-label="Any pain"')}
       <textarea id="sm-notes" placeholder="Notes: heat, who you ran with, how your legs felt"></textarea>
     </div>
     ${state.profile.fastActive ? `<div class="card"><span class="eyebrow">You're still fasting</span><p class="desc">Break your fast within about an hour with 30-40 g of protein and some carbs.</p></div>` : ""}

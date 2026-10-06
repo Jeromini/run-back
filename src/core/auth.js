@@ -17,7 +17,7 @@ export function showAuth(show) {
     <div class="brand">${brandHtml()}</div>
     <p class="tagline">${esc(APP_TAGLINE)}</p>
     <p class="note">Fasting, training and food in one coach. It tells you when to train around your fast, and keeps your data synced across devices.</p>
-    ${segHtml("a-mode", [["in", "Sign in"], ["up", "Create account"]], mode, 'data-act="auth-mode"')}
+    ${segHtml("a-mode", [["in", "Sign in"], ["up", "Create account"]], mode, 'data-act="auth-mode" aria-label="Sign in or create account"')}
     <label class="f">Email<input type="email" id="a-email" autocomplete="email" inputmode="email" required></label>
     <label class="f">Password<input type="password" id="a-pass" autocomplete="${mode === "in" ? "current-password" : "new-password"}" minlength="6" required></label>
     <p class="err" id="a-err" hidden></p><p class="ok" id="a-ok" hidden></p>
@@ -64,8 +64,10 @@ act("auth-forgot", async () => {
   const em = $("a-email").value.trim();
   if (!em) { msg("Type your email above first."); return; }
   if (!sb) return;
-  const { error } = await sb.auth.resetPasswordForEmail(em, { redirectTo: location.origin });
-  msg(error ? error.message : null, error ? null : "If that email has an account, a reset link is on its way.");
+  try {
+    const { error } = await sb.auth.resetPasswordForEmail(em, { redirectTo: location.origin });
+    msg(error ? error.message : null, error ? null : "If that email has an account, a reset link is on its way.");
+  } catch (e) { msg("Couldn't send the reset link. Check your connection and try again."); }
 });
 act("auth-local", () => {
   S.localOnly = true; try { localStorage.setItem("runback.localOnly", "1"); } catch (e) { /* ignore */ }
@@ -90,13 +92,14 @@ export const onSignedIn = fn => listeners.push(fn);
 async function onSession(session) {
   const uid = session ? session.user.id : null;
   if (uid === S.uid && !S.localOnly) return;
-  if (!uid) { S.uid = null; S.pro = false; if (!S.localOnly) showAuth(true); return; }
+  if (!uid) { S.uid = null; S.pro = false; if (!S.localOnly) { lsLoad(); showAuth(true); } return; }
   const hadLocal = !S.uid ? readLocal("runback.v2:local") : null;
   S.localOnly = false; try { localStorage.removeItem("runback.localOnly"); } catch (e) { /* ignore */ }
   S.uid = uid; S.email = session.user.email || "";
   lsLoad();
   // first sign-in after using the app without an account: carry those entries over
-  if (hadLocal && hadLocal.days && !Object.keys(state.days).length) {
+  const realLocal = hadLocal && hadLocal.days && (Object.keys(hadLocal.days).length > 0 || (hadLocal.profile && (hadLocal.profile.onboarded || hadLocal.profile.startWeight)));
+  if (realLocal && !Object.keys(state.days).length) {
     state.days = hadLocal.days; state.profile = { ...DEFAULT_PROFILE, ...hadLocal.profile };
     markAllDirty(); lsSave();
   }
@@ -114,8 +117,9 @@ export async function connect() {
     onSession(session);
     if (ev === "PASSWORD_RECOVERY") { state.view = "me"; render(); toast("Set a new password under Account"); }
   }, 0));
-  const { data } = await sb.auth.getSession();
-  if (data.session) onSession(data.session);
+  let data = {};
+  try { ({ data } = await sb.auth.getSession()); } catch (e) { data = {}; }
+  if (data && data.session) onSession(data.session);
   else if (S.localOnly) { lsLoad(); render(); setSync("local"); }
   else { lsLoad(); render(); showAuth(true); }
   window.addEventListener("online", () => { flush(); pull(); });

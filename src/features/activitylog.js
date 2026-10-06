@@ -19,7 +19,7 @@ const kg = date => toKg(currentWeight(state.days, date) || state.profile.startWe
 export function pickActivity(onPick, title = "Choose an activity") {
   pickCb = onPick; pickQ = "";
   openSheet({ title: "Activity", html: `<h1 class="big-title" style="font-size:28px">${esc(title)}</h1>
-    <div class="search"><span aria-hidden="true">${ICON.search}</span><input id="act-q" data-in="act-q" placeholder="Search: treadmill, elliptical, tennis..." autocomplete="off"></div>
+    <div class="search"><span aria-hidden="true">${ICON.search}</span><input id="act-q" aria-label="Search activities" data-in="act-q" placeholder="Search: treadmill, elliptical, tennis..." autocomplete="off"></div>
     <div id="act-list">${listHtml()}</div>` });
 }
 function listHtml() {
@@ -73,7 +73,7 @@ function drawForm() {
       <div class="stepper"><button class="btn" data-act="al-step" data-d="-5" aria-label="5 minutes less">${ICON.minus}</button><b id="al-min"></b><button class="btn" data-act="al-step" data-d="5" aria-label="5 minutes more">${ICON.plus}</button></div>
       <div class="chips" style="justify-content:center">${[15, 20, 30, 45, 60, 90].map(v => `<button class="chip" data-act="al-set" data-v="${v}">${v}</button>`).join("")}</div>
       <div class="eyebrow">How hard?</div>
-      ${segHtml("al-int", INTENSITY.map(([v, l]) => [v, l]), form.int, 'data-act="al-int"')}
+      ${segHtml("al-int", INTENSITY.map(([v, l]) => [v, l]), form.int, 'data-act="al-int" aria-label="Intensity"')}
       <p class="note" style="text-align:center">${esc(INTENSITY[form.int][2])}</p>
       ${a.distance ? `<label class="f">Distance (${du}, optional)<input type="number" inputmode="decimal" step="0.01" value="${esc(form.dist)}" data-in="al-dist" placeholder="e.g. 3.1"></label>` : ""}
     </div>

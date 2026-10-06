@@ -39,14 +39,14 @@ export function renderFood(root) {
 
   const tab = state.dietTab || "log", dm = myDiet(), ds = dm && dm.diet ? dayStatus(fdate) : null;
   const head = `<h1 class="big-title">Diet</h1>
-    <div class="subnav"><div class="toptabs" role="tablist" data-act="diet-tab">${[["log", "Food log"], ["plan", dm && dm.diet ? shortName(dm.diet) : "My diet"], ["report", "Report"]].map(([v, l]) => `<button role="tab" aria-selected="${tab === v}" class="${tab === v ? "on" : ""}" data-v="${v}">${esc(l)}</button>`).join("")}</div></div>`;
+    <div class="subnav"><nav class="toptabs" aria-label="Food sections" data-act="diet-tab">${[["log", "Food log"], ["plan", dm && dm.diet ? shortName(dm.diet) : "My diet"], ["report", "Report"]].map(([v, l]) => `<button aria-current="${tab === v ? "page" : "false"}" class="${tab === v ? "on" : ""}" data-v="${v}">${esc(l)}</button>`).join("")}</nav></div>`;
   const nav = `<div class="datenav"><button class="iconbtn" data-act="food-day" data-n="-1" aria-label="Previous day">${ICON.back}</button>
       <div class="t">${fdate === t ? "Today" : esc(nice(fdate))}</div>
       <button class="iconbtn" data-act="food-day" data-n="1" aria-label="Next day"${fdate >= t ? " disabled style=\"opacity:.3\"" : ""}>${ICON.next}</button></div>`;
   if (tab === "plan") { root.innerHTML = `<section class="view">${head}${nav}${planPanel(fdate)}</section>`; return; }
   if (tab === "report") { root.innerHTML = `<section class="view">${head}${reportPanel()}</section>`; return; }
   root.innerHTML = `<section class="view">${head}
-    ${ds && ds.status !== "empty" ? `<button class="dstrip ${ds.status}" data-act="diet-tab" data-v="plan"><b>${esc(dm.diet.name)}</b><span>${ds.checks.find(c => c.id === "net") ? Math.round(ds.totals.net) + " of " + ds.checks.find(c => c.id === "net").target + " g net carbs" : ds.status === "kept" ? "On plan so far" : ds.breaks.length + " item" + (ds.breaks.length === 1 ? "" : "s") + " off plan"}</span><i>${ICON.next}</i></button>` : ""}
+    ${ds && ds.status !== "empty" && ds.status !== "notarget" ? `<button class="dstrip ${ds.status}" data-act="diet-tab" data-v="plan"><b>${esc(dm.diet.name)}</b><span>${ds.checks.find(c => c.id === "net") ? Math.round(ds.totals.net) + " of " + ds.checks.find(c => c.id === "net").target + " g net carbs" : ds.status === "kept" ? "On plan so far" : ds.breaks.length + " item" + (ds.breaks.length === 1 ? "" : "s") + " off plan"}</span><i>${ICON.next}</i></button>` : ""}
     <div class="datenav"><button class="iconbtn" data-act="food-day" data-n="-1" aria-label="Previous day">${ICON.back}</button>
       <div class="t">${fdate === t ? "Today" : esc(nice(fdate))}</div>
       <button class="iconbtn" data-act="food-day" data-n="1" aria-label="Next day"${fdate >= t ? " disabled style=\"opacity:.3\"" : ""}>${ICON.next}</button></div>

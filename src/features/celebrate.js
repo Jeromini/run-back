@@ -1,11 +1,11 @@
 // The app's one authored moment: a ring that draws itself closed around a tick, for wins that
 // matter (a fasting goal reached, a Journey milestone). Shares the pop-up layer with stage pop-ups.
-import { act, ICON } from "../lib/dom.js";
+import { act, setInert, restoreFocus, ICON } from "../lib/dom.js";
 import { esc } from "../lib/format.js";
 import { buzz } from "../lib/sound.js";
 
 const queue = [];
-let open = false;
+let open = false, winReturn = null;
 
 export function celebrate({ title, sub = "", tone = "accent", cta = "Nice" }) {
   queue.push({ title, sub, tone, cta });
@@ -21,8 +21,13 @@ function next() {
     <div class="win-mark" aria-hidden="true"><svg viewBox="0 0 120 120"><circle class="trk" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52"/></svg><span>${ICON.tick}</span></div>
     <h2 id="win-t">${esc(w.title)}</h2>${w.sub ? `<p>${esc(w.sub)}</p>` : ""}
     <button class="btn primary big" data-act="win-close">${esc(w.cta)}</button></div>`;
-  box.hidden = false;
+  if (!winReturn) winReturn = document.activeElement;
+  box.hidden = false; setInert(true);
   setTimeout(() => { const b = box.querySelector("[data-act=win-close]"); if (b) b.focus({ preventScroll: true }); }, 50);
 }
-act("win-close", () => { const box = document.getElementById("stagepop"); box.hidden = true; box.innerHTML = ""; open = false; setTimeout(next, 250); });
+act("win-close", () => {
+  const box = document.getElementById("stagepop"); box.hidden = true; box.innerHTML = ""; open = false;
+  if (queue.length) { setTimeout(next, 250); return; }
+  setInert(false); const r = winReturn; winReturn = null; setTimeout(() => restoreFocus(r), 0);
+});
 document.addEventListener("keydown", e => { if (e.key === "Escape" && open) { const b = document.querySelector("[data-act=win-close]"); if (b) b.click(); } });

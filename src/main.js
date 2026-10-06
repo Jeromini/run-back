@@ -23,7 +23,7 @@ import "./features/guides.js";
 import "./features/calendar.js";
 import { maybeOnboard } from "./features/onboarding.js";
 import { onPulled, sb } from "./core/store.js";
-import { initErrorReporting } from "./lib/errors.js";
+import { initErrorReporting, report } from "./lib/errors.js";
 
 const VIEWS = { today: renderToday, journey: renderJourney, fast: renderFast, food: renderFood, trends: renderTrends, crew: renderCrew, me: renderMe, more: renderMore, mind: renderMind };
 const TAB_ICONS = { today: "run", journey: "flag", fast: "timer", food: "food", trends: "chart" };
@@ -46,7 +46,11 @@ function render() {
   // the entrance animation only plays when switching screens, not on every update
   main.classList.toggle("still", lastView === state.view);
   lastView = state.view;
-  fn(main);
+  try { fn(main); }
+  catch (e) {
+    report("render " + state.view + ": " + ((e && e.message) || e), "main.render", (e && e.stack) || "");
+    main.innerHTML = `<section class="view"><div class="card empty"><b>This screen hit a problem</b>Your data is safe. It's been reported so it can be fixed.<button class="btn primary" style="margin-top:12px" data-act="tab" data-v="today">Go to Today</button></div></section>`;
+  }
   window.scrollTo(0, y);
   // screens reached from More keep the More (profile) button lit instead of a tab
   const sub = { crew: "more", me: "more", mind: "today" }[state.view] || state.view;
@@ -58,6 +62,14 @@ function render() {
   checkBadges();
 }
 setRenderer(render);
+// segmented controls switched in place (without a re-render) keep their pressed state in step
+new MutationObserver(ms => ms.forEach(m => {
+  const b = m.target;
+  if (b.tagName === "BUTTON" && b.parentElement && b.parentElement.classList.contains("seg")) {
+    const v = String(b.classList.contains("on"));
+    if (b.getAttribute("aria-pressed") !== v) b.setAttribute("aria-pressed", v);
+  }
+})).observe(document.body, { subtree: true, attributes: true, attributeFilter: ["class"] });
 // "System" appearance: follow the phone switching between light and dark while the app is open
 try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme); } catch (e) { /* older browsers */ }
 

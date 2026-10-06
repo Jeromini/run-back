@@ -1,7 +1,7 @@
 // First run: a one-minute setup that ends on a real plan. Four short steps (your numbers, a
 // Journey package, a fasting rhythm, reminders), skippable at any point, never shown twice.
 // profile.onboarded = "YYYY-MM-DD" once finished or skipped.
-import { $, act, onInput, openSheet, closeSheet, segHtml, toast, ICON } from "../lib/dom.js";
+import { $, act, onInput, openSheet, closeSheet, sheetOpen, segHtml, toast, ICON } from "../lib/dom.js";
 import { esc } from "../lib/format.js";
 import { today } from "../lib/dates.js";
 import { state, S, render } from "../core/state.js";
@@ -35,7 +35,7 @@ function draw() {
     <div class="onb-top"><div class="onb-prog" role="progressbar" aria-valuemin="1" aria-valuemax="${STEPS.length}" aria-valuenow="${step + 1}" aria-label="Step ${step + 1} of ${STEPS.length}">${STEPS.map((_, i) => `<i class="${i <= step ? "on" : ""}"></i>`).join("")}</div>
       <button class="linkbtn" data-act="onb-skip">Skip setup</button></div>
     ${[you, journey, fast, remind][step]()}`}</div>`;
-  if ($("onb")) { $("sh-body").innerHTML = html; $("sheet").scrollTop = 0; return; }
+  if (sheetOpen() && $("onb")) { $("sh-body").innerHTML = html; $("sheet").scrollTop = 0; return; }
   openSheet({ title: "Welcome", html, cls: "onb-sheet", onClose: () => { if (!state.profile.onboarded) finish(true); } });
 }
 
@@ -56,7 +56,7 @@ function you() {
   return `<h2 class="onb-h">Your numbers</h2>
     <p class="note">They set your daily water target, calorie suggestion and weight trend.</p>
     <label class="f">First name<input data-in="onb" data-k="name" value="${esc(f.name)}" autocomplete="given-name" placeholder="Shown to your crew"></label>
-    <label class="f">Units${segHtml("onb-unit", [["lb", "lb, ft"], ["kg", "kg, cm"]], f.unit, 'data-act="onb-unit"')}</label>
+    <label class="f">Units${segHtml("onb-unit", [["lb", "lb, ft"], ["kg", "kg, cm"]], f.unit, 'data-act="onb-unit" aria-label="Units"')}</label>
     <div class="row">${f.unit === "kg"
       ? `<label class="f">Height (cm)<input type="number" inputmode="numeric" data-in="onb" data-k="cm" value="${esc(f.cm)}"></label>`
       : `<label class="f">Height (ft)<input type="number" inputmode="numeric" data-in="onb" data-k="ft" value="${esc(f.ft)}"></label><label class="f">(in)<input type="number" inputmode="numeric" data-in="onb" data-k="inch" value="${esc(f.inch)}"></label>`}

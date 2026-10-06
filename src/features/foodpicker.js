@@ -41,10 +41,10 @@ export function pickerHtml() {
     ${plate.length ? `<div class="plate"><div class="card-head"><span class="eyebrow">Your plate</span><span class="note">${num(plateK)} kcal &middot; ${Math.round(plateP)} g protein</span></div>
       ${plate.map((x, i) => `<div class="fi${i === 0 ? " first" : ""}"><span class="nm">${esc(x.n)}<small class="note" style="display:block">${esc(x.u ? fmtQ(x.q) + " x " + x.u : "custom")}</small></span><span class="k">${x.k}</span><span class="p">${x.p ? x.p + " g" : ""}</span><button class="x" data-act="plate-del" data-i="${i}" aria-label="Remove ${esc(x.n)}">&times;</button></div>`).join("")}
       <button class="btn primary big" data-act="plate-log">${ICON.tick} Log ${plate.length} item${plate.length > 1 ? "s" : ""} to ${esc(ctx.meal)}</button>
-      ${savingPlate ? `<div class="quickw"><input id="plate-name" maxlength="40" placeholder="Name this meal, e.g. My usual breakfast"><button class="btn" data-act="plate-save">Save</button></div>`
+      ${savingPlate ? `<div class="quickw"><input id="plate-name" aria-label="Meal name" maxlength="40" placeholder="Name this meal, e.g. My usual breakfast"><button class="btn" data-act="plate-save">Save</button></div>`
         : `<button class="linkbtn" data-act="plate-save-open" style="text-align:center">Save this plate as a favourite meal</button>`}</div>` : ""}
     ${meals.length ? `<div class="eyebrow">Favourite meals</div><div class="favs">${meals.map(m => `<div class="fav"><button class="chip" data-act="meal-log" data-id="${m.id}">${esc(m.name)}<small>${num(m.items.reduce((a, x) => a + x.k, 0))}</small></button><button class="x" data-act="meal-del" data-id="${m.id}" aria-label="Delete ${esc(m.name)}">&times;</button></div>`).join("")}</div>` : ""}
-    <div class="search"><span aria-hidden="true">${ICON.search}</span><input id="food-q" data-in="food-q" placeholder="Search foods: egg, rice, chicken wing..." autocomplete="off" value="${esc(query)}"></div>
+    <div class="search"><span aria-hidden="true">${ICON.search}</span><input id="food-q" aria-label="Search foods" data-in="food-q" placeholder="Search foods: egg, rice, chicken wing..." autocomplete="off" value="${esc(query)}"></div>
     <div class="catrow cattabs" role="tablist">${[["recent", "Recent"], ...CATS].map(([id, label]) => `<button class="chip${!query && cat === id ? " on" : ""}" data-act="food-cat" data-c="${id}">${esc(label)}</button>`).join("")}</div>
     <div id="food-results" class="results">${resultsHtml()}</div>
     ${showCustom ? customHtml() : `<button class="linkbtn" data-act="custom-open" style="text-align:center">Can't find it? Add a custom food</button>`}
@@ -86,16 +86,20 @@ function onlineHtml() {
   else body = online.items.map(it => `<button class="frow" data-act="food-pick" data-id="${esc(it.id)}"><span><b>${esc(it.name)}</b><span class="note">${it.brand ? esc(it.brand) + " &middot; " : ""}${it.k} kcal &middot; ${it.p} g protein per 100 g</span></span><i aria-hidden="true">${ICON.plus}</i></button>`).join("");
   return `<div class="online-h"><span class="eyebrow">Worldwide products</span><span class="note">Open Food Facts</span></div>${body}`;
 }
+let onlineReq = 0;
 async function searchOnline(q) {
   if (!sb || !S.uid || q.length < 3) return;
+  const my = ++onlineReq;
   online = { q, items: null, loading: true, err: "" };
   try {
     const { data, error } = await sb.functions.invoke("food-search", { body: { q } });
+    if (my !== onlineReq) return;
     if (error) throw error;
     if (data.error) throw new Error(data.error);
     data.items.forEach(it => { onlineById[it.id] = onlineFood(it); });
     online = { q, items: data.items, loading: false, err: "" };
   } catch (e) {
+    if (my !== onlineReq) return;
     online = { q, items: [], loading: false, err: navigator.onLine ? "Worldwide search didn't respond." : "You're offline. Worldwide search needs a connection." };
   }
   if (query.trim() === q && $("food-results")) $("food-results").innerHTML = resultsHtml();

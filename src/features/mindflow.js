@@ -1,7 +1,7 @@
 // Mind flows: the guided Unload (feel, release, sort one by one, pick three), Focus (one priority at a
 // time with a timer), and the toolkit (breathing, grounding, thought check, body relax, worry time,
 // three good things, calm walk). Everything saves to day.mind (see src/domain/mind.js).
-import { $, act, onInput, openSheet, closeSheet, segHtml, toast, ICON } from "../lib/dom.js";
+import { $, act, onInput, openSheet, closeSheet, sheetOpen, segHtml, toast, ICON } from "../lib/dom.js";
 import { esc } from "../lib/format.js";
 import { today, nice } from "../lib/dates.js";
 import { state, day, render } from "../core/state.js";
@@ -19,7 +19,7 @@ let timers = [];
 const stopTimers = () => { timers.forEach(clearInterval); timers = []; };
 // paint into the open sheet, or open it
 function sheet(title, html, onClose) {
-  if ($("mflow") && $("mflow").dataset.t === title) { $("sh-body").innerHTML = `<div id="mflow" class="uflow" data-t="${esc(title)}">${html}</div>`; $("sheet").scrollTop = 0; return; }
+  if (sheetOpen() && $("mflow") && $("mflow").dataset.t === title) { $("sh-body").innerHTML = `<div id="mflow" class="uflow" data-t="${esc(title)}">${html}</div>`; $("sheet").scrollTop = 0; return; }
   openSheet({ title, html: `<div id="mflow" class="uflow" data-t="${esc(title)}">${html}</div>`, onClose: () => { stopTimers(); if (onClose) onClose(); render(); } });
 }
 const prog = (i, n) => `<div class="onb-prog" style="grid-template-columns:repeat(${n},1fr)" role="progressbar" aria-valuenow="${i + 1}" aria-valuemax="${n}" aria-label="Step ${i + 1} of ${n}">${Array.from({ length: n }, (_, k) => `<i class="${k <= i ? "on" : ""}"></i>`).join("")}</div>`;
@@ -45,7 +45,7 @@ function drawUnload() {
     <button class="btn primary big" data-act="u-next"${u.level ? "" : " disabled"}>Next: empty your head</button>`;
   else if (s === "release") h += `<h1 class="big-title">What's on your mind?</h1>
     <p class="note">Write down everything taking up space: tasks, worries, things you keep remembering. One at a time, big or small. You'll sort them next.</p>
-    <div class="tadd"><input id="u-new" data-in="u-new" value="${esc(u.draft)}" placeholder="e.g. Reply to the bank" maxlength="140" enterkeyhint="done" autocomplete="off"><button class="btn primary" data-act="u-add">Add</button></div>
+    <div class="tadd"><input id="u-new" aria-label="Something on your mind" data-in="u-new" value="${esc(u.draft)}" placeholder="e.g. Reply to the bank" maxlength="140" enterkeyhint="done" autocomplete="off"><button class="btn primary" data-act="u-add">Add</button></div>
     ${u.items.length ? `<div class="ulist">${u.items.map((x, k) => `<div class="uitem"><span>${esc(x.text)}</span><button class="x" data-act="u-remove" data-k="${k}" aria-label="Remove ${esc(x.text)}">&times;</button></div>`).join("")}</div>
       <p class="note">${u.items.length} out of your head. Anything else? Keep going until nothing is left.</p>` : ""}
     <button class="btn primary big" data-act="u-next"${u.items.length ? "" : " disabled"}>That's everything: sort them</button>
@@ -96,6 +96,7 @@ act("u-add", uAdd);
 document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target && e.target.id === "u-new") { e.preventDefault(); uAdd(); } });
 act("u-remove", el => { u.items.splice(Number(el.dataset.k), 1); drawUnload(); });
 act("u-next", () => {
+  if (u.step === 1 && (($("u-new") || {}).value || "").trim()) { uAdd(); return; }
   if (u.step === 0) { const m = M(); m.am = { level: u.level, signals: u.signals, causes: u.causes, note: u.note.trim() }; saveDay(today()); }
   u.step++; u.i = 0; u.cur = null; drawUnload();
 });
@@ -149,13 +150,16 @@ act("focus-open", () => { if ($("mflow")) closeSheet(); openFocus(); });
 act("f-mins", (el, ev) => { const b = ev.target.closest("button"); if (b) { fMins = Number(b.dataset.v); fLeft = 0; drawFocus(); } });
 act("f-start", () => {
   if (!fLeft) fLeft = fMins * 60; fRun = true; stopTimers(); drawFocus();
-  timers.push(setInterval(() => { fLeft--; const c = $("f-clock"); if (c) c.textContent = fmt(Math.max(0, fLeft)); if (fLeft <= 0) { stopTimers(); fRun = false; buzz([80, 60, 80]); toast("Time's up. Done, or another round?"); drawFocus(); } }, 1000));
+  const fEnd = Date.now() + fLeft * 1000;
+  timers.push(setInterval(() => { fLeft = Math.ceil((fEnd - Date.now()) / 1000); const c = $("f-clock"); if (c) c.textContent = fmt(Math.max(0, fLeft)); if (fLeft <= 0) { stopTimers(); fRun = false; buzz([80, 60, 80]); toast("Time's up. Done, or another round?"); drawFocus(); } }, 1000));
 });
 act("f-pause", () => { fRun = false; stopTimers(); drawFocus(); });
 act("f-skip", () => { const q = focusQueue(mindOf().tasks); fIdx = (fIdx + 1) % Math.max(1, q.length); fLeft = 0; fRun = false; stopTimers(); drawFocus(); });
 act("f-done", () => {
   const q = focusQueue(mindOf().tasks), t = q[Math.min(fIdx, q.length - 1)];
-  const x = (M().tasks || []).find(k => k.id === t.id); x.done = true; saveDay(today()); buzz(40);
+  const x = t && (M().tasks || []).find(k => k.id === t.id);
+  if (!x) { fIdx = 0; drawFocus(); return; }
+  x.done = true; saveDay(today()); buzz(40);
   fIdx = 0; fLeft = 0; fRun = false; stopTimers(); toast("Done. One less thing."); drawFocus();
 });
 
@@ -229,7 +233,8 @@ act("t-save", () => {
 });
 act("w-start", () => {
   tState.started = true; tState.left = 900; drawTool();
-  timers.push(setInterval(() => { tState.left--; const c = $("w-clock"); if (c) c.textContent = fmt(Math.max(0, tState.left)); if (tState.left <= 0) { stopTimers(); buzz([80, 60, 80]); toast("Worry time is over. Anything left can wait for tomorrow's."); } }, 1000));
+  const wEnd = Date.now() + 900 * 1000;
+  timers.push(setInterval(() => { tState.left = Math.ceil((wEnd - Date.now()) / 1000); const c = $("w-clock"); if (c) c.textContent = fmt(Math.max(0, tState.left)); if (tState.left <= 0) { stopTimers(); buzz([80, 60, 80]); toast("Worry time is over. Anything left can wait for tomorrow's."); } }, 1000));
 });
 function reviewWorry(date, id, fn) { const m = M(date), w = (m.worries || []).find(x => x.id === id); if (w) { w.reviewed = true; fn && fn(w); saveDay(date); } }
 act("w-act", el => { reviewWorry(el.dataset.d, el.dataset.id, w => { const m = M(); m.tasks = [...(m.tasks || []), { id: uid(), text: w.text, imp: true, urg: false, step: "", when: "today", top: false, done: false }]; saveDay(today()); }); toast("Added to today's list"); drawTool(); });
@@ -259,7 +264,8 @@ function drawBreathe() {
     const left = total - n; $("bleft").textContent = Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0") + " left";
   };
   paint();
-  timers.push(setInterval(() => { n++; if (n >= total) { stopTimers(); const st = $("bstep"); if (st) { st.textContent = "Well done"; $("bcount").textContent = ""; $("bleft").textContent = "Notice how you feel."; } return; } paint(); }, 1000));
+  const t0 = Date.now();
+  timers.push(setInterval(() => { n = Math.floor((Date.now() - t0) / 1000); if (n >= total) { stopTimers(); const st = $("bstep"); if (st) { st.textContent = "Well done"; $("bcount").textContent = ""; $("bleft").textContent = "Notice how you feel."; } return; } paint(); }, 1000));
 }
 act("b-pick", el => { tState.pattern = el.dataset.id; drawBreathe(); });
 act("b-done", () => { logTool("breathe"); closeSheet(); });
@@ -284,7 +290,7 @@ function drawEntry() {
     <div class="f jlabel"><b>What can you handle now?</b><span>Small actions you can tackle one by one. Tick them off as you go.</span>
       ${je.actions.length ? `<div class="tlist">${je.actions.map((a, k) => `<div class="trow${a.done ? " done" : ""}"><button class="tcheck" data-act="je-tick" data-k="${k}" aria-pressed="${!!a.done}" aria-label="${a.done ? "Mark not done" : "Mark done"}: ${esc(a.text)}">${a.done ? ICON.tick : ""}</button><span class="ttext">${esc(a.text)}</span><button class="tstar" data-act="je-del" data-k="${k}" aria-label="Remove ${esc(a.text)}">${ICON.close}</button></div>`).join("")}</div>
         <p class="note">${done} of ${je.actions.length} done</p>` : ""}
-      <div class="tadd"><input id="je-new" data-in="je-new" value="${esc(je.draft)}" maxlength="140" placeholder="e.g. Snack and quiet time straight after school" enterkeyhint="done" autocomplete="off"><button class="btn" data-act="je-add">Add</button></div></div>
+      <div class="tadd"><input id="je-new" aria-label="New action" data-in="je-new" value="${esc(je.draft)}" maxlength="140" placeholder="e.g. Snack and quiet time straight after school" enterkeyhint="done" autocomplete="off"><button class="btn" data-act="je-add">Add</button></div></div>
     <button class="btn primary big" data-act="je-save">Save entry</button>
     ${je.id ? `<button class="btn danger" data-act="je-delete">Delete entry</button>` : ""}`);
 }

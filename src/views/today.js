@@ -78,7 +78,7 @@ function hero() {
   const done = s.kind === "run" ? d.runDone : s.kind === "cross" ? d.crossDone : false;
   const training = s.kind === "run" || s.kind === "cross", c = coachNow(), pro = isPro();
   const noun = s.kind === "run" ? "run" : "cardio";
-  const [lead, ...rest] = (s.how || "").split(/(?<=\.)\s+/), note = rest.join(" ");
+  const howM = (s.how || "").match(/^[^.]*\.(\s+|$)/), lead = howM ? howM[0].trim() : (s.how || ""), note = howM ? (s.how || "").slice(howM[0].length) : "";
   let h = `<section class="hero2 ${s.kind}" aria-label="Today's session">
     <div class="hk">${wk ? "Run plan / Week " + wk : "Run plan starts " + esc(nice(p.startDate))}<span>${s.kind === "run" ? "Run" : s.kind === "cross" ? "Cardio + strength" : s.kind === "rest" ? "Recovery" : ""}</span></div>
     <h2>${esc(s.title).replace(/(\d) x (\d)/, "$1 &times; $2")}</h2>
@@ -126,8 +126,8 @@ function feelCard() {
   const isRun = s.kind === "run", done = isRun ? d.runDone : s.kind === "cross" ? d.crossDone : false;
   if (!done) return "";
   let h = `<div class="card" id="manual"><h3>How did it feel?</h3>
-    <label class="f">Effort (1 easy, 10 all out)${segHtml("m-rpe", [[2, "2"], [3, "3"], [4, "4"], [5, "5"], [6, "6"], [7, "7"], [8, "8+"]], d.rpe, 'data-act="m-seg" data-k="rpe"')}</label>
-    <label class="f">Any pain?${segHtml("m-pain", [["no", "No"], ["niggle", "Niggle"], ["yes", "Yes"]], d.pain || "", 'data-act="m-seg" data-k="pain"')}</label>
+    <label class="f">Effort (1 easy, 10 all out)${segHtml("m-rpe", [[2, "2"], [3, "3"], [4, "4"], [5, "5"], [6, "6"], [7, "7"], [8, "8+"]], d.rpe, 'data-act="m-seg" data-k="rpe" aria-label="Effort"')}</label>
+    <label class="f">Any pain?${segHtml("m-pain", [["no", "No"], ["niggle", "Niggle"], ["yes", "Yes"]], d.pain || "", 'data-act="m-seg" data-k="pain" aria-label="Any pain"')}</label>
     <label class="f">Notes<textarea data-in="m-text" data-k="notes" placeholder="How it felt, heat, who you ran with">${esc(d.notes || "")}</textarea></label>`;
   if (d.rpe >= 7 && isRun && weekOf(state.sel, p) <= 9) h += `<div class="callout">That felt hard for an easy run. Slow the jog down, and repeat this week if it stays above 6.</div>`;
   if (d.pain === "yes") h += `<div class="callout red">Pain that changes how you move means stop running for now. Walk or cycle and repeat the week. If it lasts more than a few days, get it checked.</div>`;

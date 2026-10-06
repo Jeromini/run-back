@@ -10,6 +10,7 @@ import { openLogActivity, startFreeWorkout } from "./activitylog.js";
 import { openWorkout } from "./workout.js";
 import { buzz } from "../lib/sound.js";
 import { openNote } from "./notes.js";
+import { resetFood } from "../views/food.js";
 
 const tile = (attrs, icon, color, soft, label, sub) => `<button class="qtile" ${attrs}><i style="background:${soft};color:${color}">${ICON[icon]}</i><b>${label}</b><small>${sub}</small></button>`;
 
@@ -30,7 +31,7 @@ function openQuickAdd() {
 }
 act("quick-add", openQuickAdd);
 act("qa-go", el => {
-  closeSheet(); state.sel = today(); state.view = el.dataset.to; render(); window.scrollTo(0, 0);
+  closeSheet(); state.sel = today(); state.view = el.dataset.to; if (el.dataset.to === "food") resetFood(); render(); window.scrollTo(0, 0);
   if (el.dataset.lifts) setTimeout(() => { const b = document.querySelector('[data-act="lifts"]'); if (b) b.click(); else { const c = document.getElementById("liftcard"); if (c) c.scrollIntoView({ behavior: "smooth" }); } }, 60);
 });
 act("qa-water", el => {

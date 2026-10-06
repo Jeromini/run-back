@@ -30,7 +30,7 @@ export function renderMe(root) {
     ${badgesSummary()}
     <div class="card"><h3>Your numbers</h3>
       <label class="f">Your name (shown to your crew)<input type="text" id="s-name" maxlength="40" placeholder="First name" value="${esc(p.displayName || "")}"></label>
-      <div class="row"><label class="f">Units${segHtml("s-unit", [["lb", "lb, mi"], ["kg", "kg, km"]], p.unit, 'data-act="set-units"')}</label>
+      <div class="row"><label class="f">Units${segHtml("s-unit", [["lb", "lb, mi"], ["kg", "kg, km"]], p.unit, 'data-act="set-units" aria-label="Units"')}</label>
         <label class="f">Age<input type="number" id="s-age" inputmode="numeric" value="${esc(p.age || "")}"></label></div>
       ${p.unit === "kg"
         ? `<label class="f">Height (cm)<input type="number" id="s-cm" inputmode="numeric" value="${esc(p.heightCm ? Math.round(p.heightCm) : "")}"></label>`
@@ -49,10 +49,10 @@ export function renderMe(root) {
       <label class="switch">Voice coaching<input type="checkbox" data-chg="pref" data-k="voice"${p.voice !== false ? " checked" : ""}></label>
       <label class="switch">GPS distance and pace<input type="checkbox" data-chg="pref" data-k="gps"${p.gps !== false ? " checked" : ""}></label>
       <label class="switch">Beeps<input type="checkbox" data-chg="pref" data-k="beeps"${p.beeps !== false ? " checked" : ""}></label></div>
-    <div class="card"><h3>Appearance</h3>${segHtml("s-theme", [["system", "System"], ["light", "Light"], ["dark", "Dark"]], p.theme || "system", 'data-act="set-theme"')}</div>
+    <div class="card"><h3>Appearance</h3>${segHtml("s-theme", [["system", "System"], ["light", "Light"], ["dark", "Dark"]], p.theme || "system", 'data-act="set-theme" aria-label="Appearance"')}</div>
     <div class="card"><h3>Account</h3>
       <p class="note">${S.localOnly ? "Using the app without an account. Entries stay on this phone. Sign in to sync them." : "Signed in as " + esc(S.email) + ". Your data syncs to any device you sign in on."}</p>
-      ${S.localOnly ? "" : `<div class="quickw"><input type="password" id="s-newpw" autocomplete="new-password" placeholder="New password"><button class="btn" data-act="me-pw">Change</button></div>`}
+      ${S.localOnly ? "" : `<div class="quickw"><input type="password" id="s-newpw" aria-label="New password" autocomplete="new-password" placeholder="New password"><button class="btn" data-act="me-pw">Change</button></div>`}
       <button class="btn ghost" data-act="me-signout">${S.localOnly ? "Sign in or create account" : "Sign out"}</button></div>
     <p class="note">Stop and get medical advice for chest pain, faintness or unusual breathlessness. Fasting isn't suitable if you're pregnant, have a history of eating disorders, or have diabetes or take medication without your doctor's advice. In the heat, run early or late and carry water.</p>
   </section>`;
@@ -61,7 +61,7 @@ export function renderMe(root) {
 act("me-save", () => {
   const p = state.profile, v = id => { const el = document.getElementById(id); return el && el.value !== "" ? Number(el.value) : null; };
   const name = document.getElementById("s-name").value.trim();
-  if (name && name !== p.displayName && sb && S.uid && !S.localOnly) sb.from("crew_members").update({ display_name: name }).eq("user_id", S.uid).then(() => {});
+  if (name && name !== p.displayName && sb && S.uid && !S.localOnly) sb.from("crew_members").update({ display_name: name }).eq("user_id", S.uid).then(({ error }) => { if (error) toast("Saved, but your crew will see the old name until you're back online"); }, () => toast("Saved, but your crew will see the old name until you're back online"));
   p.displayName = name; p.age = v("s-age");
   if (p.unit === "kg") { const cm = v("s-cm"); p.heightCm = cm || null; }
   else { const f = v("s-ft"), i = v("s-in"); p.heightCm = f || i ? Math.round(((f || 0) * 12 + (i || 0)) * 2.54 * 10) / 10 : null; }

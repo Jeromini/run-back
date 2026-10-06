@@ -74,7 +74,7 @@ export function strengthCard(onChange) {
       <button class="linkbtn" data-act="set-add" data-x="${i}">+ Add set</button></div>`).join("")}
     <button class="btn" data-act="ex-add">${ICON.plus} Add exercise</button>${pickerHtml()}</div>`;
 }
-const pickerHtml = () => `<div class="picker" id="picker"${pickerOpen ? "" : " hidden"}><input id="pk-q" placeholder="Search or type a new exercise" autocomplete="off" data-in="pk-q"><div class="chips" id="pk-list"></div></div>`;
+const pickerHtml = () => `<div class="picker" id="picker"${pickerOpen ? "" : " hidden"}><input id="pk-q" aria-label="Search or add an exercise" placeholder="Search or type a new exercise" autocomplete="off" data-in="pk-q"><div class="chips" id="pk-list"></div></div>`;
 
 function fillPicker() {
   const q = ($("pk-q").value || "").trim(), ql = q.toLowerCase(), used = new Set();

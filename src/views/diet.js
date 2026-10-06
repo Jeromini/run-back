@@ -11,7 +11,7 @@ import { foodById, nutrition } from "../domain/foods.js";
 import { TAGS } from "../domain/macros.js";
 import { DIET_INFO, CHECK_HELP } from "../domain/dietinfo.js";
 
-const STATUS = { kept: ["On plan", "good"], close: ["Nearly", "warn"], off: ["Off plan", "bad"], empty: ["Nothing logged", ""] };
+const STATUS = { kept: ["On plan", "good"], close: ["Nearly", "warn"], off: ["Off plan", "bad"], empty: ["Nothing logged", ""], notarget: ["Needs a target", ""] };
 let period = "W";
 // short label for tabs: "No carb (carnivore style)" reads "No carb"
 export const shortName = d => d.name.replace(/\s*\(.*\)$/, "");
@@ -110,21 +110,22 @@ export function planPanel(date) {
   const kc = Math.max(1, t.c * 4 + t.p * 4 + t.f * 9), [lbl, tone] = STATUS[r.status];
   const center = cap != null
     ? ring(t.net / cap, { size: 150, stroke: 13, color: t.net > cap ? "var(--bad)" : "var(--accent)", inner: `<span class="k">${Math.abs(Math.round(cap - t.net))}</span><span class="u">${t.net > cap ? "g over" : "g net carbs left"}</span>` })
-    : ring(r.score, { size: 150, stroke: 13, color: r.status === "kept" ? "var(--good)" : "var(--accent)", inner: `<span class="k">${r.status === "empty" ? "-" : Math.round(r.score * 100) + "%"}</span><span class="u">on plan</span>` });
+    : ring(r.score, { size: 150, stroke: 13, color: r.status === "kept" ? "var(--good)" : "var(--accent)", inner: `<span class="k">${r.status === "empty" || r.status === "notarget" ? "-" : Math.round(r.score * 100) + "%"}</span><span class="u">on plan</span>` });
   const week = Array.from({ length: 7 }, (_, i) => iso(addDays(parse(date), i - 6)));
   return `<div class="card dhero">
       <div class="card-head"><div><h3>${esc(diet.name)}</h3><span class="note">${date === today() ? "Today" : esc(nice(date))}</span></div><span class="pill ${tone}">${lbl}</span></div>
       <div class="dring">${center}</div>
       ${cap != null ? `<p class="note" style="text-align:center">${Math.round(t.net)} of ${cap} g net carbs (carbs minus fibre)${t.est ? ". Some items are estimates." : ""}</p>` : ""}
       ${macroBar("Carbs", t.c, Math.round(t.c * 4 / kc * 100), "var(--fast)")}${macroBar("Protein", t.p, Math.round(t.p * 4 / kc * 100), "var(--rose)")}${macroBar("Fat", t.f, Math.round(t.f * 9 / kc * 100), "var(--violet)")}
-      <div class="dweek">${week.map(k => { const s = dayStatus(k); return `<div class="${s && s.status !== "empty" ? s.status : "nolog"}${k === date ? " sel" : ""}"><i></i><small>${DOW[parse(k).getDay()].slice(0, 1)}</small></div>`; }).join("")}</div>
+      <div class="dweek">${week.map(k => { const s = dayStatus(k); return `<div class="${s && s.status !== "empty" && s.status !== "notarget" ? s.status : "nolog"}${k === date ? " sel" : ""}"><i></i><small>${DOW[parse(k).getDay()].slice(0, 1)}</small></div>`; }).join("")}</div>
     </div>
     ${r.checks.length ? `<div class="card"><div class="card-head"><h3>Today's checks</h3><button class="linkbtn" data-act="diet-guide">How ${esc(shortName(diet))} works</button></div><p class="note">The day counts as on plan when every check passes, nearly when most do. Tap a check to see what it means.</p><div class="dchecks">${r.checks.map(c => `<details class="dcheck ${c.ok ? "ok" : "no"}"><summary><i>${c.ok ? ICON.tick : ICON.close}</i><span>${esc(c.label)}</span><b>${c.dir === "all" ? `${c.value} of ${c.target}` : `${num(c.value)}${c.unit === "%" ? "%" : c.unit ? " " + c.unit : ""} <small>${c.dir === "max" ? "max " : c.dir === "min" ? "min " : ""}${c.target}${c.unit === "%" ? "%" : c.unit ? " " + c.unit : ""}</small>`}</b></summary><p>${esc(CHECK_HELP[c.id] || CHECK_HELP[c.id.split("-")[0]] || "")}${c.detail ? " Today: " + esc(c.detail.join(", ")) + "." : ""}</p></details>`).join("")}</div></div>` : ""}
     ${r.breaks.length ? `<div class="card"><h3>Off plan today</h3><div class="list">${r.breaks.map(b => `<div class="li"><div><div class="a">${esc(b.name)}</div><div class="b">${esc(b.reason)}</div></div></div>`).join("")}</div></div>` : ""}
+    ${r.status === "notarget" ? `<div class="card empty"><b>Set a daily target first</b>${esc(diet.name)} is judged against your own calorie or protein target. Set one and every day is checked.<button class="btn primary" style="margin-top:12px" data-act="food-targets">Set targets</button></div>` : ""}
     ${r.status === "empty" ? `<div class="card empty"><b>Nothing logged ${date === today() ? "today" : "this day"}</b>Log your meals in Food and they're checked against ${esc(diet.name)} as you go.<button class="btn primary" style="margin-top:12px" data-act="diet-tab" data-v="log">Log food</button></div>` : ""}
     <div class="card"><h3>Settings</h3>
       ${diet.adjust ? `<div class="card-head"><span>Daily net carb limit</span><div class="stepper"><button data-act="diet-carb" data-d="-5" aria-label="Lower">${ICON.minus}</button><b>${cap}</b><span>g</span><button data-act="diet-carb" data-d="5" aria-label="Higher">${ICON.plus}</button></div></div>` : ""}
-      ${diet.phases ? `<label class="f">Phase${segHtml("diet-ph", diet.phases.map((p, i) => [i, p[0].split(":")[0]]), opts.phase || 0, 'data-act="diet-phase"')}</label><p class="note">${esc(diet.phases[opts.phase || 0][0])}: up to ${cap} g net carbs a day.</p>` : ""}
+      ${diet.phases ? `<label class="f">Phase${segHtml("diet-ph", diet.phases.map((p, i) => [i, p[0].split(":")[0]]), opts.phase || 0, 'data-act="diet-phase" aria-label="Phase"')}</label><p class="note">${esc(diet.phases[opts.phase || 0][0])}: up to ${cap} g net carbs a day.</p>` : ""}
       <p class="note">${esc(diet.blurb)} Following since ${esc(nice(opts.since || today()))}.</p>
       <div class="row"><button class="btn" style="flex:1" data-act="diet-guide">How it works</button><button class="btn" style="flex:1" data-act="diet-open">Change diet</button></div></div>`;
 }
@@ -144,10 +145,10 @@ export function reportPanel() {
   const dim = new Date(mStart.getFullYear(), mStart.getMonth() + 1, 0).getDate();
   const cal = Array.from({ length: lead }, () => `<span></span>`).join("") + Array.from({ length: dim }, (_, i) => {
     const k = iso(new Date(mStart.getFullYear(), mStart.getMonth(), i + 1)), s = k <= t ? dayStatus(k) : null;
-    return `<span class="${s ? (s.status === "empty" ? "nolog" : s.status) : "fut"}${k === t ? " today" : ""}">${i + 1}</span>`;
+    return `<span class="${s ? (s.status === "empty" || s.status === "notarget" ? "nolog" : s.status) : "fut"}${k === t ? " today" : ""}">${i + 1}</span>`;
   }).join("");
   return `<div class="card">
-      ${segHtml("diet-per", [["W", "Week"], ["M", "Month"], ["Q", "3 months"]], period, 'data-act="diet-period"')}
+      ${segHtml("diet-per", [["W", "Week"], ["M", "Month"], ["Q", "3 months"]], period, 'data-act="diet-period" aria-label="Report period"')}
       <div class="drep">${ring(r.adherence, { size: 112, stroke: 11, color: "var(--good)", inner: `<span class="k">${r.logged ? pct + "%" : "-"}</span><span class="u">on plan</span>` })}
         <div class="drep-s"><div><b>${r.kept}</b><span>of ${r.logged} logged days on plan</span></div><div><b>${r.streak}</b><span>day streak, best ${r.best}</span></div></div></div>
     </div>

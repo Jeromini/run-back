@@ -110,6 +110,10 @@ export function dayCompliance(diet, opts, foods, ctx = {}) {
   if (L.proteinPct) range("protp", "Protein share", pct(t.p * 4), L.proteinPct);
   if (L.protein === "target" && ctx.proteinTarget) checks.push({ id: "protein", label: "Protein", value: Math.round(t.p), target: ctx.proteinTarget, unit: "g", dir: "min", ok: t.p >= ctx.proteinTarget * 0.95 });
   if (L.kcal === "target" && ctx.kcalTarget) checks.push({ id: "kcal", label: "Calories", value: Math.round(t.k), target: ctx.kcalTarget, unit: "kcal", dir: "max", ok: t.k <= ctx.kcalTarget * 1.05 });
+  // calorie counting and high protein need a target before a day can be judged
+  if (!checks.length && ((L.kcal === "target" && !ctx.kcalTarget) || (L.protein === "target" && !ctx.proteinTarget))) {
+    return { status: "notarget", score: 0, checks: [], breaks: [], totals: t };
+  }
   // foods that break the diet
   const breaks = list.map((e, i) => ({ i, name: e.n, reason: itemReason(diet, opts, e) })).filter(x => x.reason);
   if ((diet.avoid || []).length || cap != null) checks.push({ id: "foods", label: "Foods on plan", value: list.length - breaks.length, target: list.length, unit: "", dir: "all", ok: !breaks.length });
@@ -138,12 +142,12 @@ export function dietReport(diet, opts, days, from, to, ctx = {}) {
     out.push({ date: k, status: r.status, score: r.score, totals: r.totals });
     r.breaks.forEach(b => (breakers[b.name] = (breakers[b.name] || 0) + 1));
   }
-  const logged = out.filter(x => x.status !== "empty"), kept = logged.filter(x => x.status === "kept");
+  const logged = out.filter(x => x.status !== "empty" && x.status !== "notarget"), kept = logged.filter(x => x.status === "kept");
   const avg = key => logged.length ? r1(logged.reduce((a, x) => a + x.totals[key], 0) / logged.length) : 0;
   let best = 0, run = 0;
-  out.forEach(x => { if (x.status === "kept") { run++; best = Math.max(best, run); } else if (x.status !== "empty") run = 0; });
+  out.forEach(x => { if (x.status === "kept") { run++; best = Math.max(best, run); } else if (x.status !== "empty" && x.status !== "notarget") run = 0; });
   let streak = 0;
-  for (let i = out.length - 1; i >= 0; i--) { const x = out[i]; if (x.status === "kept") streak++; else if (x.status === "empty" && i === out.length - 1) continue; else break; }
+  for (let i = out.length - 1; i >= 0; i--) { const x = out[i]; if (x.status === "kept") streak++; else if ((x.status === "empty" || x.status === "notarget") && i === out.length - 1) continue; else break; }
   return {
     days: out, logged: logged.length, kept: kept.length, close: logged.filter(x => x.status === "close").length,
     adherence: logged.length ? kept.length / logged.length : 0, streak, best,

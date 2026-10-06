@@ -119,9 +119,9 @@ act("mind-carry", () => {
   const t = today(), y = iso(addDays(parse(t), -1)), m = M(t), add = carryOver(mindOf(y).tasks || [], y, m.tasks || []);
   m.tasks = [...(m.tasks || []), ...add.map(x => ({ ...x, id: uid() }))]; save(); toast(`${add.length} brought over`);
 });
-act("mind-imp", el => { const x = find(el.dataset.id); x.imp = !x.imp; save(); });
-act("mind-urg", el => { const x = find(el.dataset.id); x.urg = !x.urg; save(); });
-act("mind-done", el => { const x = find(el.dataset.id); x.done = !x.done; save(); if (x.done && x.top && focusQueue(mindOf().tasks).length === 0) toast("All three done. That's a good day."); });
+act("mind-imp", el => { const x = find(el.dataset.id); if (!x) return; x.imp = !x.imp; save(); });
+act("mind-urg", el => { const x = find(el.dataset.id); if (!x) return; x.urg = !x.urg; save(); });
+act("mind-done", el => { const x = find(el.dataset.id); if (!x) return; x.done = !x.done; save(); if (x.done && x.top && focusQueue(mindOf().tasks).length === 0) toast("All three done. That's a good day."); });
 act("mind-top", el => {
   const tasks = mindOf().tasks || [], x = find(el.dataset.id);
   if (!x.top && tasks.filter(t => t.top).length >= TOP_MAX) { toast("Three is the limit. Unstar one first."); return; }

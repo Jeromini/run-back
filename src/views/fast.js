@@ -1,12 +1,12 @@
 // Fast tab: the dial, stages, the Fast + Train coach, stats and history.
-import { act, onChange, openSheet, closeSheet, confirmTap, toast, sheetOpen, ICON } from "../lib/dom.js";
+import { act, onChange, openSheet, closeSheet, confirmTap, toast, sheetOpen, setInert, restoreFocus, ICON } from "../lib/dom.js";
 import { esc, mmss, hm } from "../lib/format.js";
 import { pad } from "../lib/dates.js";
 import { iso, addDays, today, nice, clock, dayClock, localInput, DOW } from "../lib/dates.js";
 import { stackedBars } from "../lib/charts.js";
 import { FAST_PLANS, CUSTOM_FAST } from "../config.js";
 import { state, S, day, render } from "../core/state.js";
-import { saveDay, saveProfile } from "../core/store.js";
+import { saveDay, saveProfile, profileReady } from "../core/store.js";
 import { isPro } from "../core/premium.js";
 import { planFor, stageAt, STAGES, fastStats, allFasts, windowFor, EXTENDED_H, SUPERVISED_H, zoneHours, ZONES, EVIDENCE, hourNote, ROUTINE_PRESETS, routineSummary, routineLabel, nextFast, dueFast, routineDays, onPattern, spanText, shiftDate, fmt12 } from "../domain/fasting.js";
 import { weekStart } from "../lib/dates.js";
@@ -200,6 +200,7 @@ act("fast-edit-start", () => { editStart = !editStart; render(); });
 onChange("fast-start-at", el => {
   const t = new Date(el.value).getTime();
   if (!t || t > Date.now()) { toast("Pick a time in the past"); return; }
+  if (!state.profile.fastActive) { editStart = false; render(); return; }
   state.profile.fastActive.s = t; saveProfile(); editStart = false; render();
 });
 act("fast-end", el => {
@@ -435,22 +436,27 @@ act("remind-toggle", async el => {
 let popOpen = false;
 export function checkStagePopup() {
   const fa = state.profile.fastActive;
-  if (!fa || popOpen || S.workoutLive || document.hidden || sheetOpen() || !document.getElementById("stagepop")) return;
+  const pb = document.getElementById("stagepop");
+  if (!fa || popOpen || S.workoutLive || document.hidden || sheetOpen() || !pb || !pb.hidden || !profileReady()) return;
   const elH = (Date.now() - fa.s) / H, st = stageAt(elH), idx = STAGES.indexOf(STAGES.find(s => s.name === st.name));
   if (fa.seen == null) { fa.seen = idx; saveProfile(); return; }   // fasts started before this feature
   if (idx <= fa.seen || idx === 0) return;
   fa.seen = idx; saveProfile(); popOpen = true; buzz([40, 60, 40]);
   const box = document.getElementById("stagepop");
-  box.innerHTML = `<div class="pop" role="dialog" aria-modal="true" aria-labelledby="pop-t">
+  box.innerHTML = `<div class="pop" role="dialog" aria-modal="true" aria-labelledby="pop-t" aria-describedby="pop-d">
     <div class="pop-k"><span>Stage ${idx + 1} of ${STAGES.length}</span><span>Hour ${Math.floor(elH)}</span></div>
     <div class="pop-bar">${STAGES.map((s, i) => `<i class="${i < idx ? "done" : i === idx ? "now" : ""}"></i>`).join("")}</div>
     <h2 id="pop-t">${esc(st.name)}</h2><span class="ev ev-${st.ev}">${EVIDENCE[st.ev]}</span>
-    <p>${esc(st.text)}</p>
+    <p id="pop-d">${esc(st.text)}</p>
     <ul class="changes">${st.changes.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
     ${st.next ? `<p class="note">Next: <b>${esc(st.next.name)}</b> in ${hm(st.nextIn * 3600)}</p>` : ""}
     <button class="btn fast big" data-act="pop-close">Keep going</button>
     <button class="linkbtn" data-act="pop-break" style="text-align:center">I want to break my fast</button></div>`;
-  box.hidden = false;
+  popReturn = document.activeElement; box.hidden = false; setInert(true);
+  setTimeout(() => { const b = box.querySelector("[data-act=pop-close]"); if (b) b.focus({ preventScroll: true }); }, 50);
 }
-act("pop-break", () => { const b = document.getElementById("stagepop"); b.hidden = true; b.innerHTML = ""; popOpen = false; state.view = "fast"; render(); window.scrollTo(0, 0); });
-act("pop-close", () => { const b = document.getElementById("stagepop"); b.hidden = true; b.innerHTML = ""; popOpen = false; if (state.view === "fast") render(); });
+let popReturn = null;
+function popDone() { setInert(false); const r = popReturn; popReturn = null; setTimeout(() => restoreFocus(r), 0); }
+document.addEventListener("keydown", e => { if (e.key === "Escape" && popOpen) { const b = document.querySelector("[data-act=pop-close]"); if (b) b.click(); } });
+act("pop-break", () => { const b = document.getElementById("stagepop"); b.hidden = true; b.innerHTML = ""; popOpen = false; setInert(false); popReturn = null; state.view = "fast"; render(); window.scrollTo(0, 0); });
+act("pop-close", () => { const b = document.getElementById("stagepop"); b.hidden = true; b.innerHTML = ""; popOpen = false; if (state.view === "fast") render(); popDone(); });

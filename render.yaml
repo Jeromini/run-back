@@ -20,3 +20,15 @@ services:
       - path: /manifest.webmanifest
         name: Content-Type
         value: application/manifest+json
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Permissions-Policy
+        value: geolocation=(self), camera=(), microphone=(), payment=()

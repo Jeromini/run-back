@@ -3,7 +3,7 @@ import { act, openSheet, toast } from "../lib/dom.js";
 import { esc } from "../lib/format.js";
 import { today } from "../lib/dates.js";
 import { state } from "../core/state.js";
-import { saveProfile } from "../core/store.js";
+import { saveProfile, profileReady } from "../core/store.js";
 import { context, evaluate, nextUp, fmtBadgeProgress } from "../domain/achievements.js";
 
 export const badgeList = () => evaluate(context(state.days, state.profile, today()));
@@ -31,6 +31,7 @@ act("open-badges", openBadges);
 
 // Called after every render: announce badges earned since last time (silently seed on first run).
 export function checkBadges() {
+  if (!profileReady()) return;
   const earned = badgeList().filter(b => b.earned).map(b => b.id), p = state.profile;
   if (!p.badges) { p.badges = earned; saveProfile(); return; }
   const fresh = earned.filter(id => !p.badges.includes(id));

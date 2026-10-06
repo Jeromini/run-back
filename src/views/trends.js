@@ -70,7 +70,7 @@ function chartCard(key, title, { unit, valueOf, agg, kind = "bar", color, target
   return `<div class="card chartcard"><div class="head"><div><h3>${title}</h3>
       <div class="range">${label} &middot; ${shortDate(parse(bks[0].from))} - ${shortDate(parse(bks[bks.length - 1].to))}</div>
       <div class="k">${big != null ? fmtK(big) : "-"}<small>${unit}</small>${kind === "line" && target ? `<small>&middot; goal ${target}</small>` : ""}</div></div>
-    ${segHtml("per-" + key, [["D", "Day"], ["W", "Week", !isPro()], ["M", "Month", !isPro()]], per, `data-act="period" data-k="${key}"`)}</div>${chart}</div>`;
+    ${segHtml("per-" + key, [["D", "Day"], ["W", "Week", !isPro()], ["M", "Month", !isPro()]], per, `data-act="period" data-k="${key}" aria-label="Chart period"`)}</div>${chart}</div>`;
 }
 
 function correlations() {
@@ -145,7 +145,7 @@ export function renderTrends(root) {
     body = `<div class="stats"><div class="stat"><b>${runs.length}</b><span>runs</span></div><div class="stat"><b>${fmtDist(runs.reduce((a, x) => a + x.dist, 0))}</b><span>${p.dunit} run</span></div><div class="stat"><b>${acts.filter(a => a.kind === "strength").length}</b><span>strength</span></div></div>` + feedHtml(acts);
   } else body = roadmap();
   root.innerHTML = `<section class="view"><h1 class="big-title">Progress</h1>
-    <div class="subnav"><div class="toptabs" role="tablist" data-act="trends-tab">${[["overview", "Overview"], ["activity", "Activities"], ["plan", "Run plan"]].map(([v, l]) => `<button role="tab" aria-selected="${tab === v}" class="${tab === v ? "on" : ""}" data-v="${v}">${l}</button>`).join("")}</div></div>${body}</section>`;
+    <div class="subnav"><nav class="toptabs" aria-label="Progress sections" data-act="trends-tab">${[["overview", "Overview"], ["activity", "Activities"], ["plan", "Run plan"]].map(([v, l]) => `<button aria-current="${tab === v ? "page" : "false"}" class="${tab === v ? "on" : ""}" data-v="${v}">${l}</button>`).join("")}</nav></div>${body}</section>`;
 }
 
 act("trends-tab", (el, ev) => { const b = ev.target.closest("button"); if (b) { state.trendsTab = b.dataset.v; render(); } });

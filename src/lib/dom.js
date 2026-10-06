@@ -32,37 +32,60 @@ export function confirmTap(key, el, label = "Tap again to confirm") {
   return false;
 }
 
-let toastT;
+// The toast stays in the page (hidden visually) so screen readers announce each new message.
+let toastT, toastW;
 export function toast(msg, kind = "") {
   const t = $("toast");
-  t.textContent = msg; t.className = "toast " + kind; t.hidden = false;
-  clearTimeout(toastT); toastT = setTimeout(() => (t.hidden = true), 2600);
+  t.textContent = ""; t.className = "toast " + kind;
+  clearTimeout(toastW); toastW = setTimeout(() => { t.textContent = msg; t.classList.add("show"); }, 30);
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), Math.max(2800, Math.min(6000, String(msg).length * 60)));
+}
+
+// Background content goes inert while a dialog is open, so focus and screen readers stay inside it.
+const BG = ["#main", "header.top", "#tabs", "#fab"];
+export function setInert(on) {
+  BG.forEach(sel => { const el = document.querySelector(sel); if (el) { if (on) el.setAttribute("inert", ""); else el.removeAttribute("inert"); } });
+}
+// Put focus back where it was before a dialog opened, or on the page.
+export function restoreFocus(el) {
+  if (el && el.isConnected && el.focus && !el.closest("[inert]")) { el.focus({ preventScroll: true }); return; }
+  const m = $("main"); if (m) { m.setAttribute("tabindex", "-1"); m.focus({ preventScroll: true }); }
 }
 
 // Full-screen sheet used for details, guides, the calendar and the paywall.
 const sheetStack = [];
+let sheetReturn = null;
 export function openSheet({ title = "", html = "", onClose, cls = "" }) {
   const s = $("sheet");
+  if (s.hidden) sheetReturn = document.activeElement;
   sheetStack.push(onClose || null);
   $("sh-title").textContent = title;
   $("sh-body").innerHTML = html;
   s.className = "sheet " + cls;
   s.hidden = false; s.scrollTop = 0;
-  document.body.classList.add("locked");
+  document.body.classList.add("locked"); setInert(true);
+  // move focus into the dialog, unless something inside it has already taken focus
+  setTimeout(() => {
+    if (s.hidden || s.contains(document.activeElement)) return;
+    const b = $("sh-back"), f = b && b.offsetParent ? b : s.querySelector("button, input, textarea, select, a[href]");
+    if (f) f.focus({ preventScroll: true });
+  }, 0);
   return $("sh-body");
 }
 export function closeSheet() {
   const s = $("sheet");
   if (s.hidden) return;
   const fn = sheetStack.pop();
-  s.hidden = true; document.body.classList.remove("locked");
+  s.hidden = true; document.body.classList.remove("locked"); setInert(false);
   if (fn) fn();
+  // the close handler may open another sheet; only hand focus back once it's really closed
+  setTimeout(() => { if (!$("sheet").hidden) return; const r = sheetReturn; sheetReturn = null; restoreFocus(r); }, 0);
 }
 export const sheetOpen = () => !$("sheet").hidden;
 
 export function segHtml(id, opts, val, attrs = "") {
   return `<div class="seg" id="${id}" role="group" ${attrs}>${opts.map(o =>
-    `<button type="button" data-v="${esc(o[0])}" class="${String(val) === String(o[0]) ? "on" : ""}"${o[2] ? ` data-pro="1"` : ""}>${o[1]}${o[2] ? ` <i class="lock" aria-label="Premium">${ICON.lock}</i>` : ""}</button>`).join("")}</div>`;
+    `<button type="button" data-v="${esc(o[0])}" class="${String(val) === String(o[0]) ? "on" : ""}" aria-pressed="${String(val) === String(o[0])}"${o[2] ? ` data-pro="1"` : ""}>${o[1]}${o[2] ? ` <i class="lock" aria-hidden="true">${ICON.lock}</i><span class="sr-only">(Premium)</span>` : ""}</button>`).join("")}</div>`;
 }
 
 export const typing = () => { const a = document.activeElement; return !!(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)); };

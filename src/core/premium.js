@@ -4,15 +4,17 @@ import { sb } from "./store.js";
 import { S, render } from "./state.js";
 
 export async function loadEntitlement() {
-  S.pro = false; S.proInfo = null;
-  if (!sb || !S.uid) return;
+  if (!sb || !S.uid) { S.pro = false; S.proInfo = null; return; }
+  const cached = () => { try { return localStorage.getItem("runback.pro:" + S.uid) === "1"; } catch (e) { return false; } };
   try {
-    const { data } = await sb.from("entitlements").select("tier, source, expires_at").eq("user_id", S.uid).maybeSingle();
-    if (data && (!data.expires_at || new Date(data.expires_at) > new Date())) { S.pro = true; S.proInfo = data; }
-    try { localStorage.setItem("runback.pro:" + S.uid, S.pro ? "1" : "0"); } catch (e) { /* ignore */ }
+    const { data, error } = await sb.from("entitlements").select("tier, source, expires_at").eq("user_id", S.uid).maybeSingle();
+    // offline or a server error: keep the last known answer for this account, and don't overwrite it
+    if (error) { S.pro = cached(); return; }
+    S.pro = !!(data && (!data.expires_at || new Date(data.expires_at) > new Date()));
+    S.proInfo = S.pro ? data : null;
+    try { localStorage.setItem("runback.pro:" + S.uid, S.pro ? "1" : "0"); } catch (e) { /* storage blocked */ }
   } catch (e) {
-    // offline: trust the last known answer for this account
-    try { S.pro = localStorage.getItem("runback.pro:" + S.uid) === "1"; } catch (e2) { /* ignore */ }
+    S.pro = cached();
   }
 }
 

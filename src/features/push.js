@@ -36,7 +36,11 @@ export async function enableReminders() {
 export async function disableReminders() {
   try {
     const reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription();
-    if (sub) { await sb.from("push_subscriptions").delete().eq("endpoint", sub.endpoint); await sub.unsubscribe(); }
-  } catch (e) { /* already gone */ }
+    if (sub) {
+      const { error } = await sb.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
+      await sub.unsubscribe();
+      if (error) throw new Error("Couldn't turn reminders off on the server. Try again when you're online.");
+    }
+  } catch (e) { if (/server/.test(e.message || "")) throw e; /* no subscription or service worker: nothing to undo */ }
   state.profile.remind = false; saveProfile();
 }

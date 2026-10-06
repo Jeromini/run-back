@@ -1,11 +1,11 @@
 // My Journey: one place for the whole package. Today's goals with one-tap actions (train, fast,
 // water, food, weigh-in, a note), the week, a map of every day, milestones and a day-by-day diary.
-import { $, act, onInput, onChange, openSheet, closeSheet, confirmTap, toast, segHtml, ICON } from "../lib/dom.js";
+import { $, act, onInput, onChange, openSheet, closeSheet, sheetOpen, confirmTap, toast, segHtml, ICON } from "../lib/dom.js";
 import { esc, num, hm, mmss, round1 } from "../lib/format.js";
 import { iso, parse, addDays, today, nice, DOW, MON } from "../lib/dates.js";
 import { ring } from "../lib/charts.js";
 import { state, day, render } from "../core/state.js";
-import { saveDay, saveProfile } from "../core/store.js";
+import { saveDay, saveProfile, profileReady } from "../core/store.js";
 import { sessionFor } from "../domain/plan.js";
 import { planFor, routineDays, isScheduled } from "../domain/fasting.js";
 import { foodTotals, fastsOf, actsOf, runSecs, runDist, crossSecs, setCounts, ranToday, strengthDone } from "../domain/metrics.js";
@@ -165,7 +165,7 @@ function pillarRow(j, c, d, wk) {
     <div class="acts">${actions}</div>${extra ? `<div class="extra">${extra}</div>` : ""}</div>`;
 }
 const noteEditor = (date, jr) => `<textarea data-in="j-note" data-date="${date}" rows="2" placeholder="Energy, sleep, cravings, a win...">${esc(jr.text || "")}</textarea>
-  ${segHtml("j-mood-" + date, MOODS.map((m, i) => [i + 1, m]), jr.mood || "", `data-act="j-mood" data-date="${date}"`)}`;
+  ${segHtml("j-mood-" + date, MOODS.map((m, i) => [i + 1, m]), jr.mood || "", `data-act="j-mood" data-date="${date}" aria-label="Mood"`)}`;
 
 function trainingList(d) {
   const out = [];
@@ -223,7 +223,8 @@ function milestonesHtml(j, ctx) {
   const list = milestones(j, state.days, today(), ctx, state.profile.unit), got = list.filter(m => m.date);
   // celebrate milestones reached since the last visit (the first visit just records them)
   const ids = got.map(m => m.id);
-  if (!j.seenMs) { j.seenMs = ids; saveProfile(); }
+  if (!profileReady()) { /* wait for the synced profile before recording or celebrating */ }
+  else if (!j.seenMs) { j.seenMs = ids; saveProfile(); }
   else { const fresh = got.filter(m => !j.seenMs.includes(m.id)); if (fresh.length) { j.seenMs = ids; saveProfile(); fresh.slice(-2).forEach(m => celebrate({ title: m.label, sub: `${j.name}, day ${dayNumber(j, m.date)}.`, cta: "Keep going" })); } }
   const next = list.filter(m => !m.date).slice(0, 3);
   return `<div class="card"><div class="card-head"><h3>Milestones</h3><span class="pill">${got.length} of ${list.length}</span></div>
@@ -287,7 +288,7 @@ function startJourneyDraft(templateId, from) {
 }
 function drawSetup() {
   const html = setupHtml();
-  if (document.getElementById("jsetup")) { $("sh-body").innerHTML = html; return; }
+  if (sheetOpen() && document.getElementById("jsetup")) { $("sh-body").innerHTML = html; return; }
   openSheet({ title: draft.editing ? "Edit journey" : "New journey", html });
 }
 function setupHtml() {
@@ -364,7 +365,11 @@ act("j-wsave", () => {
   if (!state.profile.startWeight) { state.profile.startWeight = v; saveProfile(); }
   toast("Weight saved"); render();
 });
-onInput("j-note", el => { const d = day(el.dataset.date); d.journal = { ...(d.journal || {}), text: el.value }; saveDay(el.dataset.date); });
+let noteT = null;
+onInput("j-note", el => {
+  const date = el.dataset.date, d = day(date); d.journal = { ...(d.journal || {}), text: el.value };
+  clearTimeout(noteT); noteT = setTimeout(() => saveDay(date), 500);
+});
 act("j-mood", (el, ev) => {
   const b = ev.target.closest("button"); if (!b) return;
   const k = el.dataset.date, d = day(k), v = Number(b.dataset.v);

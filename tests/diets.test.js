@@ -62,3 +62,13 @@ describe("diets", () => {
     expect(r.breakers[0][0]).toBe("White rice");
   });
 });
+
+describe("diets: target-based plans", () => {
+  const food = { n: "Rice", k: 200, p: 4, c: 44, f: 0.5, fib: 0.6, t: ["grain"] };
+  it("can't call a day on plan until there is a target to check", () => {
+    expect(dayCompliance(dietById("calories"), {}, [food]).status).toBe("notarget");
+    expect(dayCompliance(dietById("high-protein"), {}, [food], {}).status).toBe("notarget");
+    expect(dayCompliance(dietById("calories"), {}, [food], { kcalTarget: 1800 }).status).toBe("kept");
+    expect(dayCompliance(dietById("high-protein"), {}, [food], { proteinTarget: 120 }).status).toBe("off");
+  });
+});

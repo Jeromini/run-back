@@ -20,7 +20,7 @@
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
     --bg: #f7f7f2; --bg-2: #efefe8; --surface: #ffffff; --surface-2: #f3f3ee; --raised: #ffffff;
-    --ink: #17201d; --muted: #5b6460; --faint: #9aa19d; --line: #e5e5dd;
+    --ink: #17201d; --muted: #5b6460; --faint: #757d79; --line: #e5e5dd;
     --accent: #2858d8; --accent-2: #1f49bc; --accent-ink: #ffffff; --accent-soft: #e7edfb;
     --fast: #b4730a; --fast-soft: #f8eedb; --rose: #b8476a; --rose-soft: #f8e5eb; --water: #0e8a80; --water-soft: #dcf0ed;
     --violet: #6650c8; --violet-soft: #ece8fa; --fast-ink: #7a4d05; --water-ink: #0a665e;
@@ -32,7 +32,7 @@
 }
 :root[data-theme="light"] {
   --bg: #f7f7f2; --bg-2: #efefe8; --surface: #ffffff; --surface-2: #f3f3ee; --raised: #ffffff;
-  --ink: #17201d; --muted: #5b6460; --faint: #9aa19d; --line: #e5e5dd;
+  --ink: #17201d; --muted: #5b6460; --faint: #757d79; --line: #e5e5dd;
   --accent: #2858d8; --accent-2: #1f49bc; --accent-ink: #ffffff; --accent-soft: #e7edfb;
   --fast: #b4730a; --fast-soft: #f8eedb; --rose: #b8476a; --rose-soft: #f8e5eb; --water: #0e8a80; --water-soft: #dcf0ed;
   --violet: #6650c8; --violet-soft: #ece8fa; --fast-ink: #7a4d05; --water-ink: #0a665e;
@@ -104,7 +104,7 @@ header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; b
 
 label.f { display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--muted); }
 input, select, textarea { font: inherit; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; width: 100%; min-height: 46px; }
-input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; }
+input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 textarea { min-height: 72px; resize: vertical; }
 .seg { display: flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 3px; gap: 3px; }
 .seg button { flex: 1; border: 0; background: transparent; color: var(--muted); font-weight: 700; padding: 8px 4px; cursor: pointer; min-height: 38px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
@@ -1404,3 +1404,23 @@ details.fold > summary h3 { white-space: nowrap; }
 .jlabel { display: flex; flex-direction: column; gap: 6px; }
 .trow.wrow { grid-template-columns: 1fr; }
 .trow.wrow .ttags { grid-column: 1; }
+
+.sync.bad { background: var(--bad); }
+.toast.warn { background: var(--warn); color: #1f1300; }
+
+/* ---- accessibility pass ---- */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.switch input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+h2#sh-title { margin: 0; }
+/* the toast stays in the page so it can be announced; it only shows when it has something to say */
+.toast { opacity: 0; visibility: hidden; pointer-events: none; }
+.toast.show { opacity: 1; visibility: visible; pointer-events: auto; }
+@media (prefers-reduced-motion: no-preference) { .toast { transition: opacity .2s ease-out, visibility .2s; } }
+/* small controls keep their look but get a 44 px tap area */
+.tcheck, .tstar, .tdel { position: relative; }
+.tcheck::after, .tstar::after, .tdel::after { content: ""; position: absolute; inset: -9px; }
+.seg button, .mini, .cheer { min-height: 44px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+}
